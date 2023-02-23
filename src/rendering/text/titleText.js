@@ -27,30 +27,23 @@ export default class TitleText {
     this.createShader();
   }
 
-  generateTitleTexture(text) {
+  generateTitleTexture({text, fontFamily, fontSize, margin, fillColor, strokeColor}) {
     this.context2D.clearRect(0, 0, this.texsizeX, this.texsizeY);
+    this.context2D.font = `${fontSize}px ${fontFamily}`;
+    this.context2D.fillStyle = fillColor;
+    this.context2D.strokeStyle = strokeColor;
 
-    this.fontSize = Math.floor(16 * (this.texsizeX / 256));
-    this.fontSize = Math.max(this.fontSize, 6);
-    this.context2D.font = `italic ${this.fontSize}px Times New Roman`;
+    const lines = text.split('\n');
+    const totalHeight = (margin * (lines.length - 1)) + fontSize * lines.length;
+    let startY = (this.texsizeY - totalHeight) / 2;
 
-    let titleText = text;
-    let textLength = this.context2D.measureText(titleText).width;
-    if (textLength > this.texsizeX) {
-      const percentToKeep = 0.91 * (this.texsizeX / textLength);
-      titleText = `${titleText.substring(
-        0,
-        Math.floor(titleText.length * percentToKeep)
-      )}...`;
-      textLength = this.context2D.measureText(titleText).width;
+    for (const line of lines) {
+      let textWidth = this.context2D.measureText(line).width;
+      const startX = (this.texsizeX - textWidth) / 2;
+      this.context2D.fillText(line, startX, startY);
+      this.context2D.strokeText(line, startX, startY);
+      startY += fontSize + margin;
     }
-
-    this.context2D.fillStyle = "#FFFFFF";
-    this.context2D.fillText(
-      titleText,
-      (this.texsizeX - textLength) / 2,
-      this.texsizeY / 2
-    );
 
     const imageData = new Uint8Array(
       this.context2D.getImageData(

@@ -131,10 +131,6 @@ export default class Renderer {
     this.blendPattern = new BlendPattern(params);
     this.resampleShader = new ResampleShader(gl);
 
-    this.supertext = {
-      startTime: -1,
-    };
-
     this.warpUVs = new Float32Array(
       (this.mesh_width + 1) * (this.mesh_height + 1) * 2
     );
@@ -1090,12 +1086,8 @@ export default class Renderer {
       mdVSFrameMixed.ob_size
     );
 
-    if (this.supertext.startTime >= 0) {
-      const progress =
-        (this.time - this.supertext.startTime) / this.supertext.duration;
-      if (progress >= 1) {
-        this.titleText.renderTitle(progress, true, globalVars);
-      }
+    if (this.showTitleOpts.text && this.showTitleOpts.progress >= 1) {
+        this.titleText.renderTitle(this.showTitleOpts.progress, true, globalVars);
     }
 
     // Store variables in case we need to rerender
@@ -1165,14 +1157,8 @@ export default class Renderer {
       );
     }
 
-    if (this.supertext.startTime >= 0) {
-      const progress =
-        (this.time - this.supertext.startTime) / this.supertext.duration;
-      this.titleText.renderTitle(progress, false, this.globalVars);
-
-      if (progress >= 1) {
-        this.supertext.startTime = -1;
-      }
+    if (this.showTitleOpts.text) {
+      this.titleText.renderTitle(this.showTitleOpts.progress, false, this.globalVars);
     }
 
     if (this.outputFXAA) {
@@ -1184,12 +1170,11 @@ export default class Renderer {
     }
   }
 
-  launchSongTitleAnim(text) {
-    this.supertext = {
-      startTime: this.time,
-      duration: 1.7,
-    };
-    this.titleText.generateTitleTexture(text);
+  showTitleOpts = {}
+
+  showTitle(showTitleOpts) {
+    this.showTitleOpts = showTitleOpts;
+    this.titleText.generateTitleTexture(showTitleOpts);
   }
 
   toDataURL() {
