@@ -23,7 +23,7 @@ export default class Renderer {
   constructor(gl, audio, opts) {
     this.gl = gl;
     this.audio = audio;
-
+    this.showTitleOpts = {};
     this.frameNum = 0;
     this.fps = 30;
     this.time = 0;
@@ -818,7 +818,7 @@ export default class Renderer {
     );
   }
 
-  render({ audioLevels, elapsedTime } = {}) {
+  render({audioLevels, elapsedTime} = {}) {
     this.calcTimeAndFPS(elapsedTime);
     this.frameNum += 1;
 
@@ -918,7 +918,7 @@ export default class Renderer {
     this.gl.blendEquation(this.gl.FUNC_ADD);
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 
-    const { blurMins, blurMaxs } = Renderer.getBlurValues(mdVSFrameMixed);
+    const {blurMins, blurMaxs} = Renderer.getBlurValues(mdVSFrameMixed);
 
     if (!this.blending) {
       this.warpShader.renderQuadTexture(
@@ -1086,8 +1086,10 @@ export default class Renderer {
       mdVSFrameMixed.ob_size
     );
 
-    if (this.showTitleOpts.text && this.showTitleOpts.progress >= 1) {
-        this.titleText.renderTitle(this.showTitleOpts.progress, true, globalVars);
+    const opProgress = 1 - Math.abs(this.showTitleOpts.progress - 0.5) * 2;
+    if (this.showTitleOpts.text && !this.showTitleOpts.rendered && opProgress >= 0.95) {
+      this.titleText.renderTitle(opProgress, true, globalVars);
+      this.showTitleOpts.rendered = true;
     }
 
     // Store variables in case we need to rerender
@@ -1114,7 +1116,7 @@ export default class Renderer {
     this.gl.blendEquation(this.gl.FUNC_ADD);
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 
-    const { blurMins, blurMaxs } = Renderer.getBlurValues(this.mdVSFrameMixed);
+    const {blurMins, blurMaxs} = Renderer.getBlurValues(this.mdVSFrameMixed);
 
     if (!this.blending) {
       this.compShader.renderQuadTexture(
@@ -1158,7 +1160,8 @@ export default class Renderer {
     }
 
     if (this.showTitleOpts.text) {
-      this.titleText.renderTitle(this.showTitleOpts.progress, false, this.globalVars);
+      const opProgress = 1 - Math.abs(this.showTitleOpts.progress - 0.5) * 2;
+      this.titleText.renderTitle(opProgress, false, this.globalVars);
     }
 
     if (this.outputFXAA) {
@@ -1170,11 +1173,11 @@ export default class Renderer {
     }
   }
 
-  showTitleOpts = {}
-
-  showTitle(showTitleOpts) {
+  launchSongTitleAnim(showTitleOpts) {
     this.showTitleOpts = showTitleOpts;
-    this.titleText.generateTitleTexture(showTitleOpts);
+    if (this.showTitleOpts.text) {
+      this.titleText.generateTitleTexture(showTitleOpts);
+    }
   }
 
   toDataURL() {
@@ -1185,7 +1188,7 @@ export default class Renderer {
 
     this.bindFrameBufferTexture(compFrameBuffer, compTexture);
 
-    const { blurMins, blurMaxs } = Renderer.getBlurValues(this.mdVSFrameMixed);
+    const {blurMins, blurMaxs} = Renderer.getBlurValues(this.mdVSFrameMixed);
     this.compShader.renderQuadTexture(
       false,
       this.targetTexture,
@@ -1210,7 +1213,7 @@ export default class Renderer {
     );
 
     // flip data
-    Array.from({ length: this.texsizeY }, (val, i) =>
+    Array.from({length: this.texsizeY}, (val, i) =>
       data.slice(i * this.texsizeX * 4, (i + 1) * this.texsizeX * 4)
     ).forEach((val, i) =>
       data.set(val, (this.texsizeY - i - 1) * this.texsizeX * 4)

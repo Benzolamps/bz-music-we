@@ -776,7 +776,7 @@ export default class Visualizer {
   }
 
   launchSongTitleAnim(showTitleOpts) {
-    this.renderer.showTitle(showTitleOpts);
+    this.renderer.launchSongTitleAnim(showTitleOpts);
   }
 
   toDataURL() {

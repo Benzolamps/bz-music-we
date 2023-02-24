@@ -29,20 +29,31 @@ export default class TitleText {
 
   generateTitleTexture({text, fontFamily, fontSize, margin, fillColor, strokeColor}) {
     this.context2D.clearRect(0, 0, this.texsizeX, this.texsizeY);
-    this.context2D.font = `${fontSize}px ${fontFamily}`;
     this.context2D.fillStyle = fillColor;
     this.context2D.strokeStyle = strokeColor;
 
-    const lines = text.split('\n');
-    const totalHeight = (margin * (lines.length - 1)) + fontSize * lines.length;
-    let startY = (this.texsizeY - totalHeight) / 2;
-
+    const lines = text.trim().split('\n');
+    
+    const drawLines = [];
+    
     for (const line of lines) {
-      let textWidth = this.context2D.measureText(line).width;
-      const startX = (this.texsizeX - textWidth) / 2;
-      this.context2D.fillText(line, startX, startY);
-      this.context2D.strokeText(line, startX, startY);
-      startY += fontSize + margin;
+      let textWidth, validFontSize;
+      for (validFontSize = fontSize; validFontSize > 9; validFontSize--) {
+        this.context2D.font = `${validFontSize}px ${fontFamily}`;
+        textWidth = this.context2D.measureText(line).width;
+        if (textWidth < this.texsizeX - 2 * margin) {
+          break;
+        }
+      }
+      drawLines.push({text: line, x: (this.texsizeX - textWidth) / 2, y: validFontSize});
+    }
+
+    const totalHeight = (margin * (lines.length - 1)) + drawLines.map(line => line.y).reduce((a, b) => a + b, 0);
+    let startY = (this.texsizeY - totalHeight) / 2;
+    for (const line of drawLines) {
+      this.context2D.fillText(line.text, line.x, startY);
+      this.context2D.strokeText(line.text, line.x, startY);
+      startY += line.y + margin;
     }
 
     const imageData = new Uint8Array(
