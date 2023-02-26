@@ -18,52 +18,12 @@ export default class TitleText {
     this.positionVertexBuf = this.gl.createBuffer();
     this.vertexBuf = this.gl.createBuffer();
 
-    this.canvas = document.createElement("canvas");
-    this.canvas.width = this.texsizeX;
-    this.canvas.height = this.texsizeY;
-    this.context2D = this.canvas.getContext("2d");
-
     this.floatPrecision = ShaderUtils.getFragmentFloatPrecision(this.gl);
     this.createShader();
   }
 
-  generateTitleTexture({text, fontFamily, fontSize, margin, fillColor, strokeColor}) {
-    this.context2D.clearRect(0, 0, this.texsizeX, this.texsizeY);
-    this.context2D.fillStyle = fillColor;
-    this.context2D.strokeStyle = strokeColor;
-
-    const lines = text.trim().split('\n');
-    
-    const drawLines = [];
-    
-    for (const line of lines) {
-      let textWidth, validFontSize;
-      for (validFontSize = fontSize; validFontSize > 9; validFontSize--) {
-        this.context2D.font = `${validFontSize}px ${fontFamily}`;
-        textWidth = this.context2D.measureText(line).width;
-        if (textWidth < this.texsizeX - 2 * margin) {
-          break;
-        }
-      }
-      drawLines.push({text: line, x: (this.texsizeX - textWidth) / 2, y: validFontSize});
-    }
-
-    const totalHeight = (margin * (lines.length - 1)) + drawLines.map(line => line.y).reduce((a, b) => a + b, 0);
-    let startY = (this.texsizeY - totalHeight) / 2;
-    for (const line of drawLines) {
-      this.context2D.fillText(line.text, line.x, startY);
-      this.context2D.strokeText(line.text, line.x, startY);
-      startY += line.y + margin;
-    }
-
-    const imageData = new Uint8Array(
-      this.context2D.getImageData(
-        0,
-        0,
-        this.texsizeX,
-        this.texsizeY
-      ).data.buffer
-    );
+  generateTitleTexture(buffer) {
+    const imageData = new Uint8Array(buffer);
 
     this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
 
@@ -111,9 +71,6 @@ export default class TitleText {
     this.aspecty = opts.aspecty;
     this.invAspectx = 1.0 / this.aspectx;
     this.invAspecty = 1.0 / this.aspecty;
-
-    this.canvas.width = this.texsizeX;
-    this.canvas.height = this.texsizeY;
   }
 
   // based on https://github.com/mrdoob/three.js/blob/master/src/geometries/PlaneGeometry.js

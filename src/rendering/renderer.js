@@ -1086,9 +1086,8 @@ export default class Renderer {
       mdVSFrameMixed.ob_size
     );
 
-    const opProgress = 1 - Math.abs(this.showTitleOpts.progress - 0.5) * 2;
-    if (this.showTitleOpts.text && !this.showTitleOpts.rendered && opProgress >= 0.95) {
-      this.titleText.renderTitle(opProgress, true, globalVars);
+    if (this.showTitleOpts.buffer && !this.showTitleOpts.rendered && this.showTitleOpts.progress >= 1) {
+      this.titleText.renderTitle(this.showTitleOpts.progress, true, globalVars);
       this.showTitleOpts.rendered = true;
     }
 
@@ -1159,9 +1158,8 @@ export default class Renderer {
       );
     }
 
-    if (this.showTitleOpts.text) {
-      const opProgress = 1 - Math.abs(this.showTitleOpts.progress - 0.5) * 2;
-      this.titleText.renderTitle(opProgress, false, this.globalVars);
+    if (this.showTitleOpts.buffer) {
+      this.titleText.renderTitle(this.showTitleOpts.progress, false, this.globalVars);
     }
 
     if (this.outputFXAA) {
@@ -1175,8 +1173,8 @@ export default class Renderer {
 
   launchSongTitleAnim(showTitleOpts) {
     this.showTitleOpts = showTitleOpts;
-    if (this.showTitleOpts.text) {
-      this.titleText.generateTitleTexture(showTitleOpts);
+    if (this.showTitleOpts.buffer) {
+      this.titleText.generateTitleTexture(this.showTitleOpts.buffer);
     }
   }
 
