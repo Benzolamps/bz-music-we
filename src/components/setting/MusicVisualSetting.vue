@@ -6,6 +6,12 @@
         :min="0.5" :max="2" :step="0.1"
         :show-tooltip="false"
         input-size="mini"
+        :marks="{
+          0.5: '0.5',
+          1: '1',
+          1.5:'1.5',
+          2: '2'
+        }"
       />
     </el-form-item>
     <el-form-item label="Milk Drop Preset">
@@ -20,7 +26,6 @@
       }">下一个</el-button>
       <div style="margin: 10px;">
         <el-checkbox v-model="visualStyles.onlyShowStarPresets">只显示<i class="el-icon-star-on"/></el-checkbox>
-        <el-checkbox v-model="visualStyles.useFtt">读取FTT</el-checkbox>
         <el-checkbox v-model="visualStyles.random">随机切换</el-checkbox>
       </div>
      
@@ -31,6 +36,19 @@
         :min="0" :max="300"
         :show-tooltip="false"
         input-size="mini"
+        :marks="{
+          0: '0',
+          30: '30',
+          60: '60',
+          90: '90',
+          120: '120',
+          150: '150',
+          180: '180',
+          210: '210',
+          240: '240',
+          270: '270',
+          300: '300',
+        }"
       />
     </el-form-item>
     <el-form-item label="歌词展示方式">
@@ -120,14 +138,15 @@
 import BaseComponent from '@/components/common/BaseComponent';
 import Component from 'vue-class-component';
 import {Ref, Watch} from 'vue-property-decorator';
-import {MilkDropPresetDesc} from '@/utils/butterchurn.min.js';
+import {MilkDropPreset, MilkDropPresetDesc} from '@/utils/butterchurn.min.js';
 import BScroll from '@/components/common/BScroll.vue';
+import presetList from '@/assets/preset/index'
 @Component({
   components: {BScroll}
 })
 export default class PlayerSetting extends BaseComponent {
-  private presetList: MilkDropPresetDesc[] = [];
-  private basePresetList: MilkDropPresetDesc[] = [];
+  private presetList: ReadonlyArray<{name: string, preset: MilkDropPreset}> = [];
+  private basePresetList: ReadonlyArray<{name: string, preset: MilkDropPreset}> = presetList;
   /* 页大小 */
   private pageSize = 50;
   /* 当前页 */
@@ -139,10 +158,7 @@ export default class PlayerSetting extends BaseComponent {
   private scroll: BScroll;
 
   override mounted() {
-    getMilkDropList().then(async res => {
-      this.basePresetList = res;
-      this.loadPresetList();
-    });
+    this.loadPresetList();
   }
   
   private loadPresetList() {

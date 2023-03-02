@@ -84,8 +84,8 @@ export default class MusicLrc extends BaseComponent {
       }
       this.t = t;
       const lrcContainer = this.$refs.lrcContainer as HTMLUListElement;
-      lrcContainer.style.setProperty('--lrc-progress-past', this.lrcContext.progress * 100 + '%');
-      lrcContainer.style.setProperty('--lrc-progress-future', this.lrcContext.progress * 200 + '%');
+      lrcContainer?.style.setProperty('--lrc-progress-past', this.lrcContext.progress * 100 + '%');
+      lrcContainer?.style.setProperty('--lrc-progress-future', this.lrcContext.progress * 200 + '%');
     });
   }
 

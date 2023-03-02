@@ -3,7 +3,7 @@
     <el-form-item label="字体">
       <el-select v-model="lrcStyles.font" style="width: 80%">
         <el-option key="" value="" label="苹方简体"/>
-        <el-option v-for="font in fonts" :key="font" :value="font" :label="getFontName(font)"/>
+        <el-option v-for="font in fonts" :key="font.name" :value="font.name" :label="font.name"/>
       </el-select>
       <el-button style="width: 20%" @click="chooseCustomFont">自定义</el-button>
       <input type="file" ref="file" accept=".ttf,.otf,.woff,.woff2" @change="setCustomFont" v-show="false"/>
@@ -12,7 +12,7 @@
       <div style="display: flex">
         <el-input v-model="lrcStyles.defaultColor" readonly style="flex: 1"/>
         <el-color-picker v-model="lrcStyles.defaultColor"></el-color-picker>
-      </div>
+      </div> 
     </el-form-item>
     <el-form-item label="未播放颜色">
       <div style="display: flex">
@@ -38,12 +38,12 @@
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
 import Component from 'vue-class-component';
-import PlayerSettings from '@/components/service/player_settings';
+import PlayerSettings, {fontList} from '@/components/service/player_settings';
 import {Ref} from 'vue-property-decorator';
 
 @Component
 export default class PlayerSetting extends BaseComponent {
-  private fonts: string[] = [];
+  private fonts = fontList;
   
   @Ref('file')
   private file: HTMLInputElement;
@@ -58,14 +58,6 @@ export default class PlayerSetting extends BaseComponent {
     if (f) {
       PlayerSettings.loadCustomFont(f);
     }
-  }
-  
-  public getFontName(url: string) {
-    return PlayerSettings.getFontName(url);
-  }
-
-  public override async mounted() {
-    this.fonts = await getFontList();
   }
 }
 </script>

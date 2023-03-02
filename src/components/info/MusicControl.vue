@@ -140,13 +140,20 @@
       ref="moreDialog"
       :modal="false"
       :visible.sync="showMore"
-      :with-header="false"
-      direction="btt"
-      size="200px"
+      :with-header="true"
+      direction="rtl"
+      size="480px"
       :append-to-body="true"
       :modal-append-to-body="true"
     >
-      
+      <el-tabs style="margin: 20px">
+        <el-tab-pane label="歌词设置" name="first">
+          <music-lrc-setting/>
+        </el-tab-pane>
+        <el-tab-pane label="可视化设置" name="second">
+          <music-visual-setting/>
+        </el-tab-pane>
+      </el-tabs>
     </el-drawer>
 
     <playlist :show.sync="showPlaylist"/>
@@ -163,8 +170,10 @@ import assert from 'assert';
 import MusicCarousel from '@/components/info/MusicCarousel.vue';
 import {formatDelta} from '@/utils/common_utils';
 import Playlist from "@/components/core/Playlist.vue";
+import MusicLrcSetting from "@/components/setting/MusicLrcSetting.vue";
+import MusicVisualSetting from "@/components/setting/MusicVisualSetting.vue";
    
-@Component({components: {Playlist, MusicCarousel}})
+@Component({components: {MusicVisualSetting, MusicLrcSetting, Playlist, MusicCarousel}})
 export default class MusicControl extends BaseComponent {
   private modes = modes;
   /* 进度条时间 */

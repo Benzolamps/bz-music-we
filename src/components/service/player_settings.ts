@@ -3,6 +3,8 @@ import {bus} from '@/components/common/BaseComponent';
 
 import lrcFonts from '@/assets/fonts/lrc/index';
 
+export const fontList: Array<{name: string, blob: Blob}> = [];
+
 export const defaultLrcStyles = {
   font: '',
   defaultColor: '#2C3E50',
@@ -16,7 +18,6 @@ export const defaultVisualStyles = {
   preset: '',
   starPresets: new Set<string>(),
   onlyShowStarPresets: false,
-  useFtt: false,
   random: false,
   interval: 30,
   lrcMode: 'caption' as 'scroll' | 'caption' | 'mix',
@@ -53,23 +54,20 @@ export default class PlayerSettings {
   }
 
   public static async load() {
-    const fonts: Array<{name: string, blob: Blob}> = [];
     for (const lrcFont of lrcFonts) {
-      fonts.push({
+      fontList.push({
         name: lrcFont.name,
         blob: await (await fetch(lrcFont.url)).blob()
       });
     }
-    if (window.name == 'MusicPlayer') {
-      bus.$watch('lrcStyles', value => {
-        store.lrcStyles = value;
-      }, {deep: true});
-      bus.$watch('visualStyles', value => {
-        const v = {...value};
-        v.starPresets = Array.from(value.starPresets);
-        store.visualStyles = v;
-      }, {deep: true});
-    }
+    bus.$watch('lrcStyles', value => {
+      store.lrcStyles = value;
+    }, {deep: true});
+    bus.$watch('visualStyles', value => {
+      const v = {...value};
+      v.starPresets = Array.from(value.starPresets);
+      store.visualStyles = v;
+    }, {deep: true});
     let error = false;
     bus.$watch('lrcStyles.font', async (value, oldValue) => {
       if (bus.lrcStyles.font.startsWith('custom: ')) {
@@ -79,19 +77,18 @@ export default class PlayerSettings {
         error = false;
         return;
       }
-      const fontName = PlayerSettings.getFontName(value);
       try {
-        bus.$toast('正在应用字体：' + fontName, true);
-        await PlayerSettings.loadFontFace(value);
-        bus.$toast('应用字体成功：' + fontName);
+        bus.$toast('正在应用字体：' + value, true);
+        await PlayerSettings.loadFontFace(fontList.find(f => f.name == value)?.blob);
+        bus.$toast('应用字体成功：' + value);
       } catch (e) {
-        bus.$toast('应用字体失败：' + fontName);
+        bus.$toast('应用字体失败：' + value);
         error = true;
-        window.name == 'MusicPlayer' && (bus.lrcStyles.font = oldValue);
+        bus.lrcStyles.font = oldValue;
       }
     });
-    console.log(lrcFonts, fonts)
-    await PlayerSettings.loadFontFace(fonts.find(f => f.name == bus.lrcStyles.font)?.blob);
+    console.log(lrcFonts, fontList)
+    await PlayerSettings.loadFontFace(fontList.find(f => f.name == bus.lrcStyles.font)?.blob);
   }
   
   public static async loadCustomFont(file: File) {

@@ -27,7 +27,6 @@
 import Component from 'vue-class-component';
 import MusicControl from '@/components/info/MusicControl.vue';
 import MusicLrc from '@/components/lrc/MusicLrc.vue';
-import MenuDropDown from '@/components/setting/MenuDropDown.vue';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
 import BaseComponent from '@/components/common/BaseComponent';
 import StrokeText from '@/components/common/StrokeText.vue';

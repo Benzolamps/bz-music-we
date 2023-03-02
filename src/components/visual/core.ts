@@ -1,6 +1,7 @@
 ﻿import {bus} from '@/components/common/BaseComponent';
 import butterchurn, {MilkDropPreset, MilkDropPresetDesc, Visualizer} from '@/utils/butterchurn.min.js';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
+import presetList from '@/assets/preset/index'
 
 export default class MusicVisualCore {
   private readonly audioContext: AudioContext;
@@ -11,10 +12,9 @@ export default class MusicVisualCore {
   private readonly canvasDraw: HTMLCanvasElement;
   private readonly getDesireCanvasSize: () => [number, number];
   private timeout: number;
-  private basePresetList: ReadonlyArray<MilkDropPresetDesc>;
-  private presetList: ReadonlyArray<MilkDropPresetDesc>;
-  private randomPresetList: ReadonlyArray<MilkDropPresetDesc>;
-  private readonly presetMapping = new Map<string, MilkDropPreset>();
+  private basePresetList: ReadonlyArray<{name: string, preset: MilkDropPreset}> = Object.freeze(presetList);
+  private presetList: ReadonlyArray<{name: string, preset: MilkDropPreset}>;
+  private randomPresetList: ReadonlyArray<{name: string, preset: MilkDropPreset}>;
 
   public constructor(musicVisual: MusicVisual, canvas: HTMLCanvasElement, getDesireCanvasSize: () => [number, number]) {
     this.canvas = canvas;
@@ -44,20 +44,18 @@ export default class MusicVisualCore {
 
     musicVisual.$watch('visualStyles.onlyShowStarPresets', this.loadPresetList.bind(this));
     musicVisual.$watch('visualStyles.interval', this.reloadTimeout.bind(this));
-    musicVisual.$watch('visualStyles.useFtt', this.handleUseFtt.bind(this));
     musicVisual.$watch('visualStyles.lrcMode', this.drawLrcCaption.bind(this));
     musicVisual.$watch('lrcContext.currentLrcTime', this.drawLrcCaption.bind(this));
 
-    this.handleUseFtt();
-    this.drawEachFrame();
-  
-    // getMilkDropList().then(async res => {
-    //   this.basePresetList = Object.freeze(res);
-    //   this.loadPresetList();
-    //   await this.loadPreset();
-    //   this.reloadTimeout();
-    // });
-    
+    this.mediaSource = this.audioContext.createMediaElementSource(bus.musicService.audio);
+    this.mediaSource.connect(this.audioContext.destination);
+    this.visualizer.connectAudio(this.mediaSource);
+
+    window.requestAnimationFrame(this.drawEachFrame.bind(this));
+    this.loadPresetList();
+    this.loadPreset();
+    this.reloadTimeout();
+
     bus.musicVisualCore = this;
   }
  
@@ -71,16 +69,10 @@ export default class MusicVisualCore {
   }
   
   private async loadPreset() {
-    const preset = bus.visualStyles.preset;
-    const desc = this.presetList.find(d => d.name === preset) ?? this.presetList[0];
-    if (desc) {
-      let milkDropPreset = this.presetMapping.get(desc.name);
-      if (!milkDropPreset) {
-        // const text = await getTextData(desc.url);
-        // milkDropPreset = JSON.parse(text);
-        // this.presetMapping.set(desc.name, milkDropPreset);
-      }
-      this.visualizer.loadPreset(milkDropPreset, 2.0);
+    const name = bus.visualStyles.preset;
+    const preset = this.presetList.find(d => d.name === name) ?? this.presetList[0];
+    if (preset) {
+      this.visualizer.loadPreset(preset.preset, 2.0);
     } else {
       this.visualizer.loadPreset({}, 2.0);
     }
@@ -95,6 +87,9 @@ export default class MusicVisualCore {
     if (this.canvas.width != width || this.canvas.height != height) {
       this.canvas.width = width;
       this.canvas.height = height;
+      console.log(this.canvas.width,
+        this.canvas.height,
+        {pixelRatio: bus.visualStyles.displayRatio})
       this.visualizer.setRendererSize(
         this.canvas.width,
         this.canvas.height,
@@ -104,7 +99,6 @@ export default class MusicVisualCore {
 
     const context2d = this.canvas.getContext('2d');
     context2d.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
     if (bus.visualStyles.lrcMode !== 'scroll') {
       this.visualizer.render();
     } else {
@@ -150,22 +144,6 @@ export default class MusicVisualCore {
       );
     }
   }
-
-  private handleUseFtt() {
-    if (bus.visualStyles.useFtt) {
-      this.mediaSource = this.audioContext.createMediaElementSource(bus.musicService.audio);
-      this.mediaSource.connect(this.audioContext.destination);
-      this.visualizer.connectAudio(this.mediaSource);
-    } else {
-      if (this.mediaSource) {
-        this.visualizer.disconnectAudio(this.mediaSource);
-        this.mediaSource.disconnect();
-        this.mediaSource = null;
-        bus.musicService.createAudioElement();
-      }
-    }
-  }
-
 
   /* 绘制标题歌词 */
   private drawLrcCaption() {
