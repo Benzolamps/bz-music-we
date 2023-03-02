@@ -1,0 +1,49 @@
+'use strict';
+
+const {join} = require('path');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+
+function resolve(...dir) {
+  return join(process.cwd(), ...dir);
+}
+
+const { defineConfig } = require('@vue/cli-service');
+module.exports = defineConfig({
+  transpileDependencies: true,
+  publicPath: './',
+  devServer: {
+    host: '0.0.0.0',
+    port: 9826,
+    allowedHosts: 'all',
+  },
+  pages: {
+    index: {
+      title: require('./package.json').description,
+      entry: 'src/main.ts'
+    }
+  },
+  chainWebpack(config) {
+    config.module.rule('svg').exclude.add(resolve('src/assets/icons/svg'))
+      .end();
+    config.module
+      .rule('icons')
+      .test(/\.svg$/)
+      .include.add(resolve('src/assets/icons/svg'))
+      .end()
+      .use('svg-sprite-loader')
+      .loader('svg-sprite-loader')
+      .options({
+        symbolId: 'icon-[name]'
+      })
+      .end();
+
+    config.module
+      .rule('lrc')
+      .test(/\.lrc$/)
+      .use('raw-loader')
+      .loader('raw-loader')
+      .end();
+
+    config.plugin('node-polyfill-plugin').use(NodePolyfillPlugin);
+  }
+});

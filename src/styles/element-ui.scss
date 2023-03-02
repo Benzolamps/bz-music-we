@@ -1,0 +1,27 @@
+﻿.el-drawer__wrapper {
+  .el-drawer {
+    &.ltr {
+      border-radius: 0 10px 10px 0;
+    }
+
+    &.rtl {
+      border-radius: 10px 0 0 10px;
+    }
+
+    &.btt {
+      border-radius: 10px 10px 0 0;
+    }
+
+    &.ttb {
+      border-radius: 0 0 10px 10px;
+    }
+  }
+}
+
+.el-drawer__wrapper {
+  pointer-events: none;
+
+  .el-drawer {
+    pointer-events: auto;
+  }
+}

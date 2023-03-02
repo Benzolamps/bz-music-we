@@ -1,0 +1,60 @@
+﻿@import "@/styles/element-ui.scss";
+
+@font-face {
+  src: url(@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf);
+  font-family: 'PingFang SC';
+}
+
+@font-face {
+  src: url(@/assets/fonts/JetBrainsMono-Regular.ttf);
+  font-family: 'JetBrains Mono';
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  
+  /* 解决element-ui弹窗问题 */
+  padding-right: 0px !important;
+
+  .enable-user-select {
+    user-select: text;
+  }
+
+  .code-font {
+    font-family: 'JetBrains Mono', 'PingFang SC', 'monospace' !important;
+  }
+
+  :not([class*=icon]) {
+    font-family: 'PingFang SC', 'Arial', 'sans-serif';
+  }
+
+  ul, ol, li, dl, dt, dd {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  #app {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    top: 0;
+    left: 0;
+  }
+}
