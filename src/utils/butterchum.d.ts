@@ -1,6 +1,5 @@
 declare module '@/utils/butterchurn.min.js' {
   export interface MilkDropPreset {}
-  export interface MilkDropPresetDesc {name: string,url: string}
 
   export type TimeOptions = {
     buffer: ArrayBuffer;
@@ -13,7 +12,7 @@ declare module '@/utils/butterchurn.min.js' {
     fillColor: string;
     strokeColor: string;
     progress: number;
-  }
+  };
 
   export interface Visualizer {
     loadPreset(preset: MilkDropPreset, blendTime = 0);

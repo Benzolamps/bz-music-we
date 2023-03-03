@@ -5,8 +5,6 @@
 </template>
 
 <script lang="ts">
-import MouseWheel from '@better-scroll/mouse-wheel';
-import PullDown from '@better-scroll/pull-down';
 import Slide from '@better-scroll/slide';
 import Component from 'vue-class-component';
 import BaseComponent from '@/components/common/BaseComponent';
@@ -14,8 +12,6 @@ import {Emit, Prop} from 'vue-property-decorator';
 import {Options} from '@better-scroll/core/src/Options';
 import BetterScroll from '@better-scroll/core';
 
-BetterScroll.use(MouseWheel);
-BetterScroll.use(PullDown);
 BetterScroll.use(Slide);
 
 @Component

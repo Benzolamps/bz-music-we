@@ -14,7 +14,7 @@ import BaseComponent from '@/components/common/BaseComponent';
 import Vue from 'vue';
 import PlayerSettings from '@/components/service/player_settings';
 import LrcContext from '@/components/service/lrc_context';
-import MusicPlayer from "@/components/core/MusicPlayer.vue";
+import MusicPlayer from '@/components/core/MusicPlayer.vue';
 
 @Component({components: {MusicPlayer, Toast}})
 export default class App extends BaseComponent {

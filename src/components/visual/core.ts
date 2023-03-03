@@ -1,7 +1,11 @@
 ﻿import {bus} from '@/components/common/BaseComponent';
-import butterchurn, {MilkDropPreset, MilkDropPresetDesc, Visualizer} from '@/utils/butterchurn.min.js';
+import butterchurn, {MilkDropPreset, TimeOptions, Visualizer} from '@/utils/butterchurn.min.js';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
-import presetList from '@/assets/preset/index'
+import presetList from '@/assets/preset/index';
+
+declare class OffscreenCanvas extends HTMLCanvasElement {
+  constructor(width: number, height: number);
+}
 
 export default class MusicVisualCore {
   private readonly audioContext: AudioContext;
@@ -12,13 +16,17 @@ export default class MusicVisualCore {
   private readonly canvasDraw: HTMLCanvasElement;
   private readonly getDesireCanvasSize: () => [number, number];
   private timeout: number;
-  private basePresetList: ReadonlyArray<{name: string, preset: MilkDropPreset}> = Object.freeze(presetList);
-  private presetList: ReadonlyArray<{name: string, preset: MilkDropPreset}>;
-  private randomPresetList: ReadonlyArray<{name: string, preset: MilkDropPreset}>;
+  private basePresetList: ReadonlyArray<{ name: string, preset: MilkDropPreset }> = Object.freeze(presetList);
+  private presetList: ReadonlyArray<{ name: string, preset: MilkDropPreset }>;
+  private randomPresetList: ReadonlyArray<{ name: string, preset: MilkDropPreset }>;
 
   public constructor(musicVisual: MusicVisual, canvas: HTMLCanvasElement, getDesireCanvasSize: () => [number, number]) {
     this.canvas = canvas;
-    this.canvasDraw = document.createElement('canvas');
+    if ('OffscreenCanvas' in window) {
+      this.canvasDraw = new OffscreenCanvas(...getDesireCanvasSize());
+    } else {
+      this.canvasDraw = document.createElement('canvas');
+    }
     this.getDesireCanvasSize = getDesireCanvasSize;
 
     this.audioContext = new AudioContext();
@@ -52,13 +60,14 @@ export default class MusicVisualCore {
     this.visualizer.connectAudio(this.mediaSource);
 
     window.requestAnimationFrame(this.drawEachFrame.bind(this));
+    window.requestAnimationFrame(this.drawLrcCaption.bind(this));
+
     this.loadPresetList();
     this.loadPreset();
     this.reloadTimeout();
-
     bus.musicVisualCore = this;
   }
- 
+
   private loadPresetList() {
     this.presetList = bus.visualStyles.onlyShowStarPresets
       ? this.basePresetList.filter(p => bus.visualStyles.starPresets.has(p.name))
@@ -67,7 +76,7 @@ export default class MusicVisualCore {
     presetList.shuffle();
     this.randomPresetList = Object.freeze(presetList);
   }
-  
+
   private async loadPreset() {
     const name = bus.visualStyles.preset;
     const preset = this.presetList.find(d => d.name === name) ?? this.presetList[0];
@@ -87,9 +96,6 @@ export default class MusicVisualCore {
     if (this.canvas.width != width || this.canvas.height != height) {
       this.canvas.width = width;
       this.canvas.height = height;
-      console.log(this.canvas.width,
-        this.canvas.height,
-        {pixelRatio: bus.visualStyles.displayRatio})
       this.visualizer.setRendererSize(
         this.canvas.width,
         this.canvas.height,
@@ -120,7 +126,7 @@ export default class MusicVisualCore {
     context2d.fillStyle = bus.lrcStyles.pastColor;
     context2d.fillText('FPS: ' + fps, 5 * window.devicePixelRatio, 5 * window.devicePixelRatio);
   }
-  
+
   public loadNearPreset(nextPresetType: 'prev' | 'next') {
     const list = bus.visualStyles.random ? this.randomPresetList : this.presetList;
     let name = bus.visualStyles.preset;
@@ -147,6 +153,13 @@ export default class MusicVisualCore {
 
   /* 绘制标题歌词 */
   private drawLrcCaption() {
+    if (bus.visualStyles.lrcMode === 'scroll') {
+      return;
+    }
+    window.requestAnimationFrame(this.drawLrcCaptionInner.bind(this));
+  }
+
+  private async drawLrcCaptionInner(): Promise<TimeOptions> {
     const lines = bus.lrcContext.currentLrcArray.filter(lrc => lrc.content).map(lrc => lrc.content);
     if (lines.length === 0) {
       this.visualizer.launchSongTitleAnim({buffer: null, progress: 0});

@@ -22,7 +22,7 @@ export const defaultVisualStyles = {
   interval: 30,
   lrcMode: 'caption' as 'scroll' | 'caption' | 'mix',
   state: {
-    show: false,
+    show: true,
     pip: false,
     canvas: false,
     video: false
@@ -87,7 +87,6 @@ export default class PlayerSettings {
         bus.lrcStyles.font = oldValue;
       }
     });
-    console.log(lrcFonts, fontList)
     await PlayerSettings.loadFontFace(fontList.find(f => f.name == bus.lrcStyles.font)?.blob);
   }
   
@@ -95,20 +94,11 @@ export default class PlayerSettings {
     try {
       bus.$toast('正在应用字体：' + file.name, true);
       await PlayerSettings.loadFontFace(file);
-      bus.lrcStyles.font = 'custom: ' + file.name;
+      bus.lrcStyles.font = 'custom: ' + JSON.stringify(file);
       bus.$toast('应用字体成功：' + file.name);
     } catch (e) {
       bus.$toast('应用字体失败：' + file.name);
     }
-  }
-
-  public static getFontName(url: string) {
-    if (!url) {
-      return '苹方简体';
-    }
-    const urlObj = new URL(url, location.href);
-    const result = urlObj.pathname.substring(urlObj.pathname.lastIndexOf('/') + 1, urlObj.pathname.lastIndexOf('.'));
-    return decodeURI(result);
   }
 
   private static async loadFontFace(blob?: Blob) {

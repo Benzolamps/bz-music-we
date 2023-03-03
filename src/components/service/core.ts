@@ -171,6 +171,7 @@ export default class MusicService extends MusicComponent {
     }
     if (music.id) {
       const blob = music.musicProvider;
+      await this.vue.$sleep(200);
       music.objUrl = URL.createObjectURL(blob);
     }
     this.setMusic(this.music = music);

@@ -9,7 +9,6 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
-  "main": "build/electron-main.js",
   "devDependencies": {
     "@better-scroll/core": "^2.5.0",
     "@better-scroll/slide": "^2.5.0",
@@ -21,8 +20,6 @@
     "@vue/cli-plugin-typescript": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "@vue/eslint-config-typescript": "^9.1.0",
-    "butterchurn-presets": "^2.4.7",
-    "copy-webpack-plugin": "^5.1.1",
     "core-js": "^3.8.3",
     "element-ui": "^2.15.12",
     "eslint": "^7.32.0",

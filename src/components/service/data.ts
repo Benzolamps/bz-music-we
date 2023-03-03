@@ -1,5 +1,5 @@
 ﻿import {Music} from '@/components/service/music';
-import {audios, lrcs} from "@/assets/audio";
+import {audios, lrcs} from '@/assets/media';
 
 export default class MusicStorage {
   musicList: ReadonlyArray<Music> = [];
@@ -7,12 +7,11 @@ export default class MusicStorage {
   
   public async loadDefault() {
     const musicList: Music[] = [];
-    console.log(audios, lrcs)
     for (const audio of audios) {
       let lrcProvider: Blob = null;
-      let lrc = lrcs.find(lrc => lrc.name == audio.name);
+      const lrc = lrcs.find(lrc => lrc.name == audio.name);
       if (lrc) {
-        lrcProvider = new Blob([lrc.text], {type: 'text/plain'})
+        lrcProvider = new Blob([lrc.text], {type: 'text/plain'});
       }
       musicList.push({
         id: Math.random().toString(),

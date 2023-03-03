@@ -146,11 +146,11 @@
       :append-to-body="true"
       :modal-append-to-body="true"
     >
-      <el-tabs style="margin: 20px">
-        <el-tab-pane label="歌词设置" name="first">
+      <el-tabs value="lrc" style="margin: 20px">
+        <el-tab-pane label="歌词设置" name="lrc">
           <music-lrc-setting/>
         </el-tab-pane>
-        <el-tab-pane label="可视化设置" name="second">
+        <el-tab-pane label="可视化设置" name="visual">
           <music-visual-setting/>
         </el-tab-pane>
       </el-tabs>
@@ -169,9 +169,9 @@ import Component from 'vue-class-component';
 import assert from 'assert';
 import MusicCarousel from '@/components/info/MusicCarousel.vue';
 import {formatDelta} from '@/utils/common_utils';
-import Playlist from "@/components/core/Playlist.vue";
-import MusicLrcSetting from "@/components/setting/MusicLrcSetting.vue";
-import MusicVisualSetting from "@/components/setting/MusicVisualSetting.vue";
+import Playlist from '@/components/core/Playlist.vue';
+import MusicLrcSetting from '@/components/setting/MusicLrcSetting.vue';
+import MusicVisualSetting from '@/components/setting/MusicVisualSetting.vue';
    
 @Component({components: {MusicVisualSetting, MusicLrcSetting, Playlist, MusicCarousel}})
 export default class MusicControl extends BaseComponent {
