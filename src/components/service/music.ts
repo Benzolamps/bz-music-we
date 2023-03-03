@@ -1,7 +1,6 @@
 ﻿export interface Music {
   id?: string,
   title: string,
-  extension: string,
   musicProvider: Blob,
   lrcProvider: Blob,
   objUrl?: string

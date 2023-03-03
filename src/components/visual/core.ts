@@ -1,11 +1,21 @@
 ﻿import {bus} from '@/components/common/BaseComponent';
 import butterchurn, {MilkDropPreset, TimeOptions, Visualizer} from '@/utils/butterchurn.min.js';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
-import presetList from '@/assets/preset/index';
+import presetList from '@/assets/presets/index';
 
 declare class OffscreenCanvas extends HTMLCanvasElement {
   constructor(width: number, height: number);
 }
+
+window['wallpaperPropertyListener'] = {
+  applyGeneralProperties: function(properties: {fps: number}) {
+    if (properties.fps) {
+      fpsLimit = properties.fps;
+    }
+  },
+};
+
+let fpsLimit = 0;
 
 export default class MusicVisualCore {
   private readonly audioContext: AudioContext;
@@ -87,9 +97,33 @@ export default class MusicVisualCore {
     }
   }
 
+  private last = performance.now() / 1000;
+  private fpsThreshold = 0;
+
+  private limitFps() {
+    // Figure out how much time has passed since the last animation
+    const now = performance.now() / 1000;
+    const dt = Math.min(now - this.last, 1);
+    this.last = now;
+
+    // If there is an FPS limit, abort updating the animation if we have reached the desired FPS
+    if (fpsLimit > 0) {
+      this.fpsThreshold += dt;
+      if (this.fpsThreshold < 1.0 / fpsLimit) {
+        return true;
+      }
+      this.fpsThreshold -= 1.0 / fpsLimit;
+    }
+    return false;
+  }
+
   /* region 绘制 */
   private drawEachFrame() {
     this.animationFrameId = window.requestAnimationFrame(this.drawEachFrame.bind(this));
+
+    if (this.limitFps()) {
+      return;
+    }
 
     const [width, height] = this.getDesireCanvasSize();
 
@@ -113,7 +147,9 @@ export default class MusicVisualCore {
     if (bus.visualStyles.lrcMode !== 'caption') {
       this.drawLrcScroll();
     }
-    this.drawFps();
+    if (bus.visualStyles.showFps) {
+      this.drawFps();
+    }
   }
 
   private drawFps() {

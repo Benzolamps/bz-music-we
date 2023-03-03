@@ -34,7 +34,7 @@ export default class App extends BaseComponent {
     this.lrcStyles = Vue.observable(PlayerSettings.getLrcStyles());
     this.visualStyles = Vue.observable(PlayerSettings.getVisualStyles());
     PlayerSettings.load();
-    this.musicStorage.loadDefault();
+    this.musicStorage.init();
   }
 }
 </script>

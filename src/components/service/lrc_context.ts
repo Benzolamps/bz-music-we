@@ -63,11 +63,12 @@ export default class LrcContext {
       if (this.music?.id) {
         this.shownLrc.push({time: time += 1, content: `${this.music.title}`});
         this.shownLrc.push({time: time += 5, content: ''});
-        this.shownLrc.push({time: time += 2, content: '<暂无歌词>'});
+        this.shownLrc.push({time: time += 1, content: '<暂无歌词>'});
+        this.shownLrc.push({time: time += 5, content: ''});
       }
     }
   }
- 
+
   private generateLrcTime() {
     let time = -1;
     for (const lrc of this.shownLrc) {

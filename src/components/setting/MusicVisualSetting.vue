@@ -53,14 +53,15 @@
     </el-form-item>
     <el-divider/>
     <el-form-item label="歌词展示方式">
-      <el-select v-model="visualStyles.lrcMode" style="width: 75%">
+      <el-select v-model="visualStyles.lrcMode" style="width: 100%">
         <el-option key="scroll" value="scroll" label="滚动"/>
         <el-option key="caption" value="caption" label="标题"/>
         <el-option key="mix" value="mix" label="组合"/>
       </el-select>
-      <el-button style="width: 25%" @click="visualStyles.state.pip = !visualStyles.state.pip">
-        {{visualStyles.state.pip ? '关闭' : '开启'}}画中画
-      </el-button>
+      <div style="margin: 10px;">
+        <el-checkbox v-model="visualStyles.state.pip">画中画模式</el-checkbox>
+        <el-checkbox v-model="visualStyles.showFps">显示FPS</el-checkbox>
+      </div>
     </el-form-item>
     <el-divider/>
     <el-form-item>
@@ -126,7 +127,7 @@ import Component from 'vue-class-component';
 import {Ref, Watch} from 'vue-property-decorator';
 import {MilkDropPreset} from '@/utils/butterchurn.min.js';
 import BScroll from '@/components/common/BScroll.vue';
-import presetList from '@/assets/preset/index';
+import presetList from '@/assets/presets/index';
 import {defaultVisualStyles} from '@/components/service/player_settings';
 @Component({
   components: {BScroll}
@@ -211,6 +212,7 @@ export default class PlayerSetting extends BaseComponent {
     this.visualStyles.random = defaultVisualStyles.random;
     this.visualStyles.onlyShowStarPresets = defaultVisualStyles.onlyShowStarPresets;
     this.visualStyles.lrcMode = defaultVisualStyles.lrcMode;
+    this.visualStyles.showFps = defaultVisualStyles.showFps;
   }
 
   @Watch('visualStyles.preset')

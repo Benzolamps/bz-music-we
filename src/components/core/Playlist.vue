@@ -23,6 +23,7 @@
           <el-table-column prop="title">
             <template v-slot="scope">
               <span class="enable-user-select" style="padding-right: 10px;">{{ scope.row.title }}</span>
+              <el-tag type="warning" v-if="!scope.row.lrcProvider" size="mini" :disableTransitions="true">无歌词</el-tag>
             </template>
           </el-table-column>
           <el-table-column width="50" align="center">
@@ -48,15 +49,16 @@
           @current-change="onCurrentChange"
         >
         </el-pagination>
+        <input type="file" ref="file" multiple accept=".lrc,.mp3,.wav,.flac,.ogg" v-show="false" @change="onFileChange"/>
         <el-dropdown trigger="click" @command="cmd => cmd()">
           <el-button type="text"  size="medium" icon="el-icon-more" style="color: #409EFF; font-size: 20px; margin-right: 10px;"/>
           <el-dropdown-menu slot="dropdown" style="text-align: left">
-              <el-dropdown-item :command="() => 0">
-                <i class="el-icon-plus"/>
+              <el-dropdown-item :command="() => chooseFile(false)">
+                <i class="el-icon-document"/>
                 添加文件
               </el-dropdown-item>
-              <el-dropdown-item :command="() => 0">
-                <i class="el-icon-search"/>
+              <el-dropdown-item :command="() => chooseFile(true)">
+                <i class="el-icon-folder"/>
                 添加文件夹
               </el-dropdown-item>
           </el-dropdown-menu>
@@ -79,6 +81,9 @@ export default class Playlist extends BaseComponent {
   private pageSize = 50;
   /* 当前页 */
   private currentPage = 1;
+  
+  @Ref('file')
+  private file: HTMLInputElement;
 
   @Prop({default: false})
   private show: boolean;
@@ -104,6 +109,64 @@ export default class Playlist extends BaseComponent {
     this.musicStorage.onReload.add(() => {
       this.onCurrentChange(this.currentPage);
     });
+  }
+  
+  private async removeMusic(music: Music) {
+    try {
+      await this.$confirm('确定要删除' + music.title, '系统提醒', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true,
+        closeOnClickModal: false,
+      });
+      await this.musicStorage.remove(music.id);
+      if (music === this.music) {
+        await this.musicService.stop();
+      }
+    } catch {
+      return;
+    }
+  }
+  
+  private chooseFile(webkitDirectory: boolean) {
+    this.file.webkitdirectory = webkitDirectory;
+    this.file.dispatchEvent(new MouseEvent('click'));
+  }
+  
+  private async onFileChange() {
+    let files = Array.from(this.file.files);
+    this.file.value = '';
+    if (!files?.length) {
+      return;
+    }
+    files = files.filter(f => f.type.startsWith('audio/') || f.name.endsWith('.lrc'));
+    const audioCount = files.filter(f => f.type.startsWith('audio/')).length;
+    const lrcCount = files.filter(f => f.name.endsWith('.lrc')).length;
+    if (files.length === 0) {
+      this.$message({type: 'warning', message: '没有符合条件的文件'});
+      return;
+    }
+    try {
+      await this.$confirm(`即将导入${audioCount}个音频文件和${lrcCount}个歌词文件，是否保留列表中已有的文件?`, '系统提示', {
+        distinguishCancelAndClose: true,
+        confirmButtonText: '保留',
+        cancelButtonText: '不保留'
+      });
+    } catch (action) {
+      if (action == 'cancel') {
+        await this.musicStorage.clear();
+      } else {
+        this.$message({type: 'warning', message: '取消导入'});
+        return;
+      }
+    }
+    const entries = files.map(f => [f.name.replaceAll(/\.[^.]+$/g, ''), f] as [string, Blob]);
+    await this.musicStorage.add(entries);
+    this.$message({type: 'success', message: `导入${audioCount}个音频文件和${lrcCount}个歌词文件完成`});
+    if (!this.musicList.find(m => m.id == this.music.id)) {
+      await this.musicService.stop();
+    }
   }
 
   private getAtPage(index: number) {
@@ -141,7 +204,7 @@ export default class Playlist extends BaseComponent {
         this.musicService.chooseMusic(music);
       }
     } else {
-      //TODO 删除音乐
+      this.removeMusic(music);
     }
   }
 

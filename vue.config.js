@@ -10,6 +10,7 @@ function resolve(...dir) {
 const { defineConfig } = require('@vue/cli-service');
 module.exports = defineConfig({
   transpileDependencies: true,
+  productionSourceMap: false,
   publicPath: './',
   devServer: {
     host: '0.0.0.0',
@@ -45,5 +46,22 @@ module.exports = defineConfig({
       .end();
 
     config.plugin('node-polyfill-plugin').use(NodePolyfillPlugin);
+
+    config
+      .optimization.splitChunks({
+      chunks: 'all',
+      cacheGroups: {
+        libs: {
+          name: 'chunk-vendors',
+          test: resolve('node_modules'),
+          chunks: 'initial'
+        },
+        presets: {
+          name: 'visual-presets',
+          test: resolve('src/assets/presets'),
+          chunks: 'initial'
+        }
+      }
+    })
   }
 });

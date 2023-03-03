@@ -5,7 +5,7 @@
       class="progress"
       v-model="sliderTime"
       ref="slider"
-      :min="0" :max="musicService.duration" :step="0.01" :show-tooltip="false"
+      :min="0" :max="musicService.duration" :step="0.01"
       :disabled="musicService.isEnded"
     />
 
@@ -242,10 +242,10 @@ export default class MusicControl extends BaseComponent {
 
   @Watch('sliderTime')
   private watchSliderTime(value: number, oldValue: number) {
-    oldValue && this.$toast(formatDelta(value));
+    this.isSliding && oldValue && this.$toast(formatDelta(value));
   }
 
-  t = 0;
+  private t = 0;
   @Watch('musicService.currentTime')
   private watchCurrentTime() {
     window.requestAnimationFrame((t) => {

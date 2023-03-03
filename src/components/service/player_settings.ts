@@ -20,6 +20,7 @@ export const defaultVisualStyles = {
   onlyShowStarPresets: false,
   random: false,
   interval: 30,
+  showFps: false,
   lrcMode: 'caption' as 'scroll' | 'caption' | 'mix',
   state: {
     show: true,
