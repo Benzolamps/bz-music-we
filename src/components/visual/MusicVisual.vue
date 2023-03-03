@@ -126,6 +126,7 @@ export default class MusicVisual extends BaseComponent {
     left: 25vw;
     top: calc(50vh - 12.5vw);
     position: absolute;
+    z-index: 2;
   }
 
   canvas.hidden {
@@ -137,6 +138,7 @@ export default class MusicVisual extends BaseComponent {
   div.hidden {
     display: none;
   }
+
   video.hidden {
     pointer-events: none;
     opacity: 0;

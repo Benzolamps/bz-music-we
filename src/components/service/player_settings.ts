@@ -78,6 +78,7 @@ export default class PlayerSettings {
         return;
       }
       try {
+        value ||= '苹方简体';
         bus.$toast('正在应用字体：' + value, true);
         await PlayerSettings.loadFontFace(fontList.find(f => f.name == value)?.blob);
         bus.$toast('应用字体成功：' + value);

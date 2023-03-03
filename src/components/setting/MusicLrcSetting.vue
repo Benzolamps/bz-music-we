@@ -32,13 +32,16 @@
         <el-color-picker v-model="lrcStyles.strokeColor"></el-color-picker>
       </div>
     </el-form-item>
+    <el-form-item>
+      <el-button type="warning" @click="resetSettings">恢复默认设置</el-button>
+    </el-form-item>
   </el-form>
 </template>
 
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
 import Component from 'vue-class-component';
-import PlayerSettings, {fontList} from '@/components/service/player_settings';
+import PlayerSettings, {defaultLrcStyles, fontList} from '@/components/service/player_settings';
 import {Ref} from 'vue-property-decorator';
 
 @Component
@@ -58,6 +61,14 @@ export default class PlayerSetting extends BaseComponent {
     if (f) {
       PlayerSettings.loadCustomFont(f);
     }
+  }
+  
+  private resetSettings() {
+    this.lrcStyles.font = defaultLrcStyles.font;
+    this.lrcStyles.defaultColor = defaultLrcStyles.defaultColor;
+    this.lrcStyles.strokeColor = defaultLrcStyles.strokeColor;
+    this.lrcStyles.pastColor = defaultLrcStyles.pastColor;
+    this.lrcStyles.futureColor = defaultLrcStyles.futureColor;
   }
 }
 </script>
