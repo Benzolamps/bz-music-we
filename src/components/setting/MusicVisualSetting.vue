@@ -125,7 +125,7 @@
 import BaseComponent from '@/components/common/BaseComponent';
 import Component from 'vue-class-component';
 import {Ref, Watch} from 'vue-property-decorator';
-import {MilkDropPreset} from '@/utils/butterchurn.min.js';
+import {MilkDropPresetDesc} from '@/utils/butterchurn.min.js';
 import BScroll from '@/components/common/BScroll.vue';
 import presetList from '@/assets/presets/index';
 import {defaultVisualStyles} from '@/components/service/player_settings';
@@ -133,8 +133,9 @@ import {defaultVisualStyles} from '@/components/service/player_settings';
   components: {BScroll}
 })
 export default class PlayerSetting extends BaseComponent {
-  private presetList: ReadonlyArray<{name: string, preset: MilkDropPreset}> = [];
-  private basePresetList: ReadonlyArray<{name: string, preset: MilkDropPreset}> = presetList;
+  private presetList: MilkDropPresetDesc[] = [];
+  private readonly basePresetList: MilkDropPresetDesc[] = presetList;
+
   /* 页大小 */
   private pageSize = 50;
   /* 当前页 */
@@ -145,7 +146,7 @@ export default class PlayerSetting extends BaseComponent {
   @Ref('scroll')
   private scroll: BScroll;
 
-  override mounted() {
+  public override mounted() {
     this.loadPresetList();
   }
   
@@ -190,7 +191,7 @@ export default class PlayerSetting extends BaseComponent {
     }
   }
 
-  private onCellClick(preset: {name: string, preset: MilkDropPreset}, column: {property: string}) {
+  private onCellClick(preset: MilkDropPresetDesc, column: {property: string}) {
     if (column.property) {
       if (preset.name !== this.visualStyles.preset) {
         this.visualStyles.preset = preset.name;

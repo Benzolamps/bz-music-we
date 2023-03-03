@@ -18,7 +18,7 @@
           :color="lrcStyles.strokeColor"
           :text="attrSeparator + lrc.content + attrSeparator"
           :class="getLrcClass(lrc)"
-          @dblclick="musicService.seek(lrc.time + 0.01)"
+          @click="musicService.seek(lrc.time + 0.01)"
         />
       </template>
       <li v-if="lockScroll" key="s1" class="scroll-locker"/>

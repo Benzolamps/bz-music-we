@@ -96,7 +96,7 @@ export default class PlayerSettings {
     try {
       bus.$toast('正在应用字体：' + file.name, true);
       await PlayerSettings.loadFontFace(file);
-      bus.lrcStyles.font = 'custom: ' + JSON.stringify(file);
+      bus.lrcStyles.font = 'custom: ' + file.name;
       bus.$toast('应用字体成功：' + file.name);
     } catch (e) {
       bus.$toast('应用字体失败：' + file.name);

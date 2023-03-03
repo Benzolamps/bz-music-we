@@ -5,7 +5,7 @@
       class="progress"
       v-model="sliderTime"
       ref="slider"
-      :min="0" :max="musicService.duration" :step="0.01"
+      :min="0" :max="musicService.duration" :step="0.01" :show-tooltip="false"
       :disabled="musicService.isEnded"
     />
 
@@ -175,7 +175,7 @@ import MusicVisualSetting from '@/components/setting/MusicVisualSetting.vue';
    
 @Component({components: {MusicVisualSetting, MusicLrcSetting, Playlist, MusicCarousel}})
 export default class MusicControl extends BaseComponent {
-  private modes = modes;
+  private readonly modes = modes;
   /* 进度条时间 */
   private sliderTime = 0;
   /* 是否正在调节进度条 */
@@ -194,12 +194,16 @@ export default class MusicControl extends BaseComponent {
     const slider = this.$refs.slider as ElSlider;
     const clickHandler = () => {
       if (!this.musicService.isEnded) {
+        this.$toast(formatDelta(this.sliderTime));
         return this.musicService.seek(this.sliderTime);
       }
     };
     const mouseDownHandler = () => {
       this.sliderTime = this.musicService.currentTime;
       this.isSliding = true;
+    };
+    const mouseMoveHandler = () => {
+      this.isSliding && this.$toast(formatDelta(this.sliderTime));
     };
     const mouseUpHandler = () => {
       if (this.isSliding && !this.musicService.isEnded) {
@@ -212,6 +216,8 @@ export default class MusicControl extends BaseComponent {
     sliderButton.addEventListener('click', clickHandler);
     sliderButton.addEventListener('mousedown', mouseDownHandler, {capture: true});
     sliderButton.addEventListener('touchstart', mouseDownHandler, {capture: true});
+    sliderButton.addEventListener('mousemove', mouseMoveHandler, {capture: true});
+    sliderButton.addEventListener('touchmove', mouseMoveHandler, {capture: true});
     window.addEventListener('mouseup', mouseUpHandler, {capture: true});
     window.addEventListener('touchend', mouseUpHandler, {capture: true});
   }
@@ -238,11 +244,6 @@ export default class MusicControl extends BaseComponent {
   @Watch('musicService.volume')
   private watchVolume(value: number, oldValue: number) {
     oldValue && this.$toast('音量: ' + Math.floor(value * 100));
-  }
-
-  @Watch('sliderTime')
-  private watchSliderTime(value: number, oldValue: number) {
-    this.isSliding && oldValue && this.$toast(formatDelta(value));
   }
 
   private t = 0;

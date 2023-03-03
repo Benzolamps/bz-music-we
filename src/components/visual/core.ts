@@ -1,5 +1,5 @@
 ﻿import {bus} from '@/components/common/BaseComponent';
-import butterchurn, {MilkDropPreset, TimeOptions, Visualizer} from '@/utils/butterchurn.min.js';
+import butterchurn, {MilkDropPreset, MilkDropPresetDesc, TimeOptions, Visualizer} from '@/utils/butterchurn.min.js';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
 import presetList from '@/assets/presets/index';
 
@@ -26,9 +26,9 @@ export default class MusicVisualCore {
   private readonly canvasDraw: HTMLCanvasElement;
   private readonly getDesireCanvasSize: () => [number, number];
   private timeout: number;
-  private basePresetList: ReadonlyArray<{ name: string, preset: MilkDropPreset }> = Object.freeze(presetList);
-  private presetList: ReadonlyArray<{ name: string, preset: MilkDropPreset }>;
-  private randomPresetList: ReadonlyArray<{ name: string, preset: MilkDropPreset }>;
+  private readonly basePresetList: ReadonlyArray<MilkDropPresetDesc> = Object.freeze(presetList);
+  private presetList: ReadonlyArray<MilkDropPresetDesc>;
+  private randomPresetList: ReadonlyArray<MilkDropPresetDesc>;
 
   public constructor(musicVisual: MusicVisual, canvas: HTMLCanvasElement, getDesireCanvasSize: () => [number, number]) {
     this.canvas = canvas;
@@ -75,6 +75,7 @@ export default class MusicVisualCore {
     this.loadPresetList();
     this.loadPreset();
     this.reloadTimeout();
+
     bus.musicVisualCore = this;
   }
 
@@ -139,6 +140,7 @@ export default class MusicVisualCore {
 
     const context2d = this.canvas.getContext('2d');
     context2d.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
     if (bus.visualStyles.lrcMode !== 'scroll') {
       this.visualizer.render();
     } else {

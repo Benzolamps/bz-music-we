@@ -12,7 +12,7 @@
       <div style="display: flex">
         <el-input v-model="lrcStyles.defaultColor" readonly style="flex: 1"/>
         <el-color-picker v-model="lrcStyles.defaultColor"></el-color-picker>
-      </div> 
+      </div>
     </el-form-item>
     <el-form-item label="未播放颜色">
       <div style="display: flex">
@@ -46,10 +46,10 @@ import {Ref} from 'vue-property-decorator';
 
 @Component
 export default class PlayerSetting extends BaseComponent {
-  private fonts = fontList;
+  private readonly fonts = fontList;
   
   @Ref('file')
-  private file: HTMLInputElement;
+  private readonly file: HTMLInputElement;
   
   private chooseCustomFont() {
     this.file.dispatchEvent(new MouseEvent('click'));

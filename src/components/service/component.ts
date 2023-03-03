@@ -113,7 +113,7 @@ export default class MusicComponent {
       this.duration = 0;
       this.playingMusic = music;
       this.currentTime = 0;
-      this.play(); 
+      this.play();
     } else {
       this.audio.src = defaultSrc;
       this.duration = 0;
