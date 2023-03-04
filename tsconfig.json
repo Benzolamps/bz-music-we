@@ -37,10 +37,12 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx",
     "src/**/*.vue",
+    "butterchurn/**/*.js",
+    "butterchurn/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "butterchurn/**/*.asc.ts"
   ]
 }

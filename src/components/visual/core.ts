@@ -1,5 +1,5 @@
 ﻿import {bus} from '@/components/common/BaseComponent';
-import butterchurn, {MilkDropPreset, MilkDropPresetDesc, TimeOptions, Visualizer} from '@/utils/butterchurn.min.js';
+import butterchurn, {MilkDropPresetDesc, TimeOptions, Visualizer} from 'butterchurn';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
 import presetList from '@/assets/presets/index';
 

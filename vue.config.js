@@ -45,7 +45,16 @@ module.exports = defineConfig({
       .loader('raw-loader')
       .end();
 
+    config.module
+      .rule('assemblyscript')
+      .test(/\.asc\.ts$/)
+      .use('assemblyscript-loader')
+      .loader(resolve("butterchurn/loaders/assemblyscript.js"))
+      .end();
+
     config.plugin('node-polyfill-plugin').use(NodePolyfillPlugin);
+    
+    config.resolve.alias.set('butterchurn', resolve('butterchurn'))
 
     config
       .optimization.splitChunks({
@@ -54,6 +63,11 @@ module.exports = defineConfig({
         libs: {
           name: 'chunk-vendors',
           test: resolve('node_modules'),
+          chunks: 'initial'
+        },
+        butterchurn: {
+          name: 'butterchurn',
+          test: resolve('butterchurn'),
           chunks: 'initial'
         },
         presets: {

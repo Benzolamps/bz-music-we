@@ -125,7 +125,7 @@
 import BaseComponent from '@/components/common/BaseComponent';
 import Component from 'vue-class-component';
 import {Ref, Watch} from 'vue-property-decorator';
-import {MilkDropPresetDesc} from '@/utils/butterchurn.min.js';
+import {MilkDropPresetDesc} from 'butterchurn';
 import BScroll from '@/components/common/BScroll.vue';
 import presetList from '@/assets/presets/index';
 import {defaultVisualStyles} from '@/components/service/player_settings';

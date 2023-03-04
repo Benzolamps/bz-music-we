@@ -1,4 +1,4 @@
-﻿import {MilkDropPreset} from '@/utils/butterchurn.min.js';
+﻿import {MilkDropPreset} from 'butterchurn';
 
 const req = require.context('@/assets/presets/', false, /\.json$/);
 export default req.keys().map(k => ({
