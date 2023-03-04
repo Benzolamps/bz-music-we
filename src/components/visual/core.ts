@@ -234,7 +234,6 @@ export default class MusicVisualCore {
     context2d.clearRect(0, 0, width, height);
     context2d.fillStyle = fillColor;
     context2d.strokeStyle = strokeColor;
-    context2d.lineWidth = 10 * window.devicePixelRatio;
     context2d.textBaseline = 'top';
 
     /* endregion */
@@ -261,6 +260,7 @@ export default class MusicVisualCore {
     let startY = (height - totalHeight) / 2;
     for (const line of drawLines) {
       context2d.font = `${line.y}px ${fontFamily}`;
+      context2d.lineWidth = Math.max(3 * window.devicePixelRatio, line.y / 10);
       context2d.strokeText(line.text, line.x, startY);
       context2d.fillText(line.text, line.x, startY);
       startY += line.y + margin;

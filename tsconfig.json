@@ -39,7 +39,6 @@
     "src/**/*.ts",
     "src/**/*.vue",
     "butterchurn/**/*.js",
-    "butterchurn/**/*.ts"
   ],
   "exclude": [
     "node_modules",

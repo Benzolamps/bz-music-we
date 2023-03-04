@@ -76,6 +76,6 @@ module.exports = defineConfig({
           chunks: 'initial'
         }
       }
-    })
+    });
   }
 });

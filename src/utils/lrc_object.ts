@@ -1,6 +1,6 @@
 ﻿/* eslint-disable no-dupe-class-members */
 
-import {formatDelta, parseDelta} from '@/utils/common_utils';
+import {parseDelta} from '@/utils/common_utils';
 
 const metaReg = /\[(ti|ar|al|by):[^\]]*]/g;
 const timeReg = /\[[0-9][0-9]:[0-9][0-9].?[0-9]*]/g;
@@ -66,12 +66,6 @@ export default class LrcObject {
     }
     this._lrcArray = this._lrcArray.sort((a, b) => a.time - b.time);
     this._metaArray = this._metaArray.sort((a, b) => metaReg.toString().indexOf(a.key) - metaReg.toString().indexOf(b.key));
-  }
-
-  public parseMetaTag(key: string, value: string): string {
-    key ??= '';
-    value ??= '';
-    return '[' + key + ':' + value + ']';
   }
 
   public evalMetaTag(lrc: string): MetaTag[] | false {
