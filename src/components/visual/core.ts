@@ -159,9 +159,10 @@ export default class MusicVisualCore {
     const fontSize = 15 * window.devicePixelRatio;
     const context2d = this.canvas.getContext('2d');
     context2d.textBaseline = 'top';
-    const fps = this.visualizer.renderer.fps.toFixed(3);
     context2d.font = `${fontSize}px ${fontFamily}`;
     context2d.fillStyle = bus.lrcStyles.pastColor;
+
+    const fps = this.visualizer.renderer.fps.toFixed(3);
     context2d.fillText('FPS: ' + fps, 5 * window.devicePixelRatio, 5 * window.devicePixelRatio);
   }
 
@@ -233,6 +234,7 @@ export default class MusicVisualCore {
     context2d.clearRect(0, 0, width, height);
     context2d.fillStyle = fillColor;
     context2d.strokeStyle = strokeColor;
+    context2d.lineWidth = 10 * window.devicePixelRatio;
     context2d.textBaseline = 'top';
 
     /* endregion */
@@ -259,8 +261,8 @@ export default class MusicVisualCore {
     let startY = (height - totalHeight) / 2;
     for (const line of drawLines) {
       context2d.font = `${line.y}px ${fontFamily}`;
-      context2d.fillText(line.text, line.x, startY);
       context2d.strokeText(line.text, line.x, startY);
+      context2d.fillText(line.text, line.x, startY);
       startY += line.y + margin;
     }
 
