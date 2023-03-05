@@ -71,7 +71,7 @@ module.exports = defineConfig({
           chunks: 'initial'
         },
         presets: {
-          name: 'visual-presets',
+          name: 'butterchurn-presets',
           test: resolve('src/assets/presets'),
           chunks: 'initial'
         }

@@ -7,16 +7,6 @@ declare class OffscreenCanvas extends HTMLCanvasElement {
   constructor(width: number, height: number);
 }
 
-window['wallpaperPropertyListener'] = {
-  applyGeneralProperties: function(properties: {fps: number}) {
-    if (properties.fps) {
-      fpsLimit = properties.fps;
-    }
-  },
-};
-
-let fpsLimit = 0;
-
 export default class MusicVisualCore {
   private readonly audioContext: AudioContext;
   private mediaSource: MediaElementAudioSourceNode;
@@ -29,9 +19,13 @@ export default class MusicVisualCore {
   private readonly basePresetList: ReadonlyArray<MilkDropPresetDesc> = Object.freeze(presetList);
   private presetList: ReadonlyArray<MilkDropPresetDesc>;
   private randomPresetList: ReadonlyArray<MilkDropPresetDesc>;
+  private fpsLimit = 0;
 
   public constructor(musicVisual: MusicVisual, canvas: HTMLCanvasElement, getDesireCanvasSize: () => [number, number]) {
     this.canvas = canvas;
+    window['wallpaperPropertyListener'] = {
+      applyGeneralProperties: async ({fps}: {fps: number}) => this.fpsLimit = fps
+    };
     if ('OffscreenCanvas' in window) {
       this.canvasDraw = new OffscreenCanvas(...getDesireCanvasSize());
     } else {
@@ -108,12 +102,12 @@ export default class MusicVisualCore {
     this.last = now;
 
     // If there is an FPS limit, abort updating the animation if we have reached the desired FPS
-    if (fpsLimit > 0) {
+    if (this.fpsLimit > 0) {
       this.fpsThreshold += dt;
-      if (this.fpsThreshold < 1.0 / fpsLimit) {
+      if (this.fpsThreshold < 1.0 / this.fpsLimit) {
         return true;
       }
-      this.fpsThreshold -= 1.0 / fpsLimit;
+      this.fpsThreshold -= 1.0 / this.fpsLimit;
     }
     return false;
   }
