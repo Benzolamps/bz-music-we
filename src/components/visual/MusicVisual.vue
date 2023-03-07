@@ -11,6 +11,8 @@ import BaseComponent from '@/components/common/BaseComponent';
 import Component from 'vue-class-component';
 import {Ref, Watch} from 'vue-property-decorator';
 import MusicVisualCore from '@/components/visual/core';
+import PlayerSettings from '@/components/service/player_settings';
+import Hammer from 'hammerjs';
 
 @Component
 export default class MusicVisual extends BaseComponent {
@@ -23,7 +25,9 @@ export default class MusicVisual extends BaseComponent {
 
   @Ref('shade')
   private shade: HTMLDivElement;
-  
+
+  private hammer = new Hammer.Manager(document.createElement('div'), {});
+
   private pipWindow: {width: number, height: number};
 
   public override mounted() {
@@ -50,6 +54,25 @@ export default class MusicVisual extends BaseComponent {
 
     this.musicVisualCore = new MusicVisualCore(this, this.canvas, this.getDesireCanvasSize);
     this.handlePip();
+
+    const starHandler = () => PlayerSettings.starPreset(this.visualStyles.preset);
+    const prevHandler = () => this.musicVisualCore.prevPreset();
+    const nextHandler = () => this.musicVisualCore.nextPreset();
+
+    this.hammer = new Hammer.Manager(this.canvas, {});
+    const press = new Hammer.Press();
+    this.hammer.add(press);
+    const swipe = new Hammer.Swipe({direction: Hammer.DIRECTION_ALL});
+    this.hammer.add(swipe);
+    this.hammer.on('press', starHandler);
+    this.hammer.on('swipe', e => {
+      const direction = e.offsetDirection;
+      if (direction === Hammer.DIRECTION_DOWN || direction === Hammer.DIRECTION_RIGHT) {
+        prevHandler();
+      } else if (direction === Hammer.DIRECTION_UP || direction === Hammer.DIRECTION_LEFT) {
+        nextHandler();
+      }
+    });
   }
 
   public override beforeDestroy() {
@@ -106,7 +129,6 @@ export default class MusicVisual extends BaseComponent {
     left: 0;
     top: 0;
     position: absolute;
-    pointer-events: none;
   }
 
   div {
@@ -133,6 +155,7 @@ export default class MusicVisual extends BaseComponent {
     width: 800px;
     height: 400px;
     opacity: 0;
+    pointer-events: none;
   }
 
   div.hidden {

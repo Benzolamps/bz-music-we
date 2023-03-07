@@ -45,7 +45,7 @@ import PlayerSettings, {defaultLrcStyles, fontList} from '@/components/service/p
 import {Ref} from 'vue-property-decorator';
 
 @Component
-export default class PlayerSetting extends BaseComponent {
+export default class MusicLrcSetting extends BaseComponent {
   private readonly fonts = fontList;
   
   @Ref('file')

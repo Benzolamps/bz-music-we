@@ -21,14 +21,8 @@
         <el-checkbox v-model="visualStyles.random">随机切换</el-checkbox>
       </div>
       <el-button @click="showPresetList = true">配置</el-button>
-      <el-button v-if="visualStyles.state.show" type="success" @click="() => {
-        musicVisualCore.loadNearPreset('prev');
-        musicVisualCore.reloadTimeout();
-      }">上一个</el-button>
-      <el-button v-if="visualStyles.state.show" type="warning"  @click="() => {
-        musicVisualCore.loadNearPreset('next');
-        musicVisualCore.reloadTimeout();
-      }">下一个</el-button>
+      <el-button v-if="visualStyles.state.show" type="success" @click="() => musicVisualCore.prevPreset()">上一个</el-button>
+      <el-button v-if="visualStyles.state.show" type="warning" @click="() => musicVisualCore.nextPreset()">下一个</el-button>
     </el-form-item>
     <el-form-item label="切换间隔">
       <el-slider
@@ -128,11 +122,11 @@ import {Ref, Watch} from 'vue-property-decorator';
 import {MilkDropPresetDesc} from 'butterchurn';
 import BScroll from '@/components/common/BScroll.vue';
 import presetList from '@/assets/presets/index';
-import {defaultVisualStyles} from '@/components/service/player_settings';
+import PlayerSettings, {defaultVisualStyles} from '@/components/service/player_settings';
 @Component({
   components: {BScroll}
 })
-export default class PlayerSetting extends BaseComponent {
+export default class MusicVisualSetting extends BaseComponent {
   private presetList: MilkDropPresetDesc[] = [];
   private readonly basePresetList: MilkDropPresetDesc[] = presetList;
 
@@ -197,13 +191,7 @@ export default class PlayerSetting extends BaseComponent {
         this.visualStyles.preset = preset.name;
       }
     } else {
-      if (this.visualStyles.starPresets.has(preset.name)) {
-        this.visualStyles.starPresets.delete(preset.name);
-      } else {
-        this.visualStyles.starPresets.add(preset.name);
-      }
-      // vue无法监听Set集合的变更的解决方案
-      this.visualStyles.starPresets = new Set<string>(Array.from(this.visualStyles.starPresets));
+      PlayerSettings.starPreset(preset.name);
     }
   }
   

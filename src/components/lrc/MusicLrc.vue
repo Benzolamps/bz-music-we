@@ -109,10 +109,12 @@ export default class MusicLrc extends BaseComponent {
     flex-direction: column;
     align-items: center;
     color: var(--lrc-color-default);
+    pointer-events: none;
 
     li {
       padding: 0 10px;
       &, &::before {
+        pointer-events: auto;
         width: fit-content;
         max-width: calc(100% - 20px);
         white-space: nowrap;

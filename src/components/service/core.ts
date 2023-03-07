@@ -40,8 +40,6 @@ export default class MusicService extends MusicComponent {
   /* 播放模式 */
   public mode : Mode;
 
-  private musicInited = false;
-
   /* 是否播放下一曲 */
   private nextMusicType: 'prev' | 'next' | 'default' = 'default';
 
@@ -75,18 +73,6 @@ export default class MusicService extends MusicComponent {
   }
 
   private async initMusic() {
-    if (!this.musicInited) {
-      this.watch('$route.query.musicId', async musicId => {
-        await this.vue.$sleep(100);
-        const music = this.musicList.find(m => m.id === musicId);
-        if (music && music !== this.music) {
-          await this.chooseMusic(music);
-        }
-      });
-    }
-
-    this.musicInited = true;
-
     this.musicList = this.vue.musicStorage.musicList;
     this.shuffleMusicList();
 
@@ -160,18 +146,16 @@ export default class MusicService extends MusicComponent {
 
   /* 更换歌曲 */
   public async changeMusic() {
-    await this.vue.$nextTick();
     let music;
     if (this.choseMusic) {
       music = this.choseMusic;
     } else if (this.nextMusicType === 'default' && this.mode.single && this.music.id) {
       music = this.music;
     } else {
-      music = await this.getNearMusic();
+      music = this.getNearMusic();
     }
     if (music.id) {
       const blob = music.musicProvider;
-      await this.vue.$sleep(200);
       music.objUrl = URL.createObjectURL(blob);
     }
     this.setMusic(this.music = music);
@@ -183,14 +167,13 @@ export default class MusicService extends MusicComponent {
   }
 
   /* 获取上一曲或者下一曲 */
-  private async getNearMusic() : Promise<Music> {
+  private getNearMusic() : Music {
     let musicList: Readonly<Music[]>;
     if (this.mode.single || this.mode.sequence) {
       musicList = this.musicList;
     } else if (this.mode.random) {
       musicList = this.randomMusicList;
     }
-    // let index = musicList.indexOf(this.music);
     let index = musicList.findIndex(m => m.id === this.music.id);
     for (let i = 0; i < musicList.length; i++) {
       index += this.nextMusicType === 'prev' ? -1 : 1;

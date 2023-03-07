@@ -23,9 +23,6 @@ export default class MusicVisualCore {
 
   public constructor(musicVisual: MusicVisual, canvas: HTMLCanvasElement, getDesireCanvasSize: () => [number, number]) {
     this.canvas = canvas;
-    window['wallpaperPropertyListener'] = {
-      applyGeneralProperties: async ({fps}: {fps: number}) => this.fpsLimit = fps
-    };
     if ('OffscreenCanvas' in window) {
       this.canvasDraw = new OffscreenCanvas(...getDesireCanvasSize());
     } else {
@@ -71,6 +68,10 @@ export default class MusicVisualCore {
     this.reloadTimeout();
 
     bus.musicVisualCore = this;
+
+    window['wallpaperPropertyListener'] = {
+      applyGeneralProperties: ({fps = 0}) => this.fpsLimit = fps
+    };
   }
 
   private loadPresetList() {
@@ -160,18 +161,28 @@ export default class MusicVisualCore {
     context2d.fillText('FPS: ' + fps, 5 * window.devicePixelRatio, 5 * window.devicePixelRatio);
   }
 
-  public loadNearPreset(nextPresetType: 'prev' | 'next') {
+  private loadNearPreset(nextPresetType: 'prev' | 'next') {
     const list = bus.visualStyles.random ? this.randomPresetList : this.presetList;
-    let name = bus.visualStyles.preset;
-    let index = list.findIndex(d => d.name === name);
+    let index = list.findIndex(d => d.name === bus.visualStyles.preset);
     index += nextPresetType === 'prev' ? -1 : 1;
     if (index >= list.length) {
       index = 0;
     } else if (index <= -1) {
       index = list.length - 1;
     }
-    name = list[index].name;
-    bus.$set(bus.visualStyles, 'preset', name);
+    bus.visualStyles.preset = list[index].name;
+  }
+  
+  public prevPreset() {
+    this.loadNearPreset('prev');
+    this.reloadTimeout();
+    bus.$message({message: '已切换到: ' + bus.visualStyles.preset, type: 'success'});
+  }
+
+  public nextPreset() {
+    this.loadNearPreset('next');
+    this.reloadTimeout();
+    bus.$message({message: '已切换到: ' + bus.visualStyles.preset, type: 'success'});
   }
 
   public reloadTimeout() {

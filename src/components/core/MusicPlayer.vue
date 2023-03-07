@@ -38,13 +38,13 @@ export default class MusicPlayer extends BaseComponent {
   
   @Ref('musicControl')
   private musicControl: MusicControl;
-  
+
   private timeout = 0;
 
   private get music() {
     return this.musicService.music;
   }
-  
+
   private get showLrc() {
     return !this.visualStyles.state.show || this.visualStyles.lrcMode != 'caption' || this.visualStyles.state.pip;
   }
@@ -91,7 +91,7 @@ export default class MusicPlayer extends BaseComponent {
     .music-info {
       height: 175px;
       font-size: medium;
-      
+
       ul {
         display: flex;
         flex-direction: column;
@@ -100,6 +100,7 @@ export default class MusicPlayer extends BaseComponent {
         li {
           padding: 5px;
           height: 25px;
+
           &, &::before {
             width: fit-content;
             max-width: calc(100vw - 20px);

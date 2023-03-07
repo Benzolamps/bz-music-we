@@ -91,6 +91,18 @@ export default class PlayerSettings {
     });
     await PlayerSettings.loadFontFace(fontList.find(f => f.name == bus.lrcStyles.font)?.blob);
   }
+
+  public static starPreset(key: string) {
+    if (bus.visualStyles.starPresets.has(key)) {
+      bus.visualStyles.starPresets.delete(key);
+      bus.$message({message: '已取消收藏: ' + key, type: 'success'});
+    } else {
+      bus.visualStyles.starPresets.add(key);
+      bus.$message({message: '已收藏: ' + key, type: 'success'});
+    }
+    // vue无法监听Set集合的变更的解决方案
+    bus.visualStyles.starPresets = new Set<string>(Array.from(bus.visualStyles.starPresets));
+  }
   
   public static async loadCustomFont(file: File) {
     try {

@@ -14,7 +14,6 @@ export default class MusicComponent {
   public isEnded = true;
   /* 当前时间 */
   public currentTime = 0;
-  
   /* 总时长 */
   public duration = 0;
   /* 是否静音 */
@@ -53,6 +52,7 @@ export default class MusicComponent {
     },
     ended: () => {
       if (!this.playingMusic) {
+        this.setMusic(null);
         return;
       }
       this.isPlaying = false;
@@ -79,26 +79,12 @@ export default class MusicComponent {
   }
   
   public createAudioElement() {
-    const old = this.audio;
     this.audio = document.createElement('audio');
+    this.audio.style.display = 'none';
     for (const key in this.listeners) {
-      old?.removeEventListener(key, this.listeners[key], {capture: true});
       this.audio.addEventListener(key, this.listeners[key], {capture: true});
     }
-    this.audio.style.display = 'none';
     document.body.append(this.audio);
-    if (old) {
-      old.remove();
-      this.audio.src = old.src;
-      this.audio.play().then(() => {
-        this.isPlaying || this.audio.pause();
-        this.audio['preservesPitch'] = false;
-        this.audio.currentTime = old.currentTime;
-        this.audio.muted = old.muted;
-        this.audio.playbackRate = old.playbackRate;
-        this.audio.volume = old.volume;
-      });
-    }
   }
 
   protected setMusic(music: Music) {
@@ -110,16 +96,15 @@ export default class MusicComponent {
     }
     if (music?.id) {
       this.audio.src = music.objUrl || defaultSrc;
-      this.duration = 0;
-      this.playingMusic = music;
       this.currentTime = 0;
-      this.play();
+      this.playingMusic = music;
     } else {
       this.audio.src = defaultSrc;
       this.duration = 0;
       this.currentTime = 0;
       this.playingMusic = null;
     }
+    this.play();
   }
 
   private async getCurrentTime() {
@@ -139,7 +124,6 @@ export default class MusicComponent {
 
   /* 播放 */
   public play() {
-    this.audio.autoplay = true;
     this.audio.play().catch(() => 0);
   }
 
@@ -152,10 +136,8 @@ export default class MusicComponent {
   public stop() {
     if (this.playingMusic) {
       this.setMusic(null);
-      this.audio.src = defaultSrc;
       this.isEnded = true;
       this.isPlaying = false;
-      this.currentTime = 0;
       this.vue.$nextTick(() => this.vue.$emit('ended'));
     }
   }
