@@ -1,6 +1,5 @@
 ﻿export const attrSeparator = '\u3000';
 
-
 declare global {
   interface Array<T> {
     shuffle(): void;
@@ -14,24 +13,6 @@ Array.prototype.shuffle = function () {
     [this[j], this[i]] = [this[i], this[j]];
   }
 };
-
-export function registerEvents(document: Document = window.document) {
-  const args: [(ev: Event) => void, AddEventListenerOptions] = [
-    event => {
-      if (event.type !== 'mousedown' || !(event instanceof MouseEvent) || event.button === 1 || event.button === 2) {
-        event.stopPropagation();
-        event.preventDefault();
-      }
-    }, {capture: true}
-  ];
-  document.addEventListener('drag', ...args);
-  document.addEventListener('drop', ...args);
-  document.addEventListener('dragenter', ...args);
-  document.addEventListener('dragover', ...args);
-  document.addEventListener('dragstart', ...args);
-  document.addEventListener('contextmenu', ...args);
-  document.addEventListener('mousedown', ...args);
-}
 
 export function sleep(timeout: number) {
   return new Promise<void>(handler => setTimeout(handler, timeout));
@@ -79,4 +60,12 @@ export function parseDelta(delta: string) {
     s += h * 60;
   }
   return s;
+}
+
+export async function getTextData(url: string) {
+  return await (await fetch(url)).text();
+}
+
+export async function getBinaryData(url: string) {
+  return await (await fetch(url)).blob();
 }

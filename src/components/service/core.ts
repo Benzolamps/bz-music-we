@@ -1,6 +1,7 @@
 ﻿import MusicComponent from '@/components/service/component';
 import {emptyMusic, Music} from '@/components/service/music';
 import store from '@/components/service/store';
+import messages from '@/assets/locale/messages';
 
 /**
  * 播放模式键
@@ -65,7 +66,7 @@ export default class MusicService extends MusicComponent {
       console.dir(error);
       this.vue.$message({
         type: 'error',
-        message: '无法播放' + this.music.title + ': ' + error,
+        message: messages['music.cannot_play'](this.music.title, error),
       });
       await this.vue.$sleep(3000);
       await this.changeMusic();
@@ -104,22 +105,14 @@ export default class MusicService extends MusicComponent {
       this.playOrPause();
       return true;
     }
-    if (music.musicProvider) {
-      this.choseMusic = music;
-      if (this.isEnded) {
-        await this.changeMusic();
-        this.isPlaying || this.play();
-      } else {
-        this.stop();
-      }
-      return true;
+    this.choseMusic = music;
+    if (this.isEnded) {
+      await this.changeMusic();
+      this.isPlaying || this.play();
     } else {
-      this.vue.$message({
-        type: 'error',
-        message: '无法播放' + music.title + ': 文件不存在',
-      });
-      return false;
+      this.stop();
     }
+    return true;
   }
 
   /* 上一曲 */

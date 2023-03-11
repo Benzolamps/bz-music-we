@@ -1,5 +1,6 @@
 ﻿import {Music} from '@/components/service/music';
 import {audios, lrcs} from '@/assets/media';
+import {getBinaryData} from '@/utils/common_utils';
 
 export default class MusicStorage {
   musicList: ReadonlyArray<Music> = [];
@@ -13,7 +14,7 @@ export default class MusicStorage {
       new Blob([lrc.text], {type: 'text/plain'})
     ]));
     for (const audio of audios) {
-      this.audioBlobs.set(audio.name, await (await fetch(audio.url)).blob());
+      this.audioBlobs.set(audio.name, await getBinaryData(audio.url));
     }
     await this.reload();
   }

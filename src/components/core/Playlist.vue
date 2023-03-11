@@ -23,7 +23,7 @@
           <el-table-column prop="title">
             <template v-slot="scope">
               <span class="enable-user-select" style="padding-right: 10px;">{{ scope.row.title }}</span>
-              <el-tag type="warning" v-if="!scope.row.lrcProvider" size="mini" :disableTransitions="true">无歌词</el-tag>
+              <el-tag type="warning" v-if="!scope.row.lrcProvider" size="mini" :disableTransitions="true">{{messages['music.no_lrc']}}</el-tag>
             </template>
           </el-table-column>
           <el-table-column width="50" align="center">
@@ -55,11 +55,11 @@
           <el-dropdown-menu slot="dropdown" style="text-align: left">
               <el-dropdown-item :command="() => chooseFile(false)">
                 <i class="el-icon-document"/>
-                添加文件
+                {{messages['music.add_files']}}
               </el-dropdown-item>
               <el-dropdown-item :command="() => chooseFile(true)">
                 <i class="el-icon-folder"/>
-                添加文件夹
+                {{messages['music.add_folder']}}
               </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -113,13 +113,17 @@ export default class Playlist extends BaseComponent {
   
   private async removeMusic(music: Music) {
     try {
-      await this.$confirm('确定要删除' + music.title, '系统提醒', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true,
-        closeOnClickModal: false,
-      });
+      await this.$confirm(
+        this.messages['music.delete'](music.title),
+        this.messages['music.warning'], 
+        {
+          confirmButtonText: this.messages['music.confirm'],
+          cancelButtonText: this.messages['music.cancel'],
+          type: 'warning',
+          center: true,
+          closeOnClickModal: false,
+        }
+      );
       await this.musicStorage.remove(music.id);
       if (music === this.music) {
         await this.musicService.stop();
@@ -144,26 +148,30 @@ export default class Playlist extends BaseComponent {
     const audioCount = files.filter(f => f.type.startsWith('audio/')).length;
     const lrcCount = files.filter(f => f.name.endsWith('.lrc')).length;
     if (files.length === 0) {
-      this.$message({type: 'warning', message: '没有符合条件的文件'});
+      this.$message({type: 'warning', message: this.messages['music.no_proper_files']});
       return;
     }
     try {
-      await this.$confirm(`即将导入${audioCount}个音频文件和${lrcCount}个歌词文件，是否保留列表中已有的文件?`, '系统提示', {
-        distinguishCancelAndClose: true,
-        confirmButtonText: '保留',
-        cancelButtonText: '不保留'
-      });
+      await this.$confirm(
+        this.messages['music.about_to_import'](audioCount, lrcCount),
+        this.messages['music.warning'],
+        {
+          distinguishCancelAndClose: true,
+          confirmButtonText: this.messages['music.keep'],
+          cancelButtonText: this.messages['music.do_not_keep']
+        }
+      );
     } catch (action) {
       if (action == 'cancel') {
         await this.musicStorage.clear();
       } else {
-        this.$message({type: 'warning', message: '取消导入'});
+        this.$message({type: 'warning', message: this.messages['music.cancel_import']});
         return;
       }
     }
     const entries = files.map(f => [f.name.replaceAll(/\.[^.]+$/g, ''), f] as [string, Blob]);
     await this.musicStorage.add(entries);
-    this.$message({type: 'success', message: `导入${audioCount}个音频文件和${lrcCount}个歌词文件完成`});
+    this.$message({type: 'success', message: this.messages['music.import_finish'](audioCount, lrcCount)});
     if (!this.musicList.find(m => m.id == this.music.id)) {
       await this.musicService.stop();
     }

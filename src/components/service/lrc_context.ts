@@ -1,6 +1,7 @@
 ﻿import {Music} from '@/components/service/music';
 import LrcObject, {LrcTag} from '@/utils/lrc_object';
 import {bus} from '@/components/common/BaseComponent';
+import messages from '@/assets/locale/messages';
 
 export default class LrcContext {
   private music: Music;
@@ -35,7 +36,6 @@ export default class LrcContext {
       this.shownLrc = [];
       this.currentLrcTime = this.nextLrcTime = -1;
       this.music = bus.musicService.music;
-      this.lrcObj = new LrcObject('正在加载歌词');
       const lrcContent = await this.music.lrcProvider?.text();
       this.lrcObj = new LrcObject(lrcContent);
       this.generateShownLrc();
@@ -63,7 +63,7 @@ export default class LrcContext {
       if (this.music?.id) {
         this.shownLrc.push({time: time += 1, content: `${this.music.title}`});
         this.shownLrc.push({time: time += 5, content: ''});
-        this.shownLrc.push({time: time += 1, content: '<暂无歌词>'});
+        this.shownLrc.push({time: time += 1, content: messages['music.no_lrc_1']});
         this.shownLrc.push({time: time += 5, content: ''});
       }
     }

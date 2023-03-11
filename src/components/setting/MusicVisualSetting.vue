@@ -1,30 +1,37 @@
 <template>
   <el-form class="visual-setting-container" size="mini" label-position="top" style="text-align: left;">
-    <el-form-item label="展示分辨率">
+    <el-form-item :label="messages['visual.display_ratio']">
       <el-slider
         v-model="visualStyles.displayRatio"
         :min="0.5" :max="2" :step="0.1"
         :show-tooltip="false"
         input-size="mini"
         :marks="{
-          0.5: '0.5',
-          1: '1',
-          1.5:'1.5',
-          2: '2'
+          0.5: '0.5×',
+          1: '1×',
+          1.5:'1.5×',
+          2: '2×'
         }"
       />
     </el-form-item>
     <el-divider/>
-    <el-form-item label="Milk Drop Preset">
+    <el-form-item :label="messages['visual.preset']">
       <div style="margin: 10px;">
-        <el-checkbox v-model="visualStyles.onlyShowStarPresets">只显示<i class="el-icon-star-on"/></el-checkbox>
-        <el-checkbox v-model="visualStyles.random">随机切换</el-checkbox>
+        <el-checkbox v-model="visualStyles.onlyShowStarPresets">
+          {{messages['visual.preset.only_show_stars']}}
+          <i class="el-icon-star-on"/>
+        </el-checkbox>
+        <el-checkbox v-model="visualStyles.random">{{messages['visual.preset.random']}}</el-checkbox>
       </div>
-      <el-button @click="showPresetList = true">配置</el-button>
-      <el-button v-if="visualStyles.state.show" type="success" @click="() => musicVisualCore.prevPreset()">上一个</el-button>
-      <el-button v-if="visualStyles.state.show" type="warning" @click="() => musicVisualCore.nextPreset()">下一个</el-button>
+      <el-button @click="showPresetList = true">{{messages['visual.preset.config']}}</el-button>
+      <el-button v-if="visualStyles.state.show" type="success" @click="() => musicVisualCore.prevPreset()">
+        {{messages['visual.preset.prev']}}
+      </el-button>
+      <el-button v-if="visualStyles.state.show" type="warning" @click="() => musicVisualCore.nextPreset()">
+        {{messages['visual.preset.next']}}
+      </el-button>
     </el-form-item>
-    <el-form-item label="切换间隔">
+    <el-form-item :label="messages['visual.preset.interval']">
       <el-slider
         v-model="visualStyles.interval"
         :min="0" :max="300"
@@ -46,20 +53,19 @@
       />
     </el-form-item>
     <el-divider/>
-    <el-form-item label="歌词展示方式">
+    <el-form-item :label="messages['visual.lrc_mode']">
       <el-select v-model="visualStyles.lrcMode" style="width: 100%">
-        <el-option key="scroll" value="scroll" label="滚动"/>
-        <el-option key="caption" value="caption" label="标题"/>
-        <el-option key="mix" value="mix" label="组合"/>
+        <el-option key="scroll" value="scroll" :label="messages['visual.lrc_mode.scroll']"/>
+        <el-option key="caption" value="caption" :label="messages['visual.lrc_mode.caption']"/>
+        <el-option key="mix" value="mix" :label="messages['visual.lrc_mode.mix']"/>
       </el-select>
       <div style="margin: 10px;">
-        <el-checkbox v-model="visualStyles.state.pip">画中画模式</el-checkbox>
-        <el-checkbox v-model="visualStyles.showFps">显示FPS</el-checkbox>
+        <el-checkbox v-model="visualStyles.state.pip">{{messages['visual.pip']}}</el-checkbox>
+        <el-checkbox v-model="visualStyles.showFps">{{messages['visual.fps']}}</el-checkbox>
       </div>
     </el-form-item>
-    <el-divider/>
     <el-form-item>
-      <el-button type="warning" @click="resetSettings">恢复默认设置</el-button>
+      <el-button type="warning" @click="resetSettings">{{messages['music.reset_default']}}</el-button>
     </el-form-item>
     <el-drawer
       :modal="false"
@@ -216,12 +222,12 @@ export default class MusicVisualSetting extends BaseComponent {
 
   @Watch('visualStyles.displayRatio')
   private watchDisplayRatio(value: number, oldValue: number) {
-    oldValue && this.$toast(`展示分辨率: ${value}x`);
+    oldValue && this.$toast(this.messages['visual.display_ratio'] + this.messages.colon + value + '×');
   }
 
   @Watch('visualStyles.interval')
   private watchInterval(value: number, oldValue: number) {
-    oldValue && this.$toast(`切换间隔: ${value}s`);
+    oldValue && this.$toast(this.messages['visual.preset.interval'] + this.messages.colon + value + 's');
   }
 }
 </script>

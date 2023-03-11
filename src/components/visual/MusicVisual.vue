@@ -59,7 +59,9 @@ export default class MusicVisual extends BaseComponent {
     const prevHandler = () => this.musicVisualCore.prevPreset();
     const nextHandler = () => this.musicVisualCore.nextPreset();
 
-    this.hammer = new Hammer.Manager(this.canvas, {});
+    this.hammer = new Hammer.Manager(this.canvas, {
+      enable: this.visualStyles.lrcMode !== 'scroll'
+    });
     const press = new Hammer.Press();
     this.hammer.add(press);
     const swipe = new Hammer.Swipe({direction: Hammer.DIRECTION_ALL});
@@ -113,6 +115,11 @@ export default class MusicVisual extends BaseComponent {
   @Watch('visualStyles.state.pip')
   private watchPip() {
     this.handlePip();
+  }
+  
+  @Watch('visualStyles.lrcMode')
+  private changeHammer() {
+    this.hammer.set({enable: this.visualStyles.lrcMode !== 'scroll'});
   }
   
   /* endregion */

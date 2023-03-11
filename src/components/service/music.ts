@@ -1,4 +1,6 @@
-﻿export interface Music {
+﻿import messages from '@/assets/locale/messages';
+
+export interface Music {
   id?: string,
   title: string,
   musicProvider: Blob,
@@ -6,6 +8,6 @@
   objUrl?: string
 }
 
-export function emptyMusic(title = '暂无歌曲') : Music {
+export function emptyMusic(title = messages['music.no_music']) : Music {
   return {title: title} as Music;
 }

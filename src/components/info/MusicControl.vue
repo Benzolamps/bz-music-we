@@ -84,7 +84,7 @@
       <div class="popover-content">
         <span v-for="m in modes" :key="m.key" @click="musicService.setMode(m)" style="cursor: pointer; display: flex; align-items: center;">
           <svg-icon :icon-name="`music_${m.key}`" class="popover-icon" :class="{active: musicService.mode.key === m.key}" style="margin-right: 5px;"/>
-          <span class="popover-text" :class="{active: musicService.mode.key === m.key}">{{ m.name }}</span>
+          <span class="popover-text" :class="{active: musicService.mode.key === m.key}">{{ messages['music.mode.' + m.key] }}</span>
         </span>
       </div>
     </el-popover>
@@ -124,7 +124,7 @@
       :append-to-body="false"
     >
       <div class="popover-content">
-        <span class="popover-text">倍速</span>
+        <span class="popover-text">{{messages['music.pitch']}}</span>
         <el-slider
           class="popover-slider"
           :value="musicService.pitch"
@@ -147,10 +147,10 @@
       :modal-append-to-body="true"
     >
       <el-tabs value="lrc" style="margin: 20px">
-        <el-tab-pane label="歌词设置" name="lrc">
+        <el-tab-pane :label="messages['lrc.settings']" name="lrc">
           <music-lrc-setting/>
         </el-tab-pane>
-        <el-tab-pane label="可视化设置" name="visual">
+        <el-tab-pane :label="messages['visual.settings']" name="visual">
           <music-visual-setting/>
         </el-tab-pane>
       </el-tabs>
@@ -233,17 +233,17 @@ export default class MusicControl extends BaseComponent {
 
   @Watch('musicService.pitch')
   private watchPitch(value: number, oldValue: number) {
-    oldValue && this.$toast('倍速: ' + value + 'x');
+    oldValue && this.$toast(this.messages['music.pitch'] + this.messages.colon + value + '×');
   }
 
   @Watch('musicService.muted')
   private watchMuted(value: boolean, oldValue: boolean) {
-    oldValue !== undefined && this.$toast(value ? '静音' : '取消静音');
+    oldValue !== undefined && this.$toast(this.messages[value ? 'music.mute' : 'music.unmute']);
   }
 
   @Watch('musicService.volume')
   private watchVolume(value: number, oldValue: number) {
-    oldValue && this.$toast('音量: ' + Math.floor(value * 100));
+    oldValue && this.$toast(this.messages['music.volume'] + this.messages.colon + Math.floor(value * 100));
   }
 
   private t = 0;

@@ -2,6 +2,8 @@
 import butterchurn, {MilkDropPresetDesc, TimeOptions, Visualizer} from 'butterchurn';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
 import presetList from '@/assets/presets/index';
+import wallpaperProperties from '@/utils/env';
+import messages from '@/assets/locale/messages';
 
 declare class OffscreenCanvas extends HTMLCanvasElement {
   constructor(width: number, height: number);
@@ -19,7 +21,6 @@ export default class MusicVisualCore {
   private readonly basePresetList: ReadonlyArray<MilkDropPresetDesc> = Object.freeze(presetList);
   private presetList: ReadonlyArray<MilkDropPresetDesc>;
   private randomPresetList: ReadonlyArray<MilkDropPresetDesc>;
-  private fpsLimit = 0;
 
   public constructor(musicVisual: MusicVisual, canvas: HTMLCanvasElement, getDesireCanvasSize: () => [number, number]) {
     this.canvas = canvas;
@@ -68,10 +69,6 @@ export default class MusicVisualCore {
     this.reloadTimeout();
 
     bus.musicVisualCore = this;
-
-    window['wallpaperPropertyListener'] = {
-      applyGeneralProperties: ({fps = 0}) => this.fpsLimit = fps
-    };
   }
 
   private loadPresetList() {
@@ -103,12 +100,12 @@ export default class MusicVisualCore {
     this.last = now;
 
     // If there is an FPS limit, abort updating the animation if we have reached the desired FPS
-    if (this.fpsLimit > 0) {
+    if (wallpaperProperties.fps > 0) {
       this.fpsThreshold += dt;
-      if (this.fpsThreshold < 1.0 / this.fpsLimit) {
+      if (this.fpsThreshold < 1.0 / wallpaperProperties.fps) {
         return true;
       }
-      this.fpsThreshold -= 1.0 / this.fpsLimit;
+      this.fpsThreshold -= 1.0 / wallpaperProperties.fps;
     }
     return false;
   }
@@ -176,13 +173,13 @@ export default class MusicVisualCore {
   public prevPreset() {
     this.loadNearPreset('prev');
     this.reloadTimeout();
-    bus.$message({message: '已切换到: ' + bus.visualStyles.preset, type: 'success'});
+    bus.$message({message: messages['visual.preset.switch'] + messages.colon + bus.visualStyles.preset, type: 'success'});
   }
 
   public nextPreset() {
     this.loadNearPreset('next');
     this.reloadTimeout();
-    bus.$message({message: '已切换到: ' + bus.visualStyles.preset, type: 'success'});
+    bus.$message({message: messages['visual.preset.switch'] + messages.colon + bus.visualStyles.preset, type: 'success'});
   }
 
   public reloadTimeout() {

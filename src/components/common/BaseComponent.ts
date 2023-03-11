@@ -8,6 +8,8 @@ import {defaultLrcStyles, defaultVisualStyles} from '@/components/service/player
 import store from '@/components/service/store';
 import LrcContext from '@/components/service/lrc_context';
 import MusicVisualCore from '@/components/visual/core';
+import wallpaperProperties from '@/utils/env';
+import messages from '@/assets/locale/messages';
 
 /**
  * 组件基类
@@ -22,6 +24,9 @@ export default class BaseComponent extends Vue {
   private static _visualStyles = defaultVisualStyles;
   private static _lrcContext: LrcContext;
   private static _musicVisualCore: MusicVisualCore;
+
+  public wallpaperProperties = wallpaperProperties;
+  public messages = messages;
 
   private isAdmin = false === (store.userName as string)?.startsWith('user');
 

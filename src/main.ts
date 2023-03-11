@@ -2,7 +2,6 @@ import Vue from 'vue';
 
 /* region element-ui */
 import Element from 'element-ui';
-import {ElMessageOptions} from 'element-ui/types/message';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(Element, {size: 'small'});
 /* endregion */

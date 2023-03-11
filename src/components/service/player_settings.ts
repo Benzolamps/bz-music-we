@@ -2,11 +2,14 @@
 import {bus} from '@/components/common/BaseComponent';
 
 import lrcFonts from '@/assets/fonts/lrc/index';
+import messages from '@/assets/locale/messages';
+import pfsc from '@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf';
+import {getBinaryData} from '@/utils/common_utils';
 
 export const fontList: Array<{name: string, blob: Blob}> = [];
 
 export const defaultLrcStyles = {
-  font: '',
+  font: '苹方简体',
   defaultColor: '#2C3E50',
   pastColor: '#FF1E90',
   futureColor: '#1E90FF',
@@ -55,22 +58,27 @@ export default class PlayerSettings {
   }
 
   public static async load() {
-    for (const lrcFont of lrcFonts) {
-      fontList.push({
-        name: lrcFont.name,
-        blob: await (await fetch(lrcFont.url)).blob()
-      });
-    }
-    bus.$watch('lrcStyles', value => {
-      store.lrcStyles = value;
-    }, {deep: true});
+    bus.$watch('lrcStyles', value => store.lrcStyles = value, {deep: true});
+
     bus.$watch('visualStyles', value => {
       const v = {...value};
       v.starPresets = Array.from(value.starPresets);
       store.visualStyles = v;
     }, {deep: true});
+
+    fontList.push({
+      name: '苹方简体',
+      blob: await getBinaryData(pfsc)
+    });
+    for (const lrcFont of lrcFonts) {
+      fontList.push({
+        name: lrcFont.name,
+        blob: await getBinaryData(lrcFont.url)
+      });
+    }
+
     let error = false;
-    bus.$watch('lrcStyles.font', async (value, oldValue) => {
+    const callback = async (value?: string, oldValue?: string) => {
       if (bus.lrcStyles.font.startsWith('custom: ')) {
         return;
       }
@@ -78,51 +86,45 @@ export default class PlayerSettings {
         error = false;
         return;
       }
-      try {
-        value ||= '苹方简体';
-        bus.$toast('正在应用字体：' + value, true);
-        await PlayerSettings.loadFontFace(fontList.find(f => f.name == value)?.blob);
-        bus.$toast('应用字体成功：' + value);
-      } catch (e) {
-        bus.$toast('应用字体失败：' + value);
+      const font = fontList.find(f => f.name == value);
+      await PlayerSettings.loadFontFace(font?.blob, value).catch(() => {
         error = true;
         bus.lrcStyles.font = oldValue;
-      }
-    });
-    await PlayerSettings.loadFontFace(fontList.find(f => f.name == bus.lrcStyles.font)?.blob);
+      });
+    };
+    bus.$watch('lrcStyles.font', callback);
+    await callback(bus.lrcStyles.font);
+  }
+  
+  public static async loadCustomFont(file: File) {
+    PlayerSettings.loadFontFace(file, file.name)
+      .then(() => bus.lrcStyles.font = 'custom: ' + file.name)
+      .catch(() => 0);
+  }
+
+  private static async loadFontFace(blob: Blob, name: string) {
+    let init;
+    try {
+      let fontFace = new FontFace('LrcFont', await blob.arrayBuffer());
+      fontFace = await fontFace.load();
+      document.fonts.forEach(f => init = f.family === 'LrcFont' && document.fonts.delete(f));
+      document.fonts.add(fontFace);
+      init && bus.$message({message: messages['lrc.apply_font_success'] + messages.colon + name, type: 'success'});
+    } catch (e) {
+      init && bus.$message({message: messages['lrc.apply_font_failed'] + messages.colon + name, type: 'error'});
+      throw e;
+    }
   }
 
   public static starPreset(key: string) {
     if (bus.visualStyles.starPresets.has(key)) {
       bus.visualStyles.starPresets.delete(key);
-      bus.$message({message: '已取消收藏: ' + key, type: 'success'});
+      bus.$message({message: messages['visual.preset.unstar'] + messages.colon + key, type: 'success'});
     } else {
       bus.visualStyles.starPresets.add(key);
-      bus.$message({message: '已收藏: ' + key, type: 'success'});
+      bus.$message({message: messages['visual.preset.star'] + messages.colon + key, type: 'success'});
     }
     // vue无法监听Set集合的变更的解决方案
     bus.visualStyles.starPresets = new Set<string>(Array.from(bus.visualStyles.starPresets));
-  }
-  
-  public static async loadCustomFont(file: File) {
-    try {
-      bus.$toast('正在应用字体：' + file.name, true);
-      await PlayerSettings.loadFontFace(file);
-      bus.lrcStyles.font = 'custom: ' + file.name;
-      bus.$toast('应用字体成功：' + file.name);
-    } catch (e) {
-      bus.$toast('应用字体失败：' + file.name);
-    }
-  }
-
-  private static async loadFontFace(blob?: Blob) {
-    if (!blob) {
-      document.fonts.forEach(f => f.family === 'LrcFont' && document.fonts.delete(f));
-      return;
-    }
-    let fontFace = new FontFace('LrcFont', await blob.arrayBuffer());
-    fontFace = await fontFace.load();
-    document.fonts.forEach(f => f.family === 'LrcFont' && document.fonts.delete(f));
-    document.fonts.add(fontFace);
   }
 }

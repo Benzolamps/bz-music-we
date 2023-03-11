@@ -1,39 +1,38 @@
 ﻿<template>
   <el-form class="lrc-setting-container" size="mini" label-position="top" style="text-align: left;">
-    <el-form-item label="字体">
+    <el-form-item :label="messages['lrc.font']">
       <el-select v-model="lrcStyles.font" style="width: 80%">
-        <el-option key="" value="" label="苹方简体"/>
         <el-option v-for="font in fonts" :key="font.name" :value="font.name" :label="font.name"/>
       </el-select>
-      <el-button style="width: 20%" @click="chooseCustomFont">自定义</el-button>
+      <el-button style="width: 20%" @click="chooseCustomFont">{{messages['lrc.font.custom']}}</el-button>
       <input type="file" ref="file" accept=".ttf,.otf,.woff,.woff2" @change="setCustomFont" v-show="false"/>
     </el-form-item>
-    <el-form-item label="默认颜色">
+    <el-form-item :label="messages['lrc.color.default']">
       <div style="display: flex">
         <el-input v-model="lrcStyles.defaultColor" readonly style="flex: 1"/>
-        <el-color-picker v-model="lrcStyles.defaultColor"></el-color-picker>
+        <el-color-picker v-model="lrcStyles.defaultColor"/>
       </div>
     </el-form-item>
-    <el-form-item label="未播放颜色">
+    <el-form-item :label="messages['lrc.color.future']">
       <div style="display: flex">
         <el-input v-model="lrcStyles.futureColor" readonly style="flex: 1"/>
-        <el-color-picker v-model="lrcStyles.futureColor"></el-color-picker>
+        <el-color-picker v-model="lrcStyles.futureColor"/>
       </div>
     </el-form-item>
-    <el-form-item label="已播放颜色">
+    <el-form-item :label="messages['lrc.color.past']">
       <div style="display: flex">
         <el-input v-model="lrcStyles.pastColor" readonly style="flex: 1"/>
-        <el-color-picker v-model="lrcStyles.pastColor"></el-color-picker>
+        <el-color-picker v-model="lrcStyles.pastColor"/>
       </div>
     </el-form-item>
-    <el-form-item label="描边颜色">
+    <el-form-item :label="messages['lrc.color.stroke']">
       <div style="display: flex">
         <el-input v-model="lrcStyles.strokeColor" readonly style="flex: 1"/>
-        <el-color-picker v-model="lrcStyles.strokeColor"></el-color-picker>
+        <el-color-picker v-model="lrcStyles.strokeColor"/>
       </div>
     </el-form-item>
     <el-form-item>
-      <el-button type="warning" @click="resetSettings">恢复默认设置</el-button>
+      <el-button type="warning" @click="resetSettings">{{messages['music.reset_default']}}</el-button>
     </el-form-item>
   </el-form>
 </template>
