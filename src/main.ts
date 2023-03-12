@@ -19,9 +19,6 @@ Vue.config.productionTip = false;
 
 /* region init app */
 import App from './App.vue';
-
-new Vue({
-  render: h => h(App),
-}).$mount('#app');
+import {loadBasicFonts} from '@/utils/common_utils';
+loadBasicFonts().then(() => new Vue({render: h => h(App)}).$mount('#app'));
 /* endregion */
- 

@@ -4,6 +4,7 @@ export type LanguageKeys = 'en-us' | 'zh-chs' | 'zh-cht';
 
 export interface Message extends Readonly<unknown> {
   'colon': string,
+  'preview': string,
   'music.no_music': string;
   'music.no_lrc': string;
   'music.no_lrc_1': string;
@@ -62,6 +63,7 @@ type LanguageRecord = Readonly<Record<LanguageKeys, Message>>;
 const languages: LanguageRecord = {
   'en-us': {
     'colon': ': ',
+    'preview': 'Preview is not supported.',
     'music.no_music': '<No music>',
     'music.no_lrc': 'No lyrics',
     'music.no_lrc_1': '<No lyrics>',
@@ -116,6 +118,7 @@ const languages: LanguageRecord = {
   },
   'zh-chs': {
     'colon': '：',
+    'preview': '暂不支持预览',
     'music.no_music': '<暂无歌曲>',
     'music.no_lrc': '无歌词',
     'music.no_lrc_1': '<暂无歌词>',
@@ -142,8 +145,8 @@ const languages: LanguageRecord = {
     'music.reset_default': '恢复默认设置',
     'lrc.settings': '歌词设置',
     'lrc.font': '字体',
-    'lrc.apply_font_success': '字体应用成功,',
-    'lrc.apply_font_failed': '字体应用失败,',
+    'lrc.apply_font_success': '字体应用成功',
+    'lrc.apply_font_failed': '字体应用失败',
     'lrc.font.custom': '自定义',
     'lrc.color.default': '默认颜色',
     'lrc.color.future': '未播放颜色',
@@ -152,15 +155,15 @@ const languages: LanguageRecord = {
     'visual.settings': '可视化设置',
     'visual.display_ratio': '展示分辨率',
     'visual.preset': 'Milk Drop 预设',
-    'visual.preset.unstar': '已取消收藏,',
-    'visual.preset.star': '已收藏,',
+    'visual.preset.unstar': '已取消收藏',
+    'visual.preset.star': '已收藏',
     'visual.preset.only_show_stars': '只显示',
     'visual.preset.random': '随机切换',
     'visual.preset.config': '配置',
     'visual.preset.prev': '上一个',
     'visual.preset.next': '下一个',
     'visual.preset.interval': '切换间隔',
-    'visual.preset.switch': '已切换到,',
+    'visual.preset.switch': '已切换到',
     'visual.lrc_mode': '歌词展示方式',
     'visual.lrc_mode.scroll': '滚动',
     'visual.lrc_mode.caption': '标题',
@@ -170,6 +173,7 @@ const languages: LanguageRecord = {
   },
   'zh-cht': {
     'colon': '：',
+    'preview': '暫不支持預覽',
     'music.no_music': '<暫無歌曲>',
     'music.no_lrc': '無歌詞',
     'music.no_lrc_1': '<暫無歌詞>',
@@ -196,8 +200,8 @@ const languages: LanguageRecord = {
     'music.reset_default': '恢復默認設置',
     'lrc.settings': '歌詞設置',
     'lrc.font': '字體',
-    'lrc.apply_font_success': '字體應用成功,',
-    'lrc.apply_font_failed': '字體應用失敗,',
+    'lrc.apply_font_success': '字體應用成功',
+    'lrc.apply_font_failed': '字體應用失敗',
     'lrc.font.custom': '自定義',
     'lrc.color.default': '默認顏色',
     'lrc.color.future': '未播放顏色',

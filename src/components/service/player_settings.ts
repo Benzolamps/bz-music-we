@@ -95,7 +95,7 @@ export default class PlayerSettings {
     bus.$watch('lrcStyles.font', callback);
     await callback(bus.lrcStyles.font);
   }
-  
+
   public static async loadCustomFont(file: File) {
     PlayerSettings.loadFontFace(file, file.name)
       .then(() => bus.lrcStyles.font = 'custom: ' + file.name)

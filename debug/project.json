@@ -1,0 +1,75 @@
+{
+  "file": "index.html",
+  "general": {
+    "properties": {
+      "taskbar_position": {
+        "index": 0,
+        "options": [
+          {
+            "label": "ui_taskbar_position_bottom",
+            "value": "bottom"
+          },
+          {
+            "label": "ui_taskbar_position_top",
+            "value": "top"
+          },
+          {
+            "label": "ui_taskbar_position_left",
+            "value": "left"
+          },
+          {
+            "label": "ui_taskbar_position_right",
+            "value": "right"
+          }
+        ],
+        "order": 100,
+        "text": "ui_taskbar_position",
+        "type": "combo",
+        "value": "bottom"
+      },
+      "taskbar_length": {
+        "fraction": false,
+        "index": 1,
+        "max": 200,
+        "min": 0,
+        "order": 101,
+        "text": "ui_taskbar_length",
+        "type": "slider",
+        "value": 40
+      }
+    },
+    "localization" :
+    {
+      "en-us" :
+      {
+        "ui_taskbar_position" : "Taskbar position",
+        "ui_taskbar_position_bottom" : "Bottom",
+        "ui_taskbar_position_top" : "Top",
+        "ui_taskbar_position_left" : "Left",
+        "ui_taskbar_position_right" : "Right",
+        "ui_taskbar_length" : "Taskbar length"
+      },
+      "zh-chs" :
+      {
+        "ui_taskbar_position" : "任务栏位置",
+        "ui_taskbar_position_bottom" : "底部",
+        "ui_taskbar_position_top" : "顶部",
+        "ui_taskbar_position_left" : "靠左",
+        "ui_taskbar_position_right" : "靠右",
+        "ui_taskbar_length" : "任务栏长度"
+      },
+      "zh-cht" :
+      {
+        "ui_taskbar_position" : "任務欄位置",
+        "ui_taskbar_position_bottom" : "底部",
+        "ui_taskbar_position_top" : "頂部",
+        "ui_taskbar_position_left" : "靠左",
+        "ui_taskbar_position_right" : "靠右",
+        "ui_taskbar_length" : "任務欄長度"
+      }
+    }
+  },
+  "title": "Bz Music Player Debug",
+  "type": "web",
+  "version": 0
+}

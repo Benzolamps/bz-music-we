@@ -1,4 +1,7 @@
-﻿export const attrSeparator = '\u3000';
+﻿import pfsc from '@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf';
+import jbm from '@/assets/fonts/JetBrainsMono-Regular.ttf';
+
+export const attrSeparator = '\u3000';
 
 declare global {
   interface Array<T> {
@@ -13,6 +16,17 @@ Array.prototype.shuffle = function () {
     [this[j], this[i]] = [this[i], this[j]];
   }
 };
+
+export async function loadBasicFonts() {
+  let blob = await getBinaryData(pfsc);
+  let fontFace = new FontFace('PingFang SC', await blob.arrayBuffer());
+  fontFace = await fontFace.load();
+  document.fonts.add(fontFace);
+  blob = await getBinaryData(jbm);
+  fontFace = new FontFace('JetBrains Mono', await blob.arrayBuffer());
+  fontFace = await fontFace.load();
+  document.fonts.add(fontFace);
+}
 
 export function sleep(timeout: number) {
   return new Promise<void>(handler => setTimeout(handler, timeout));

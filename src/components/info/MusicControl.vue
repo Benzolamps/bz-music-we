@@ -76,7 +76,7 @@
     <!-- 播放模式弹出 -->
     <el-popover
       ref="popoverMode"
-      placement="top"
+      placement="left"
       width="400"
       trigger="click"
       :append-to-body="false"
@@ -92,7 +92,7 @@
     <!-- 音量弹出 -->
     <el-popover
       ref="popoverVolume"
-      placement="top"
+      placement="left"
       width="400"
       trigger="click"
       :append-to-body="false"
@@ -118,7 +118,7 @@
     <!-- 倍速弹出 -->
     <el-popover
       ref="popoverPitch"
-      placement="top"
+      placement="left"
       width="400"
       trigger="click"
       :append-to-body="false"
@@ -273,10 +273,10 @@ export default class MusicControl extends BaseComponent {
   --button-padding: min(12px, var(--button-size) * 0.24);
   position: absolute;
   bottom: 0;
-  left: 0;
+  left: var(--taskbar-left);
   padding: 0px;
-  height: 80px;
-  width: 100%;
+  height: calc(80px + var(--taskbar-bottom));
+  width: calc(100% - var(--taskbar-right));
   background-color: #C6E2FFBB;
 
   .el-slider.progress {

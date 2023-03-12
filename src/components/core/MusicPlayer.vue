@@ -61,7 +61,11 @@ export default class MusicPlayer extends BaseComponent {
       } else if (event instanceof TouchEvent) {
         clientY = Array.from(event.touches).map(t => t.clientY).reduce((a, b) => a > b ? a : b);
       }
-      if (clientY >= window.innerHeight - 100) {
+      let below = 100;
+      if (this.wallpaperProperties.taskbar_position === 'bottom') {
+        below += this.wallpaperProperties.taskbar_length;
+      }
+      if (clientY >= window.innerHeight - below) {
         window.clearTimeout(this.timeout);
         this.showMusicControl = true;
         this.timeout = window.setTimeout(() => this.showMusicControl = false, 3000);

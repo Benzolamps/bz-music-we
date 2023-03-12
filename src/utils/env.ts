@@ -17,17 +17,22 @@ const wallpaperProperties = {
   },
   get language() {
     return this._language;
-  }
+  },
+  taskbar_position: 'bottom' as 'bottom' | 'top' | 'left' | 'right',
+  taskbar_length: 0
 };
 
-wallpaperProperties.language = {'zh-CN': 'zh-chs', 'zh-TW': 'zh-cht', 'zh-HK': 'zh-cht'}[navigator.language];
-
 window['wallpaperPropertyListener'] = {
-  async applyGeneralProperties (props: typeof wallpaperProperties) {
+  applyGeneralProperties(props: typeof wallpaperProperties) {
     for (const propsKey in props) {
       wallpaperProperties[propsKey] = props[propsKey];
     }
-  }
+  },
+  applyUserProperties(props: typeof wallpaperProperties) {
+    for (const propsKey in props) {
+      wallpaperProperties[propsKey] = props[propsKey].value;
+    }
+  },
 };
 
 export default wallpaperProperties;

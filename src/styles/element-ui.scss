@@ -2,10 +2,16 @@
   .el-drawer {
     &.ltr {
       border-radius: 0 10px 10px 0;
+      padding-left: var(--taskbar-left);
+      padding-top: var(--taskbar-top);
+      padding-bottom: var(--taskbar-bottom);
     }
 
     &.rtl {
       border-radius: 10px 0 0 10px;
+      padding-right: var(--taskbar-right);
+      padding-top: var(--taskbar-top);
+      padding-bottom: var(--taskbar-bottom);
     }
 
     &.btt {
