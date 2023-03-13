@@ -43,16 +43,16 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
     position: relative;
     top: 0;
     left: 0;
+    background: linear-gradient(135deg, #041D76, #0D7E7E);
 
     &.preview {
-      display: flex;
-      justify-content: center;
-      align-content: center;
-      align-items: center;
-      background-color: #FFF;
       color: #F56C6C;
       font-size: min(5vw, 80vh);
     }

@@ -1,6 +1,5 @@
 ﻿<template>
   <div class="toast-container">
-    <div class="toast-shade" v-show="showShade"></div>
     <div :style="showToast || {opacity: 0}" class="toast" v-html="toastContent"/>
   </div>
 </template>
@@ -16,9 +15,6 @@ import Component from 'vue-class-component';
 export default class Toast extends BaseComponent {
   /** 是否展示 */
   private showToast = false;
-
-  /** 是否展示遮罩层 */
-  private showShade = false;
 
   /** 展示内容 */
   private toastContent = '';
@@ -37,15 +33,12 @@ export default class Toast extends BaseComponent {
   /**
    * 显示Toast
    */
-  private show(msg: string, showShade = false) {
+  private show(msg: string) {
     window.clearTimeout(this.timeout);
     this.$createElement;
     this.toastContent = msg;
     this.showToast = true;
-    this.showShade = !!showShade;
-    if (!this.showShade) {
-      this.timeout = window.setTimeout(this.hide, 3000);
-    }
+    this.timeout = window.setTimeout(this.hide, 3000);
   }
 
   /**
@@ -53,33 +46,27 @@ export default class Toast extends BaseComponent {
    */
   private hide() {
     this.showToast = false;
-    this.showShade = false;
   }
 }
 </script>
 
 <style lang="scss">
 .toast-container {
-  width: 0;
-  height: 0;
-  .toast-shade {
-    width: 100vw;
-    height: 100vh;
-    z-index: 9999;
-    position: fixed;
-    left: 0;
-    top: 0;
-    background-color: #000;
-    opacity: .5;
-    transition: opacity .7s;
-  }
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  background-color: transparent;
+  pointer-events: none;
 
   .toast {
-    position: fixed;
-    z-index: 10000;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
     background: #000A;
     padding: 10px;
     border-radius: 5px;
