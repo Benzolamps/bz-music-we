@@ -1,0 +1,29 @@
+﻿[h1]Bz Music Player[/h1]
+
+带有Milk Drop可视化效果的音乐播放器
+
+[h1]Features[/h1]
+
+* 基本的音乐播放器功能
+* 使用Milk Drop的可视化效果，而且包含3D歌词文字展示
+* 支持导入本地音乐文件(MP3 FLAC WAV OGG)和歌词文件(LRC with UTF-8).
+* 提供上千个Milk Drop预设，可以进行收藏与取消收藏
+* 可以对歌词进行个性化颜色配置，支持使用本地字体文件
+
+[h1]Gestures[/h1]
+
+* 左滑/上滑: 下一个预设
+* 右滑/下滑: 上一个预设
+* 长按: 收藏/取消收藏当前预设
+
+[h1]Attention[/h1]
+* 因为CEF限制，你选择的本地文件（歌曲、歌词、字体）会再下次切换到这个壁纸时失效，你需要重新选择
+* 窗口的大小不会根据任务栏的位置和长度自适应，所以有些UI组件可能被任务栏挡住，但你可以调整Wallpaper Engine提供的原生属性来告诉程序去正确地显示
+
+[h1]Thanks[/h1]
+* [url=https://github.com/jberg]jberg[/url] for creating [url=https://github.com/jberg/butterchurn]Butterchurn[/url]
+* [url=http://www.geisswerks.com/]Ryan Geiss[/url] for creating [url=http://www.geisswerks.com/about_milkdrop.html]MilkDrop[/url]
+
+## Links
+* [url=https://github.com/Benzolamps/bz-music-we]GitHub[/url]
+* [url=https://gitee.com/Benzolamps/bz-music-we]Gitee[/url]

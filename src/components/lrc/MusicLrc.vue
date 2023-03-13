@@ -16,7 +16,7 @@
           :key="index"
           tag="li"
           :color="lrcStyles.strokeColor"
-          :text="attrSeparator + lrc.content + attrSeparator"
+          :text="lrc.content || attrSeparator"
           :class="getLrcClass(lrc)"
           @click="musicService.seek(lrc.time + 0.01)"
         />

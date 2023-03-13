@@ -18,7 +18,7 @@ export default class MusicVisualCore {
   private readonly canvasDraw: HTMLCanvasElement;
   private readonly getDesireCanvasSize: () => [number, number];
   private timeout: number;
-  private readonly basePresetList: ReadonlyArray<MilkDropPresetDesc> = Object.freeze(presetList);
+  private readonly basePresetList: ReadonlyArray<MilkDropPresetDesc> = presetList;
   private presetList: ReadonlyArray<MilkDropPresetDesc>;
   private randomPresetList: ReadonlyArray<MilkDropPresetDesc>;
 

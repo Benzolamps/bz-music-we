@@ -1,6 +1,9 @@
 declare module 'butterchurn' {
   export interface MilkDropPreset {}
-  export interface MilkDropPresetDesc {name: string, preset: MilkDropPreset}
+  export interface MilkDropPresetDesc {
+    name: string;
+    preset: MilkDropPreset;
+  }
 
   export type TimeOptions = {
     buffer: ArrayBuffer;

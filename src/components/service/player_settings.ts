@@ -86,11 +86,13 @@ export default class PlayerSettings {
         error = false;
         return;
       }
-      const font = fontList.find(f => f.name == value);
-      await PlayerSettings.loadFontFace(font?.blob, value).catch(() => {
+      const font = fontList.find(f => f.name == value) ?? fontList[0];
+      try {
+        await PlayerSettings.loadFontFace(font.blob, value);
+      } catch {
         error = true;
         bus.lrcStyles.font = oldValue;
-      });
+      }
     };
     bus.$watch('lrcStyles.font', callback);
     await callback(bus.lrcStyles.font);
@@ -111,7 +113,7 @@ export default class PlayerSettings {
       document.fonts.add(fontFace);
       init && bus.$message({message: messages['lrc.apply_font_success'] + messages.colon + name, type: 'success'});
     } catch (e) {
-      init && bus.$message({message: messages['lrc.apply_font_failed'] + messages.colon + name, type: 'error'});
+      bus.$message({message: messages['lrc.apply_font_failed'] + messages.colon + name, type: 'error'});
       throw e;
     }
   }
