@@ -43,6 +43,7 @@ export default class MusicCarousel extends BaseComponent {
 <style lang="scss">
 .music-carousel {
   overflow: hidden;
+  pointer-events: none;
 
   ul {
     width: 100%;
@@ -50,7 +51,6 @@ export default class MusicCarousel extends BaseComponent {
     overflow: hidden;
 
     li {
-      pointer-events: none;
       position: relative;
       white-space: nowrap;
       word-break: break-all;

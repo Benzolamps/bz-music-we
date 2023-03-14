@@ -42,7 +42,7 @@ export default class PlayerSettings {
         result.font = '';
       }
     } else {
-      result = defaultLrcStyles;
+      result = JSON.parse(JSON.stringify(defaultLrcStyles));
     }
     return result;
   }
@@ -53,7 +53,7 @@ export default class PlayerSettings {
       visualStyles.starPresets = new Set(visualStyles.starPresets ?? []);
       return {...(visualStyles), state: defaultVisualStyles.state} as typeof defaultVisualStyles;
     } else {
-      return defaultVisualStyles;
+      return JSON.parse(JSON.stringify(defaultVisualStyles));
     }
   }
 

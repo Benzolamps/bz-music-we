@@ -18,7 +18,7 @@
           :color="lrcStyles.strokeColor"
           :text="lrc.content || attrSeparator"
           :class="getLrcClass(lrc)"
-          @click="musicService.seek(lrc.time + 0.01)"
+          @click="seek(lrc)"
         />
       </template>
       <li v-if="lockScroll" key="s1" class="scroll-locker"/>
@@ -45,6 +45,18 @@ export default class MusicLrc extends BaseComponent {
 
   public override mounted() {
     this.refreshScroll();
+  }
+
+  private time = performance.now();
+  private seek(lrc: LrcTag) {
+    const current = performance.now();
+    if (current - this.time < 500) {
+      const seekTime = lrc.time + 0.01;
+      if (seekTime > 0 && seekTime < this.musicService.duration) {
+        this.musicService.seek(seekTime);
+      }
+    }
+    this.time = current;
   }
 
   private getLrcClass(lrc: LrcTag) {

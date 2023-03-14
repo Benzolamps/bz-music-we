@@ -17,13 +17,15 @@ import messages from '@/assets/locale/messages';
 export default class BaseComponent extends Vue {
   protected readonly attrSeparator = attrSeparator;
 
-  private static _musicStorage: MusicStorage;
-  private static _musicService: MusicService;
-  private static _toast: Toast['utilType'];
-  private static _lrcStyles = defaultLrcStyles;
-  private static _visualStyles = defaultVisualStyles;
-  private static _lrcContext: LrcContext;
-  private static _musicVisualCore: MusicVisualCore;
+  private static staticData = Vue.observable(new class {
+    musicStorage: MusicStorage;
+    musicService: MusicService;
+    toast: Toast['utilType'];
+    lrcStyles = defaultLrcStyles;
+    visualStyles = defaultVisualStyles;
+    lrcContext: LrcContext;
+    musicVisualCore: MusicVisualCore;
+  });
 
   public wallpaperProperties = wallpaperProperties;
   public messages = messages;
@@ -36,59 +38,59 @@ export default class BaseComponent extends Vue {
   }
 
   public get musicStorage(): MusicStorage {
-    return BaseComponent._musicStorage || {} as MusicStorage;
+    return BaseComponent.staticData.musicStorage;
   }
 
   protected set musicStorage(value: MusicStorage) {
-    BaseComponent._musicStorage = value;
+    BaseComponent.staticData.musicStorage = value;
   }
 
   public get musicService() {
-    return BaseComponent._musicService || {} as MusicService;
+    return BaseComponent.staticData.musicService;
   }
 
   protected set musicService(value: MusicService) {
-    BaseComponent._musicService = value;
+    BaseComponent.staticData.musicService = value;
   }
 
   public get lrcContext() {
-    return BaseComponent._lrcContext || {} as LrcContext;
+    return BaseComponent.staticData.lrcContext;
   }
 
   protected set lrcContext(value: LrcContext) {
-    BaseComponent._lrcContext = value;
+    BaseComponent.staticData.lrcContext = value;
   }
 
   public get musicVisualCore() {
-    return BaseComponent._musicVisualCore || {} as MusicVisualCore;
+    return BaseComponent.staticData.musicVisualCore;
   }
 
   public set musicVisualCore(value: MusicVisualCore) {
-    BaseComponent._musicVisualCore = value;
+    BaseComponent.staticData.musicVisualCore = value;
   }
 
   public get lrcStyles() {
-    return BaseComponent._lrcStyles;
+    return BaseComponent.staticData.lrcStyles;
   }
 
   protected set lrcStyles(value) {
-    BaseComponent._lrcStyles = value;
+    BaseComponent.staticData.lrcStyles = value;
   }
 
   public get visualStyles() {
-    return BaseComponent._visualStyles;
+    return BaseComponent.staticData.visualStyles;
   }
 
   protected set visualStyles(value) {
-    BaseComponent._visualStyles = value;
+    BaseComponent.staticData.visualStyles = value;
   }
 
   public get $toast(): Toast['utilType'] {
-    return BaseComponent._toast || {} as Toast['utilType'];
+    return BaseComponent.staticData.toast;
   }
 
   protected set $toast(value: Toast['utilType']) {
-    BaseComponent._toast = value;
+    BaseComponent.staticData.toast = value;
   }
 
   public beforeCreate() {}

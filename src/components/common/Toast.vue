@@ -72,7 +72,6 @@ export default class Toast extends BaseComponent {
     border-radius: 5px;
     color: #fff;
     transition: opacity .7s;
-    pointer-events: none;
   }
 }
 </style>
