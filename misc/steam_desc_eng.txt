@@ -3,7 +3,6 @@
 Music player with Milk Drop Visualizer
 
 [h1]Features[/h1]
-
 * Basic music player features
 * Music Visualization using Milk Drop, and 3D lyrics text.
 * You can import your own local music files (MP3 FLAC WAV OGG) and lyrics files (LRC with UTF-8).
@@ -11,7 +10,6 @@ Music player with Milk Drop Visualizer
 * You can set the lyrics to your favorite color, and you can choose your own local font file.
 
 [h1]Gestures[/h1]
-
 * Swipe Left/Up: next preset
 * Swipe Down/Right: prev preset
 * Long Press: star/unstar current preset

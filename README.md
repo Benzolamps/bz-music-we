@@ -5,7 +5,6 @@ Music player with Milk Drop Visualizer (published on Wallpaper Engine on Steam)
 ![preview](public/preview.gif)
 
 ## Features
-
 * Basic music player features
 * Music Visualization using Milk Drop, and 3D lyrics text.
 * You can import your own local music files (MP3 FLAC WAV OGG) and lyrics files (LRC with UTF-8).
@@ -13,7 +12,6 @@ Music player with Milk Drop Visualizer (published on Wallpaper Engine on Steam)
 * You can set the lyrics to your favorite color, and you can choose your own local font file.
 
 ## Gestures
-
 * Swipe Left/Up: next preset
 * Swipe Down/Right: prev preset
 * Long Press: star/unstar current preset
