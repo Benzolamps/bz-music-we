@@ -23,12 +23,6 @@ export default class BScroll extends BaseComponent {
 
   @Prop({default: Object})
   protected options: Options;
-  
-  protected defaultOptions: Options = {
-    momentum: false,
-    mouseWheel: true,
-    preventDefault: false
-  };
 
   public override async mounted() {
     await this.initScroll();
@@ -38,24 +32,21 @@ export default class BScroll extends BaseComponent {
     this.scroll.destroy();
   }
 
-  @Emit('initScroll')
+  @Emit('init-scroll')
   private async initScroll() {
     if (this.wrapper) {
       this.$el.remove();
     }
     await this.$nextTick();
     const element = this.wrapper || this.$el as HTMLElement;
-    this.scroll = new BetterScroll(element, {
-      ...this.defaultOptions,
-      ...this.options
-    });
+    this.scroll = new BetterScroll(element, this.options);
   }
 
   public refresh() {
     this.scroll?.refresh();
   }
 
-  public scrollTo(x: number, y: number, time?: number) {
+  public scrollTo(x: number, y: number, time: number) {
     this.scroll?.scrollTo(x, y, time);
   }
 

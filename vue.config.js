@@ -54,10 +54,14 @@ module.exports = defineConfig({
 
     config.plugin('node-polyfill-plugin').use(NodePolyfillPlugin);
     
-    config.resolve.alias.set('butterchurn', resolve('butterchurn'))
+    config.resolve.alias.set('butterchurn', resolve('butterchurn'));
 
-    config
-      .optimization.splitChunks({
+    config.resolve.alias.set('butterchurn-presets', [
+      resolve('src/assets/presets'),
+      resolve('node_modules/butterchurn-presets/presets/converted'),
+    ]);
+
+    config.optimization.splitChunks({
       chunks: 'all',
       cacheGroups: {
         libs: {
@@ -72,7 +76,7 @@ module.exports = defineConfig({
         },
         presets: {
           name: 'butterchurn-presets',
-          test: resolve('src/assets/presets'),
+          test: /presets/,
           chunks: 'initial'
         }
       }

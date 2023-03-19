@@ -1,6 +1,6 @@
 ﻿<template>
   <div class="toast-container">
-    <div :style="showToast || {opacity: 0}" class="toast" v-html="toastContent"/>
+    <div :style="toast && content || {opacity: 0}" class="toast" v-html="content"/>
   </div>
 </template>
 
@@ -14,20 +14,16 @@ import Component from 'vue-class-component';
 @Component
 export default class Toast extends BaseComponent {
   /** 是否展示 */
-  private showToast = false;
+  private toast = false;
 
   /** 展示内容 */
-  private toastContent = '';
+  private content = '';
 
   /** 延时关闭 */
   private timeout = 0;
 
-  /** 工具类型 */
-  declare private utilType: Toast['show'] & { close: Toast['hide']};
-
   public override mounted() {
-    this.$toast = this.show.bind(this) as Toast['utilType'];
-    this.$toast.close = this.hide;
+    this.$toast = this.show;
   }
 
   /**
@@ -35,17 +31,9 @@ export default class Toast extends BaseComponent {
    */
   private show(msg: string) {
     window.clearTimeout(this.timeout);
-    this.$createElement;
-    this.toastContent = msg;
-    this.showToast = true;
-    this.timeout = window.setTimeout(this.hide, 3000);
-  }
-
-  /**
-   * 隐藏Toast
-   */
-  private hide() {
-    this.showToast = false;
+    this.toast = true;
+    this.content = msg;
+    this.timeout = window.setTimeout(() => this.toast = false, 3000);
   }
 }
 </script>

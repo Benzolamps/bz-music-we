@@ -1,17 +1,27 @@
-﻿.el-drawer__wrapper {
+﻿.el-popover {
+  min-width: 0;
+}
+
+.el-tag {
+  margin: 0 2px;
+}
+
+.el-drawer__wrapper {
   .el-drawer {
     &.ltr {
       border-radius: 0 10px 10px 0;
-      padding-left: var(--taskbar-left);
-      padding-top: var(--taskbar-top);
-      padding-bottom: var(--taskbar-bottom);
+      height: unset;
+      left: var(--taskbar-left);
+      top: var(--taskbar-top);
+      bottom: var(--taskbar-bottom);
     }
 
     &.rtl {
       border-radius: 10px 0 0 10px;
-      padding-right: var(--taskbar-right);
-      padding-top: var(--taskbar-top);
-      padding-bottom: var(--taskbar-bottom);
+      height: unset;
+      right: var(--taskbar-right);
+      top: var(--taskbar-top);
+      bottom: var(--taskbar-bottom);
     }
 
     &.btt {

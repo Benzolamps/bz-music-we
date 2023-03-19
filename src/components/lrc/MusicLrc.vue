@@ -4,6 +4,7 @@
     ref="scroll"
     class="music-lrc"
     :options="{mouseWheel: !lockScroll, disableMouse: lockScroll, disableTouch: lockScroll}"
+    @init-scroll="initScroll"
   >
     <ul :style="{
       '--lrc-color-default': lrcStyles.defaultColor,
@@ -45,16 +46,51 @@ export default class MusicLrc extends BaseComponent {
 
   public override mounted() {
     this.refreshScroll();
+    window.addEventListener('resize', this.adjustHeight);
+    this.$nextTick(this.adjustHeight);
+  }
+
+  public override beforeDestroy() {
+    window.removeEventListener('resize', this.adjustHeight);
+  }
+  
+  public async adjustHeight() {
+    const element = this.$el as HTMLElement;
+    if (element.style.maxHeight === '100%') {
+      return;
+    }
+    element.style.maxHeight = '100%';
+    await this.$nextTick();
+    const height = element.clientHeight;
+    const lineHeight = parseInt(window.getComputedStyle(element).lineHeight);
+    let number = Math.floor(height / lineHeight);
+    number = number % 2 ? number : number - 1;
+    number = Math.max(1, number);
+    const maxHeight = number * lineHeight;
+    element.style.maxHeight = maxHeight + 'px';
+    await this.$nextTick();
+    this.scroll?.refresh();
+  }
+
+  private initScroll() {
+    const hooks = this.scroll.scroll.scroller.hooks;
+    hooks.on('momentum', (obj: {newX: number, newY: number, time: number}) => {
+      const lineHeight = parseInt(window.getComputedStyle(this.$el).lineHeight);
+      obj.newX = 0;
+      obj.newY = Math.round(obj.newY / lineHeight) * lineHeight;
+      obj.time ||= 500;
+    });
   }
 
   private time = performance.now();
   private seek(lrc: LrcTag) {
+    if (this.scroll?.scroll.pending) {
+      return;
+    }
     const current = performance.now();
     if (current - this.time < 500) {
       const seekTime = lrc.time + 0.01;
-      if (seekTime > 0 && seekTime < this.musicService.duration) {
-        this.musicService.seek(seekTime);
-      }
+      this.musicService.seek(seekTime);
     }
     this.time = current;
   }
@@ -111,7 +147,6 @@ export default class MusicLrc extends BaseComponent {
 </script>
 
 <style lang="scss">
-
 .music-lrc {
   line-height: 45px;
   overflow: hidden;
@@ -157,5 +192,4 @@ export default class MusicLrc extends BaseComponent {
     }
   }
 }
-
 </style>

@@ -89,7 +89,7 @@
             <el-table-column width="70" type="index" prop="index" :index="index => index + 1 + pageSize * (currentPage - 1)"/>
             <el-table-column prop="title">
               <template v-slot="scope">
-                <span class="enable-user-select" style="padding-right: 10px;">{{ scope.row.name }}</span>
+                <span style="padding-right: 10px;">{{ scope.row.name }}</span>
               </template>
             </el-table-column>
             <el-table-column width="50" align="center">

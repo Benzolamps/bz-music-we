@@ -106,11 +106,11 @@ export default class MusicService extends MusicComponent {
       return true;
     }
     this.choseMusic = music;
-    if (this.isEnded) {
-      await this.changeMusic();
-      this.isPlaying || this.play();
-    } else {
+    if (this.isPlaying) {
       this.stop();
+    } else {
+      await this.changeMusic();
+      this.play();
     }
     return true;
   }
@@ -118,22 +118,22 @@ export default class MusicService extends MusicComponent {
   /* 上一曲 */
   public async prevMusic() {
     this.nextMusicType = 'prev';
-    if (this.isEnded) {
-      await this.changeMusic();
-      this.isPlaying || this.play();
-    } else {
+    if (this.isPlaying) {
       this.stop();
+    } else {
+      await this.changeMusic();
+      this.play();
     }
   }
 
   /* 下一曲 */
   public async nextMusic() {
     this.nextMusicType = 'next';
-    if (this.isEnded) {
-      await this.changeMusic();
-      this.isPlaying || this.play();
-    } else {
+    if (this.isPlaying) {
       this.stop();
+    } else {
+      await this.changeMusic();
+      this.play();
     }
   }
 

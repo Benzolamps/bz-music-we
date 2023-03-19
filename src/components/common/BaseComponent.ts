@@ -20,7 +20,7 @@ export default class BaseComponent extends Vue {
   private static staticData = Vue.observable(new class {
     musicStorage: MusicStorage;
     musicService: MusicService;
-    toast: Toast['utilType'];
+    toast: Toast['show'];
     lrcStyles = defaultLrcStyles;
     visualStyles = defaultVisualStyles;
     lrcContext: LrcContext;
@@ -85,11 +85,11 @@ export default class BaseComponent extends Vue {
     BaseComponent.staticData.visualStyles = value;
   }
 
-  public get $toast(): Toast['utilType'] {
+  public get $toast(): Toast['show'] {
     return BaseComponent.staticData.toast;
   }
 
-  protected set $toast(value: Toast['utilType']) {
+  protected set $toast(value: Toast['show']) {
     BaseComponent.staticData.toast = value;
   }
 

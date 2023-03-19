@@ -22,7 +22,7 @@
           <el-table-column width="70" type="index" prop="index" :index="index => index + 1 + pageSize * (currentPage - 1)"/>
           <el-table-column prop="title">
             <template v-slot="scope">
-              <span class="enable-user-select" style="padding-right: 10px;">{{ scope.row.title }}</span>
+              <span style="padding-right: 10px;">{{ scope.row.title }}</span>
               <el-tag type="warning" v-if="!scope.row.lrcProvider" size="mini" :disableTransitions="true">{{messages['music.no_lrc']}}</el-tag>
             </template>
           </el-table-column>
@@ -49,7 +49,7 @@
           @current-change="onCurrentChange"
         >
         </el-pagination>
-        <input type="file" ref="file" multiple accept=".lrc,.mp3,.wav,.flac,.ogg" v-show="false" @change="onFileChange"/>
+        <input type="file" ref="file" multiple accept="audio/*,.lrc" v-show="false" @change="onFileChange"/>
         <el-dropdown trigger="click" @command="cmd => cmd()">
           <el-button type="text"  size="medium" icon="el-icon-more" style="color: #409EFF; font-size: 20px; margin-right: 10px;"/>
           <el-dropdown-menu slot="dropdown" style="text-align: left">
@@ -74,6 +74,7 @@ import Component from 'vue-class-component';
 import {Prop, Ref, Watch} from 'vue-property-decorator';
 import {Music} from '@/components/service/music';
 import BScroll from '@/components/common/BScroll.vue';
+import {getFileBaseName} from '@/utils/common_utils';
 
 @Component({components: {BScroll}})
 export default class Playlist extends BaseComponent {
@@ -169,7 +170,7 @@ export default class Playlist extends BaseComponent {
         return;
       }
     }
-    const entries = files.map(f => [f.name.replaceAll(/\.[^.]+$/g, ''), f] as [string, Blob]);
+    const entries = files.map(f => [getFileBaseName(f.name), f] as [string, Blob]);
     await this.musicStorage.add(entries);
     this.$message({type: 'success', message: this.messages['music.import_finish'](audioCount, lrcCount)});
     if (!this.musicList.find(m => m.id == this.music.id)) {

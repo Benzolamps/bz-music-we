@@ -70,6 +70,13 @@
         <span style="line-height: 50px; padding: 0; font-size: 14px;" v-popover:popoverPitch>
           {{ musicService.pitch }}x
         </span>
+        
+        <div style="flex: 1; display: flex; justify-content: flex-end;">
+          <el-tag type="info" v-if="musicService.music.musicProvider">{{musicService.music.musicProvider.type}}</el-tag>
+          <el-tag type="info" v-if="musicService.music.musicProvider">{{musicService.music.musicProvider.size | fileSize}}</el-tag>
+          <el-tag type="info" v-if="musicService.music.musicProvider">{{musicService.duration | delta}}</el-tag>
+          <el-tag type="warning" v-if="!musicService.music.lrcProvider">无歌词</el-tag>
+        </div>
       </div>
     </div>
 
@@ -168,12 +175,14 @@ import {ElSlider} from 'element-ui/types/slider';
 import Component from 'vue-class-component';
 import assert from 'assert';
 import MusicCarousel from '@/components/info/MusicCarousel.vue';
-import {formatDelta} from '@/utils/common_utils';
+import {formatDelta, formatFileSize} from '@/utils/common_utils';
 import Playlist from '@/components/core/Playlist.vue';
 import MusicLrcSetting from '@/components/setting/MusicLrcSetting.vue';
 import MusicVisualSetting from '@/components/setting/MusicVisualSetting.vue';
    
-@Component({components: {MusicVisualSetting, MusicLrcSetting, Playlist, MusicCarousel}})
+@Component({
+  methods: {formatFileSize},
+  components: {MusicVisualSetting, MusicLrcSetting, Playlist, MusicCarousel}})
 export default class MusicControl extends BaseComponent {
   private readonly modes = modes;
   /* 进度条时间 */
@@ -212,14 +221,13 @@ export default class MusicControl extends BaseComponent {
       this.isSliding = false;
     };
     const sliderButton = slider.$el.querySelector('.el-slider__runway');
-    assert.ok(sliderButton);
     sliderButton.addEventListener('click', clickHandler);
     sliderButton.addEventListener('mousedown', mouseDownHandler, {capture: true});
     sliderButton.addEventListener('touchstart', mouseDownHandler, {capture: true});
-    sliderButton.addEventListener('mousemove', mouseMoveHandler, {capture: true});
-    sliderButton.addEventListener('touchmove', mouseMoveHandler, {capture: true});
-    window.addEventListener('mouseup', mouseUpHandler, {capture: true});
-    window.addEventListener('touchend', mouseUpHandler, {capture: true});
+    document.addEventListener('mousemove', mouseMoveHandler, {capture: true});
+    document.addEventListener('touchmove', mouseMoveHandler, {capture: true});
+    document.addEventListener('mouseup', mouseUpHandler, {capture: true});
+    document.addEventListener('touchend', mouseUpHandler, {capture: true});
   }
 
   private openPlaylist() {
@@ -300,6 +308,7 @@ export default class MusicControl extends BaseComponent {
     position: absolute;
     left: 20px;
     transform: scale(0.8);
+    pointer-events: none;
   }
 
   .music-control-button-group {

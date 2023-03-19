@@ -16,10 +16,9 @@ export default class MusicCarousel extends BaseComponent {
   
   private delta = 0;
 
-  public override async mounted() {
+  public override mounted() {
     window.addEventListener('resize', this.calcDelta);
-    await this.$nextTick();
-    this.calcDelta();
+    this.$nextTick(this.calcDelta);
   }
 
   public override beforeDestroy() {
@@ -34,8 +33,7 @@ export default class MusicCarousel extends BaseComponent {
 
   @Watch('musicService.music.title')
   private async watchMusic() {
-    await this.$nextTick();
-    this.calcDelta();
+    this.$nextTick(this.calcDelta);
   }
 }
 </script>

@@ -28,6 +28,13 @@ export default class MusicComponent {
   protected vue: BaseComponent;
 
   private listeners: Partial<Record<keyof HTMLMediaElementEventMap, () => void>> = {
+    canplaythrough: () => {
+      if (!this.playingMusic) {
+        return;
+      }
+      this.isEnded = false;
+      this.isPaused = !this.isPlaying;
+    },
     play: () => {
       if (!this.playingMusic) {
         return;
@@ -104,7 +111,7 @@ export default class MusicComponent {
       this.currentTime = 0;
       this.playingMusic = null;
     }
-    this.play();
+    this.vue.visualStyles.state.show && this.play();
   }
 
   private async getCurrentTime() {
@@ -149,7 +156,7 @@ export default class MusicComponent {
 
   /* 设置当前时间 */
   public seek(value: number) {
-    this.isEnded || (this.audio.currentTime = value);
+    this.isEnded || value < 0 || value >= this.duration || (this.audio.currentTime = value);
   }
 
   /* 切换静音 */
@@ -176,10 +183,6 @@ export default class MusicComponent {
   /* 快进 */
   public seekForward(seekOffset: number) {
     this.seek(Math.min(this.duration, this.currentTime + seekOffset));
-  }
-
-  public watch(prop: string, callback: (e: any) => void) {
-    this.vue.$watch(prop, callback);
   }
 
   public on(event:string, callback: (...args: any[]) => void) {

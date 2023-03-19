@@ -55,7 +55,7 @@ export default class MusicVisualCore {
     musicVisual.$watch('visualStyles.onlyShowStarPresets', this.loadPresetList.bind(this));
     musicVisual.$watch('visualStyles.interval', this.reloadTimeout.bind(this));
     musicVisual.$watch('visualStyles.lrcMode', this.drawLrcCaption.bind(this));
-    musicVisual.$watch('lrcContext.currentLrcTime', this.drawLrcCaption.bind(this));
+    musicVisual.$watch('lrcContext.currentLrcArray', this.drawLrcCaption.bind(this));
 
     this.mediaSource = this.audioContext.createMediaElementSource(bus.musicService.audio);
     this.mediaSource.connect(this.audioContext.destination);

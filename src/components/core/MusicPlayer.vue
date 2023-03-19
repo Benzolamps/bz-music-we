@@ -4,21 +4,24 @@
       <music-visual v-if="visualStyles.state.show"/>
     </header>
     <main class="music-main">
+      <!-- 歌词 -->
+      <music-lrc ref="musicLrc" v-if="showLrc"/>
+
       <!-- 歌曲信息 -->
       <div v-show="showInfo" class="music-info" :style="{color: lrcStyles.defaultColor}">
         <stroke-text tag="span" :color="lrcStyles.strokeColor" :text="music.title" style="cursor: pointer;"/>
+        <div style="padding: 10px">
+          <el-tag type="info" v-if="music.musicProvider">{{music.musicProvider.type}}</el-tag>
+          <el-tag type="info" v-if="music.musicProvider">{{music.musicProvider.size | fileSize}}</el-tag>
+          <el-tag type="info" v-if="music.musicProvider">{{musicService.duration | delta}}</el-tag>
+          <el-tag type="warning" v-if="!musicService.music.lrcProvider">无歌词</el-tag>
+        </div>
       </div>
-
-      <!-- 歌词 -->
-      <music-lrc v-if="showLrc"/>
     </main>
 
     <footer>
       <!-- 音乐播放控制 -->
-      <music-control
-        ref="musicControl"
-        :style="showMusicControl || showInfo || {height: '0px'}"
-      />
+      <music-control ref="musicControl" :style="showMusicControl || showInfo || {height: '0px'}"/>
     </footer>
   </article>
 </template>
@@ -30,14 +33,17 @@ import MusicLrc from '@/components/lrc/MusicLrc.vue';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
 import BaseComponent from '@/components/common/BaseComponent';
 import StrokeText from '@/components/common/StrokeText.vue';
-import {Ref} from 'vue-property-decorator';
+import {Ref, Watch} from 'vue-property-decorator';
 
 @Component({components: {StrokeText, MusicVisual, MusicLrc, MusicControl}})
 export default class MusicPlayer extends BaseComponent {
   private showMusicControl = true;
-  
+
   @Ref('musicControl')
   private musicControl: MusicControl;
+
+  @Ref('musicLrc')
+  private musicLrc: MusicLrc;
 
   private timeout = 0;
 
@@ -51,6 +57,17 @@ export default class MusicPlayer extends BaseComponent {
 
   private get showInfo() {
     return !this.visualStyles.state.show || this.visualStyles.state.pip;
+  }
+
+  public override async created() {
+    if (this.wallpaperProperties.fps > 0) {
+      this.visualStyles.state.show = true;
+    } else {
+      while (!this.visualStyles.state.show) {
+        this.visualStyles.state.show = !!navigator['userActivation'].hasBeenActive;
+        await this.$sleep(1);
+      }
+    }
   }
 
   public override mounted() {
@@ -74,6 +91,13 @@ export default class MusicPlayer extends BaseComponent {
     document.addEventListener('click', handler);
     document.addEventListener('mousemove', handler);
   }
+
+  @Watch('showInfo')
+  @Watch('wallpaperProperties.taskbar_position')
+  @Watch('wallpaperProperties.taskbar_length')
+  private watchShowInfo() {
+    this.musicLrc?.adjustHeight();
+  }
 }
 </script>
 
@@ -85,15 +109,15 @@ export default class MusicPlayer extends BaseComponent {
 
   .music-main {
     display: flex;
-    flex-direction: column;
-    justify-content: space-around;
+    flex-direction: column-reverse;
+    justify-content: space-between;
     height: 100%;
     padding: 20px 20px calc(80px - (1 - var(--show-info)) * 50px);
 
     box-sizing: border-box;
 
     .music-info {
-      height: 175px;
+      height: 70px;
       font-size: medium;
 
       ul {
@@ -120,14 +144,7 @@ export default class MusicPlayer extends BaseComponent {
     .music-lrc {
       font-size: 22px;
       font-weight: 700;
-
-      @for $i from 0 to 19 {
-        $height: ($i * 2 + 1) * 45px;
-        $screenHeight: $height + 350px;
-        @media (screen and min-height: $screenHeight) {
-          height: calc($height + (1 - var(--show-info)) * 270px);
-        }
-      }
+      flex: 1;
     }
   }
 
@@ -138,13 +155,6 @@ export default class MusicPlayer extends BaseComponent {
 }
 
 .music-detail-popover {
-  width: min(calc(100vw - 35px), 400px);
-  left: 50% !important;
-  transform: translateX(-50%);
-
-  .popper__arrow {
-    left: 50% !important;
-    transform: translateX(-50%);
-  }
+  max-width: min(calc(100vw - 35px), 400px);
 }
 </style>

@@ -28,8 +28,14 @@ export async function loadBasicFonts() {
   document.fonts.add(fontFace);
 }
 
+export function getFileBaseName(fileName: string) {
+  fileName = fileName.replace(/.*\//, '');
+  fileName = fileName.replace(/\.[^.]*$/, '');
+  return fileName;
+}
+
 export function sleep(timeout: number) {
-  return new Promise<void>(handler => setTimeout(handler, timeout));
+  return new Promise<void>(handler => window.setTimeout(handler, timeout));
 }
 
 export function formatFileSize(value: number) {
@@ -83,3 +89,4 @@ export async function getTextData(url: string) {
 export async function getBinaryData(url: string) {
   return await (await fetch(url)).blob();
 }
+

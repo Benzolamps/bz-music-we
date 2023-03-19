@@ -35,7 +35,7 @@
         "order": 101,
         "text": "ui_taskbar_length",
         "type": "slider",
-        "value": 40
+        "value": 48
       }
     },
     "localization" :

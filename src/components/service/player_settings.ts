@@ -4,7 +4,7 @@ import {bus} from '@/components/common/BaseComponent';
 import lrcFonts from '@/assets/fonts/lrc/index';
 import messages from '@/assets/locale/messages';
 import pfsc from '@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf';
-import {getBinaryData} from '@/utils/common_utils';
+import {getBinaryData, getFileBaseName} from '@/utils/common_utils';
 
 export const fontList: Array<{name: string, blob: Blob}> = [];
 
@@ -26,7 +26,7 @@ export const defaultVisualStyles = {
   showFps: false,
   lrcMode: 'caption' as 'scroll' | 'caption' | 'mix',
   state: {
-    show: true,
+    show: false,
     pip: false,
     canvas: false,
     video: false
@@ -36,17 +36,32 @@ export const defaultVisualStyles = {
 export default class PlayerSettings {
   public static getLrcStyles() {
     let result;
-    if (store.lrcStyles) {
-      result = store.lrcStyles as typeof defaultLrcStyles;
-      if (result.font.startsWith('custom: ')) {
-        result.font = '';
+    if (window.name === 'MusicLrcDesktop') {
+      if (window.opener && window.opener['lrcStyles']) {
+        result = window.opener['lrcStyles'];
+      } else {
+        result = {} as typeof defaultLrcStyles;
+        for (const key in defaultLrcStyles) {
+          Object.defineProperty(result, key, {
+            get: () => store.lrcStyles && store.lrcStyles[key]
+          });
+        }
+        window['lrcStyles'] = result;
       }
     } else {
-      result = JSON.parse(JSON.stringify(defaultLrcStyles));
+      if (store.lrcStyles) {
+        result = store.lrcStyles as typeof defaultLrcStyles;
+        if (result.font.startsWith('custom: ')) {
+          result.font = '';
+        }
+      } else {
+        result = JSON.parse(JSON.stringify(defaultLrcStyles));
+      }
+      window['lrcStyles'] = store.lrcStyles = result;
     }
     return result;
   }
-  
+
   public static getVisualStyles() {
     if (store.visualStyles instanceof Object) {
       const visualStyles = store.visualStyles as typeof defaultVisualStyles;
@@ -99,8 +114,9 @@ export default class PlayerSettings {
   }
 
   public static async loadCustomFont(file: File) {
-    PlayerSettings.loadFontFace(file, file.name)
-      .then(() => bus.lrcStyles.font = 'custom: ' + file.name)
+    const name = getFileBaseName(file.name);
+    PlayerSettings.loadFontFace(file, name)
+      .then(() => bus.lrcStyles.font = 'custom: ' + name)
       .catch(() => 0);
   }
 

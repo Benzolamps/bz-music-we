@@ -6,6 +6,21 @@
 </head>
 <body>
 <div id="app"></div>
+<script>
+  const wallpaperProperties = window['wallpaperProperties'] = {};
+  window['wallpaperPropertyListener'] = {
+    applyGeneralProperties(props) {
+      for (const propsKey in props) {
+        wallpaperProperties[propsKey] = props[propsKey];
+      }
+    },
+    applyUserProperties(props) {
+      for (const propsKey in props) {
+        wallpaperProperties[propsKey] = props[propsKey].value;
+      }
+    },
+  };
+</script>
 <!-- built files will be auto injected -->
 </body>
 </html>

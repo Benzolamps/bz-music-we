@@ -31,40 +31,36 @@ export default class LrcContext {
   }
 
   private async update() {
-    let flag = false;
     if (this.music != bus.musicService.music) {
       this.shownLrc = [];
       this.currentLrcTime = this.nextLrcTime = -1;
+      this.currentLrcArray = [];
       this.music = bus.musicService.music;
       const lrcContent = await this.music.lrcProvider?.text();
       this.lrcObj = new LrcObject(lrcContent);
       this.generateShownLrc();
-      flag = true;
     }
-    if (this.duration != bus.musicService.duration) {
-      this.duration = bus.musicService.duration;
-      flag = true;
-    }
-    if (this.currentTime != bus.musicService.currentTime) {
-      this.currentTime = bus.musicService.currentTime;
-      flag = true;
-    }
-    if (flag) {
-      this.generateLrcTime();
+    if (bus.musicService.duration > 0) {
+      if (this.duration != bus.musicService.duration) {
+        this.duration = bus.musicService.duration;
+      }
+      if (this.currentTime != bus.musicService.currentTime) {
+        this.currentTime = bus.musicService.currentTime;
+        this.generateLrcTime();
+      }
     }
   }
 
   private generateShownLrc() {
     this.shownLrc = [];
-    let time = -1;
+    let time = 0;
     if (this.music?.lrcProvider) {
       this.shownLrc = this.lrcObj.lrcArray;
     } else {
       if (this.music?.id) {
-        this.shownLrc.push({time: time += 1, content: `${this.music.title}`});
+        this.shownLrc.push({time, content: `${this.music.title}`});
         this.shownLrc.push({time: time += 5, content: ''});
-        this.shownLrc.push({time: time += 1, content: messages['music.no_lrc_1']});
-        this.shownLrc.push({time: time += 5, content: ''});
+        this.shownLrc.push({time: time += 2, content: messages['music.no_lrc_1']});
       }
     }
   }
@@ -78,7 +74,10 @@ export default class LrcContext {
     }
     if (this.currentLrcTime != time) {
       this.currentLrcTime = time;
-      this.nextLrcTime = this.shownLrc.map(lrc => lrc.time).find(t => t > this.currentLrcTime) ?? this.duration;
+      this.nextLrcTime = Math.min(
+        this.shownLrc.map(lrc => lrc.time).find(t => t > this.currentLrcTime) ?? this.currentLrcTime + 5,
+        this.duration
+      );
       this.currentLrcArray = this.shownLrc.filter(lrc => lrc.time == this.currentLrcTime);
     }
     if (this.currentTime < this.currentLrcTime) {

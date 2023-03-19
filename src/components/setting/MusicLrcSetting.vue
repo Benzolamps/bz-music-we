@@ -61,7 +61,7 @@ export default class MusicLrcSetting extends BaseComponent {
       PlayerSettings.loadCustomFont(f);
     }
   }
-  
+
   private resetSettings() {
     this.lrcStyles.font = defaultLrcStyles.font;
     this.lrcStyles.defaultColor = defaultLrcStyles.defaultColor;
