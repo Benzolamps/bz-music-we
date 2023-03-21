@@ -113,8 +113,7 @@
             :current-page="currentPage"
             :page-size="pageSize"
             @current-change="onCurrentChange"
-          >
-          </el-pagination>
+          />
         </footer>
       </div>
     </el-drawer>
@@ -129,27 +128,25 @@ import {MilkDropPresetDesc} from 'butterchurn';
 import BScroll from '@/components/common/BScroll.vue';
 import presetList from '@/assets/presets/index';
 import PlayerSettings, {defaultVisualStyles} from '@/components/service/player_settings';
-@Component({
-  components: {BScroll}
-})
+@Component({components: {BScroll}})
 export default class MusicVisualSetting extends BaseComponent {
-  private presetList: MilkDropPresetDesc[] = [];
-  private readonly basePresetList: MilkDropPresetDesc[] = presetList;
+  private presetList: Array<MilkDropPresetDesc> = [];
+  private readonly basePresetList: Array<MilkDropPresetDesc> = presetList;
 
   /* 页大小 */
-  private pageSize = 50;
+  private readonly pageSize = 50;
   /* 当前页 */
   private currentPage = 1;
 
-  private showPresetList = false;
+  private readonly showPresetList = false;
 
   @Ref('scroll')
-  private scroll: BScroll;
+  private readonly scroll: BScroll;
 
   public override mounted() {
     this.loadPresetList();
   }
-  
+
   private loadPresetList() {
     this.presetList = this.visualStyles.onlyShowStarPresets
       ? this.basePresetList.filter(p => this.visualStyles.starPresets.has(p.name))
@@ -164,8 +161,7 @@ export default class MusicVisualSetting extends BaseComponent {
   }
 
   private getAtPage(index: number) {
-    index += 1;
-    return Math.floor(index / this.pageSize) + Math.sign(index % this.pageSize);
+    return Math.floor((index + 1) / this.pageSize) + Math.sign((index + 1) % this.pageSize);
   }
 
   /* 换页 */
@@ -200,7 +196,7 @@ export default class MusicVisualSetting extends BaseComponent {
       PlayerSettings.starPreset(preset.name);
     }
   }
-  
+
   private resetSettings() {
     this.visualStyles.displayRatio = defaultVisualStyles.displayRatio;
     this.visualStyles.interval = defaultVisualStyles.interval;
@@ -212,7 +208,7 @@ export default class MusicVisualSetting extends BaseComponent {
 
   @Watch('visualStyles.preset')
   private watchPreset() {
-    this.locatePreset();
+    return this.locatePreset();
   }
 
   @Watch('visualStyles.onlyShowStarPresets')

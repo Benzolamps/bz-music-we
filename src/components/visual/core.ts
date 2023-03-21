@@ -1,18 +1,13 @@
 ﻿import {bus} from '@/components/common/BaseComponent';
-import butterchurn, {MilkDropPresetDesc, TimeOptions, Visualizer} from 'butterchurn';
+import butterchurn, {MilkDropPresetDesc, Visualizer} from 'butterchurn';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
 import presetList from '@/assets/presets/index';
 import wallpaperProperties from '@/utils/env';
 import messages from '@/assets/locale/messages';
 
-declare class OffscreenCanvas extends HTMLCanvasElement {
-  constructor(width: number, height: number);
-}
-
 export default class MusicVisualCore {
   private readonly audioContext: AudioContext;
   private mediaSource: MediaElementAudioSourceNode;
-  private animationFrameId = 0;
   private readonly visualizer: Visualizer;
   private readonly canvas: HTMLCanvasElement;
   private readonly canvasDraw: HTMLCanvasElement;
@@ -35,7 +30,7 @@ export default class MusicVisualCore {
     this.visualizer = butterchurn.createVisualizer(this.audioContext, this.canvas, {
       width: 0,
       height: 0,
-      pixelRatio: bus.visualStyles.displayRatio,
+      pixelRatio: bus.visualStyles.displayRatio
     });
 
     musicVisual.$watch('visualStyles.displayRatio', () => {
@@ -52,17 +47,21 @@ export default class MusicVisualCore {
       this.reloadTimeout();
     });
 
-    musicVisual.$watch('visualStyles.onlyShowStarPresets', this.loadPresetList.bind(this));
-    musicVisual.$watch('visualStyles.interval', this.reloadTimeout.bind(this));
-    musicVisual.$watch('visualStyles.lrcMode', this.drawLrcCaption.bind(this));
-    musicVisual.$watch('lrcContext.currentLrcArray', this.drawLrcCaption.bind(this));
-
     this.mediaSource = this.audioContext.createMediaElementSource(bus.musicService.audio);
     this.mediaSource.connect(this.audioContext.destination);
     this.visualizer.connectAudio(this.mediaSource);
 
-    window.requestAnimationFrame(this.drawEachFrame.bind(this));
-    window.requestAnimationFrame(this.drawLrcCaption.bind(this));
+    this.drawEachFrame = this.drawEachFrame.bind(this);
+    this.drawLrcCaption = this.drawLrcCaption.bind(this);
+    this.drawLrcCaptionInner = this.drawLrcCaptionInner.bind(this);
+
+    musicVisual.$watch('visualStyles.onlyShowStarPresets', this.loadPresetList.bind(this));
+    musicVisual.$watch('visualStyles.interval', this.reloadTimeout.bind(this));
+    musicVisual.$watch('visualStyles.lrcMode', this.drawLrcCaption);
+    musicVisual.$watch('lrcContext.currentLrcArray', this.drawLrcCaption);
+
+    bus.animationRunner.on(this.drawEachFrame);
+    bus.animationRunner.once(this.drawLrcCaption);
 
     this.loadPresetList();
     this.loadPreset();
@@ -80,7 +79,7 @@ export default class MusicVisualCore {
     this.randomPresetList = Object.freeze(presetList);
   }
 
-  private async loadPreset() {
+  private loadPreset() {
     const name = bus.visualStyles.preset;
     const preset = this.presetList.find(d => d.name === name) ?? this.presetList[0];
     if (preset) {
@@ -112,15 +111,13 @@ export default class MusicVisualCore {
 
   /* region 绘制 */
   private drawEachFrame() {
-    this.animationFrameId = window.requestAnimationFrame(this.drawEachFrame.bind(this));
-
     if (this.limitFps()) {
       return;
     }
 
     const [width, height] = this.getDesireCanvasSize();
 
-    if (this.canvas.width != width || this.canvas.height != height) {
+    if (this.canvas.width !== width || this.canvas.height !== height) {
       this.canvas.width = width;
       this.canvas.height = height;
       this.visualizer.setRendererSize(
@@ -133,10 +130,10 @@ export default class MusicVisualCore {
     const context2d = this.canvas.getContext('2d');
     context2d.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    if (bus.visualStyles.lrcMode !== 'scroll') {
-      this.visualizer.render();
-    } else {
+    if (bus.visualStyles.lrcMode === 'scroll') {
       this.visualizer.renderer.calcTimeAndFPS();
+    } else {
+      this.visualizer.render();
     }
     if (bus.visualStyles.lrcMode !== 'caption') {
       this.drawLrcScroll();
@@ -169,7 +166,7 @@ export default class MusicVisualCore {
     }
     bus.visualStyles.preset = list[index].name;
   }
-  
+
   public prevPreset() {
     this.loadNearPreset('prev');
     this.reloadTimeout();
@@ -197,10 +194,10 @@ export default class MusicVisualCore {
     if (bus.visualStyles.lrcMode === 'scroll') {
       return;
     }
-    window.requestAnimationFrame(this.drawLrcCaptionInner.bind(this));
+    bus.animationRunner.once(this.drawLrcCaptionInner);
   }
 
-  private async drawLrcCaptionInner(): Promise<TimeOptions> {
+  private drawLrcCaptionInner() {
     const lines = bus.lrcContext.currentLrcArray.filter(lrc => lrc.content).map(lrc => lrc.content);
     if (lines.length === 0) {
       this.visualizer.launchSongTitleAnim({buffer: null, progress: 0});
@@ -258,7 +255,7 @@ export default class MusicVisualCore {
     /* endregion */
 
     /* region 绘制各行 */
-    const totalHeight = (margin * (lines.length - 1)) + drawLines.map(line => line.y).reduce((a, b) => a + b, 0);
+    const totalHeight = margin * (lines.length - 1) + drawLines.map(line => line.y).reduce((a, b) => a + b, 0);
     let startY = (height - totalHeight) / 2;
     for (const line of drawLines) {
       context2d.font = `${line.y}px ${fontFamily}`;
@@ -305,8 +302,7 @@ export default class MusicVisualCore {
     }
     const fontSize = 20 * window.devicePixelRatio;
     const margin = 10 * window.devicePixelRatio;
-    const width = this.canvas.width;
-    const height = this.canvas.height;
+    const {width, height} = this.canvas;
     const context2d = this.canvas.getContext('2d');
     context2d.textBaseline = 'top';
     context2d.font = `${fontSize}px LrcFont`;
@@ -348,9 +344,9 @@ export default class MusicVisualCore {
   }
 
   public close() {
+    bus.animationRunner.off(this.drawEachFrame);
     bus.visualStyles.state.video = false;
     bus.visualStyles.state.canvas = false;
-    window.cancelAnimationFrame(this.animationFrameId);
     if (this.mediaSource) {
       this.visualizer.disconnectAudio(this.mediaSource);
       this.mediaSource.disconnect();

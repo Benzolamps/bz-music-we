@@ -16,15 +16,14 @@ import Hammer from 'hammerjs';
 
 @Component
 export default class MusicVisual extends BaseComponent {
-
   @Ref('canvas')
-  private canvas: HTMLCanvasElement;
+  private readonly canvas: HTMLCanvasElement;
 
   @Ref('video')
-  private video: HTMLVideoElement;
+  private readonly video: HTMLVideoElement;
 
   @Ref('shade')
-  private shade: HTMLDivElement;
+  private readonly shade: HTMLDivElement;
 
   private hammer = new Hammer.Manager(document.createElement('div'), {});
 
@@ -119,12 +118,12 @@ export default class MusicVisual extends BaseComponent {
   private watchPip() {
     this.handlePip();
   }
-  
+
   @Watch('visualStyles.lrcMode')
   private changeHammer() {
     this.hammer.set({enable: this.visualStyles.lrcMode !== 'scroll'});
   }
-  
+
   /* endregion */
 }
 </script>

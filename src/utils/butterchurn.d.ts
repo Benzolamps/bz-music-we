@@ -1,14 +1,17 @@
 declare module 'butterchurn' {
-  export interface MilkDropPreset {}
+  export interface MilkDropPreset {
+    version?: string;
+  }
+
   export interface MilkDropPresetDesc {
     name: string;
     preset: MilkDropPreset;
   }
 
-  export type TimeOptions = {
+  export interface TimeOptions {
     buffer: ArrayBuffer;
     progress: number;
-  };
+  }
 
   export interface Visualizer {
     loadPreset(preset: MilkDropPreset, blendTime = 0);
@@ -18,16 +21,16 @@ declare module 'butterchurn' {
     connectAudio(audioNode: AudioNode);
     disconnectAudio(audioNode: AudioNode);
     renderer: {
-      fps: number,
+      fps: number;
       calcTimeAndFPS: () => void;
     };
   }
 
   export default class {
     declare static createVisualizer(audioContext: AudioContext, canvas: HTMLCanvasElement, opts: {
-      width: number,
-      height: number,
-      pixelRatio: number
+      width: number;
+      height: number;
+      pixelRatio: number;
     }): Visualizer;
   }
 }

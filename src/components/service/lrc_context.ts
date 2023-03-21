@@ -17,11 +17,11 @@ export default class LrcContext {
 
   public nextLrcTime = -1;
 
-  public currentLrcArray: LrcTag[] = [];
+  public currentLrcArray: Array<LrcTag> = [];
 
   public progress = 0;
 
-  public shownLrc: LrcTag[] = [];
+  public shownLrc: Array<LrcTag> = [];
 
   public constructor() {
     this.update();
@@ -31,7 +31,7 @@ export default class LrcContext {
   }
 
   private async update() {
-    if (this.music != bus.musicService.music) {
+    if (this.music !== bus.musicService.music) {
       this.shownLrc = [];
       this.currentLrcTime = this.nextLrcTime = -1;
       this.currentLrcArray = [];
@@ -41,10 +41,10 @@ export default class LrcContext {
       this.generateShownLrc();
     }
     if (bus.musicService.duration > 0) {
-      if (this.duration != bus.musicService.duration) {
+      if (this.duration !== bus.musicService.duration) {
         this.duration = bus.musicService.duration;
       }
-      if (this.currentTime != bus.musicService.currentTime) {
+      if (this.currentTime !== bus.musicService.currentTime) {
         this.currentTime = bus.musicService.currentTime;
         this.generateLrcTime();
       }
@@ -72,13 +72,13 @@ export default class LrcContext {
         time = lrc.time;
       }
     }
-    if (this.currentLrcTime != time) {
+    if (this.currentLrcTime !== time) {
       this.currentLrcTime = time;
       this.nextLrcTime = Math.min(
         this.shownLrc.map(lrc => lrc.time).find(t => t > this.currentLrcTime) ?? this.currentLrcTime + 5,
         this.duration
       );
-      this.currentLrcArray = this.shownLrc.filter(lrc => lrc.time == this.currentLrcTime);
+      this.currentLrcArray = this.shownLrc.filter(lrc => lrc.time === this.currentLrcTime);
     }
     if (this.currentTime < this.currentLrcTime) {
       this.progress = 0;

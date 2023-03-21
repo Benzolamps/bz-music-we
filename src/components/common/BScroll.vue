@@ -19,7 +19,7 @@ export default class BScroll extends BaseComponent {
   public scroll: BetterScroll;
 
   @Prop()
-  private wrapper: HTMLElement;
+  private readonly wrapper: HTMLElement;
 
   @Prop({default: Object})
   protected options: Options;

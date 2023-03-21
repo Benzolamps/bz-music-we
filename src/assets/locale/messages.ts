@@ -3,8 +3,8 @@
 export type LanguageKeys = 'en-us' | 'zh-chs' | 'zh-cht';
 
 export interface Message extends Readonly<unknown> {
-  'colon': string,
-  'preview': string,
+  'colon': string;
+  'preview': string;
   'music.no_music': string;
   'music.no_lrc': string;
   'music.no_lrc_1': string;
@@ -224,7 +224,7 @@ const languages: LanguageRecord = {
     'visual.lrc_mode.caption': '標題',
     'visual.lrc_mode.mix': '組合',
     'visual.pip': '畫中畫模式',
-    'visual.fps': '顯示FPS',
+    'visual.fps': '顯示FPS'
   }
 };
 
@@ -234,4 +234,4 @@ export default new Proxy(languages['en-us'], {
     const messages = (languages[lang] ?? target) as Message;
     return messages[p] || p;
   }
-}) as Message;
+});

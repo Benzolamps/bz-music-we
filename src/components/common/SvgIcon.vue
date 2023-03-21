@@ -5,14 +5,13 @@
 </template>
 
 <script lang="ts">
-import BaseComponent from '@/components/common/BaseComponent';
-import {Prop} from 'vue-property-decorator';
+import {Prop, Vue} from 'vue-property-decorator';
 import Component from 'vue-class-component';
 
 @Component({inheritAttrs: false})
-export default class SvgIcon extends BaseComponent {
+export default class SvgIcon extends Vue {
   @Prop({required: true})
-  private iconName: string;
+  private readonly iconName: string;
 }
 </script>
 

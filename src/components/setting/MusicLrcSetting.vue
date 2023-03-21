@@ -46,14 +46,14 @@ import {Ref} from 'vue-property-decorator';
 @Component
 export default class MusicLrcSetting extends BaseComponent {
   private readonly fonts = fontList;
-  
+
   @Ref('file')
   private readonly file: HTMLInputElement;
-  
+
   private chooseCustomFont() {
     this.file.dispatchEvent(new MouseEvent('click'));
   }
-  
+
   private setCustomFont() {
     const f = this.file.files[0];
     this.file.value = '';

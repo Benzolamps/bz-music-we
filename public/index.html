@@ -7,16 +7,22 @@
 <body>
 <div id="app"></div>
 <script>
-  const wallpaperProperties = window['wallpaperProperties'] = {};
-  window['wallpaperPropertyListener'] = {
+  window.wallpaperProperties = {
+    fps: 0,
+    language: '',
+    taskbar_position: 'bottom',
+    taskbar_length: 0
+  };
+
+  window.wallpaperPropertyListener = {
     applyGeneralProperties(props) {
       for (const propsKey in props) {
-        wallpaperProperties[propsKey] = props[propsKey];
+        window.wallpaperProperties[propsKey] = props[propsKey];
       }
     },
     applyUserProperties(props) {
       for (const propsKey in props) {
-        wallpaperProperties[propsKey] = props[propsKey].value;
+        window.wallpaperProperties[propsKey] = props[propsKey].value;
       }
     },
   };

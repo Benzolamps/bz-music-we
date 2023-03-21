@@ -37,12 +37,11 @@ import StrokeText from '@/components/common/StrokeText.vue';
 
 @Component({components: {StrokeText, BScroll}})
 export default class MusicLrc extends BaseComponent {
-
   @Prop({default: false})
-  private lockScroll: boolean;
+  private readonly lockScroll: boolean;
 
   @Ref('scroll')
-  private scroll: BScroll;
+  private readonly scroll: BScroll;
 
   public override mounted() {
     this.refreshScroll();
@@ -53,7 +52,7 @@ export default class MusicLrc extends BaseComponent {
   public override beforeDestroy() {
     window.removeEventListener('resize', this.adjustHeight);
   }
-  
+
   public async adjustHeight() {
     const element = this.$el as HTMLElement;
     if (element.style.maxHeight === '100%') {
@@ -96,7 +95,7 @@ export default class MusicLrc extends BaseComponent {
   }
 
   private getLrcClass(lrc: LrcTag) {
-    const result : string[] = [];
+    const result : Array<string> = [];
     if (lrc?.time === this.lrcContext.currentLrcTime) {
       result.push('music-lrc-item-current');
     } else {
@@ -105,7 +104,7 @@ export default class MusicLrc extends BaseComponent {
     result.push('lrc-gradient', 'lrc-font');
     return result;
   }
-  
+
   private async refreshScroll() {
     await this.$nextTick();
     this.scroll?.refresh();
@@ -123,25 +122,22 @@ export default class MusicLrc extends BaseComponent {
     return this.scroll.$el.querySelector('.music-lrc-item-normal');
   }
 
-  private t = 0;
+  private updateTime() {
+    const lrcContainer = this.$refs.lrcContainer as HTMLUListElement;
+    lrcContainer?.style.setProperty('--lrc-progress-past', this.lrcContext.progress * 100 + '%');
+    lrcContainer?.style.setProperty('--lrc-progress-future', this.lrcContext.progress * 200 + '%');
+  }
+
   @Watch('musicService.currentTime')
-  private async watchCurrentTime() {
-    window.requestAnimationFrame(t => {
-      if (t == this.t) {
-        return;
-      }
-      this.t = t;
-      const lrcContainer = this.$refs.lrcContainer as HTMLUListElement;
-      lrcContainer?.style.setProperty('--lrc-progress-past', this.lrcContext.progress * 100 + '%');
-      lrcContainer?.style.setProperty('--lrc-progress-future', this.lrcContext.progress * 200 + '%');
-    });
+  private watchCurrentTime() {
+    this.animationRunner.once(this.updateTime);
   }
 
   @Watch('lrcContext.shownLrc.length')
   @Watch('visualStyles.state.show')
   @Watch('lrcContext.currentLrcTime')
   private watchShownLrc() {
-    this.refreshScroll();
+    return this.refreshScroll();
   }
 }
 </script>

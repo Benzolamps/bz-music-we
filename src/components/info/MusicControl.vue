@@ -11,8 +11,8 @@
 
     <!-- 时间 -->
     <div class="music-control-time">
-      <span ref="time" class="code-font">00:00.00</span>
-      <span class="code-font">{{ musicService.duration | delta }}</span>
+      <span ref="currentTime" class="code-font">{{0 | delta}}</span>
+      <span ref="duration" class="code-font">{{0 | delta}}</span>
     </div>
 
     <el-badge :value="musicStorage.musicList.length" type="success" class="music-count-badge"/>
@@ -65,12 +65,12 @@
           :icon-name="`music_${musicService.muted ? 'muted' : 'volume'}`"
           v-popover:popoverVolume
         />
- 
+
         <!-- 倍速 -->
         <span style="line-height: 50px; padding: 0; font-size: 14px;" v-popover:popoverPitch>
           {{ musicService.pitch }}x
         </span>
-        
+
         <div style="flex: 1; display: flex; justify-content: flex-end;">
           <el-tag type="info" v-if="musicService.music.musicProvider">{{musicService.music.musicProvider.type}}</el-tag>
           <el-tag type="info" v-if="musicService.music.musicProvider">{{musicService.music.musicProvider.size | fileSize}}</el-tag>
@@ -173,16 +173,20 @@ import BaseComponent from '@/components/common/BaseComponent';
 import {Watch} from 'vue-property-decorator';
 import {ElSlider} from 'element-ui/types/slider';
 import Component from 'vue-class-component';
-import assert from 'assert';
 import MusicCarousel from '@/components/info/MusicCarousel.vue';
-import {formatDelta, formatFileSize} from '@/utils/common_utils';
+import {formatDelta} from '@/utils/common_utils';
 import Playlist from '@/components/core/Playlist.vue';
 import MusicLrcSetting from '@/components/setting/MusicLrcSetting.vue';
 import MusicVisualSetting from '@/components/setting/MusicVisualSetting.vue';
-   
+
 @Component({
-  methods: {formatFileSize},
-  components: {MusicVisualSetting, MusicLrcSetting, Playlist, MusicCarousel}})
+  components: {
+    MusicVisualSetting,
+    MusicLrcSetting,
+    Playlist,
+    MusicCarousel
+  }
+})
 export default class MusicControl extends BaseComponent {
   private readonly modes = modes;
   /* 进度条时间 */
@@ -190,7 +194,7 @@ export default class MusicControl extends BaseComponent {
   /* 是否正在调节进度条 */
   private isSliding = false;
   /* 是否显示更多 */
-  private showMore = false;
+  private readonly showMore = false;
 
   private showPlaylist = false;
 
@@ -204,7 +208,7 @@ export default class MusicControl extends BaseComponent {
     const clickHandler = () => {
       if (!this.musicService.isEnded) {
         this.$toast(formatDelta(this.sliderTime));
-        return this.musicService.seek(this.sliderTime);
+        this.musicService.seek(this.sliderTime);
       }
     };
     const mouseDownHandler = () => {
@@ -234,6 +238,20 @@ export default class MusicControl extends BaseComponent {
     this.showPlaylist = true;
   }
 
+  private updateTime() {
+    const currentTimeElement = this.$refs.currentTime as HTMLElement;
+    const durationElement = this.$refs.duration as HTMLElement;
+    currentTimeElement.innerText = formatDelta(this.musicService.currentTime);
+    durationElement.innerText = formatDelta(this.musicService.duration);
+    if (!this.isSliding) {
+      const slider = this.$refs.slider as ElSlider;
+      let element: HTMLElement = slider.$el.querySelector('.el-slider__bar');
+      element.style.width = this.musicService.currentTime / this.musicService.duration * 100 + '%';
+      element = slider.$el.querySelector('.el-slider__button-wrapper');
+      element.style.left = this.musicService.currentTime / this.musicService.duration * 100 + '%';
+    }
+  }
+
   @Watch('musicService.mode.name')
   private watchMode(value: string, oldValue: string) {
     oldValue && this.$toast(value);
@@ -254,23 +272,9 @@ export default class MusicControl extends BaseComponent {
     oldValue && this.$toast(this.messages['music.volume'] + this.messages.colon + Math.floor(value * 100));
   }
 
-  private t = 0;
   @Watch('musicService.currentTime')
   private watchCurrentTime() {
-    window.requestAnimationFrame((t) => {
-      if (t == this.t) {
-        return;
-      }
-      this.t = t;
-      this.$refs.time['innerText'] = formatDelta(this.musicService.currentTime);
-      if (!this.isSliding) {
-        const slider = this.$refs.slider as ElSlider;
-        let element = slider.$el.querySelector('.el-slider__bar') as HTMLElement;
-        element.style.width = (this.musicService.currentTime / this.musicService.duration) * 100 + '%';
-        element = slider.$el.querySelector('.el-slider__button-wrapper') as HTMLElement;
-        element.style.left = (this.musicService.currentTime / this.musicService.duration) * 100 + '%';
-      }
-    });
+    this.animationRunner.once(this.updateTime);
   }
 }
 </script>

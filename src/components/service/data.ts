@@ -4,7 +4,7 @@ import {getBinaryData} from '@/utils/common_utils';
 
 export default class MusicStorage {
   musicList: ReadonlyArray<Music> = [];
-  onReload = new Set<(...args: unknown[]) => void>();
+  onReload = new Set<(...args: Array<unknown>) => void>();
   lrcBlobs = new Map<string, Blob>();
   audioBlobs = new Map<string, Blob>();
 
@@ -16,36 +16,36 @@ export default class MusicStorage {
     for (const audio of audios) {
       this.audioBlobs.set(audio.name, await getBinaryData(audio.url));
     }
-    await this.reload();
+    this.reload();
   }
 
-  public async reload() {
-    const musicList: Music[] = [];
+  public reload() {
+    const musicList: Array<Music> = [];
     for (const [name, blob] of this.audioBlobs) {
       musicList.push({
         id: name,
         title: name,
         musicProvider: blob,
-        lrcProvider: this.lrcBlobs.get(name),
+        lrcProvider: this.lrcBlobs.get(name)
       });
     }
     this.musicList = Object.freeze(musicList);
     this.onReload.forEach(h => h());
   }
-  
-  public async remove(key: string) {
+
+  public remove(key: string) {
     this.audioBlobs.delete(key);
     this.lrcBlobs.delete(key);
-    await this.reload();
-  }
-  
-  public async clear() {
-    this.audioBlobs.clear();
-    this.lrcBlobs.clear();
-    await this.reload();
+    this.reload();
   }
 
-  public async add(entries: [string, Blob][]) {
+  public clear() {
+    this.audioBlobs.clear();
+    this.lrcBlobs.clear();
+    this.reload();
+  }
+
+  public add(entries: Array<[string, Blob]>) {
     for (const [name, blob] of entries) {
       if (blob.type.startsWith('audio/')) {
         this.audioBlobs.set(name, blob);
@@ -53,6 +53,6 @@ export default class MusicStorage {
         this.lrcBlobs.set(name, blob);
       }
     }
-    await this.reload();
+    this.reload();
   }
 }

@@ -13,7 +13,6 @@ import {Watch} from 'vue-property-decorator';
 
 @Component
 export default class MusicCarousel extends BaseComponent {
-  
   private delta = 0;
 
   public override mounted() {
@@ -24,7 +23,7 @@ export default class MusicCarousel extends BaseComponent {
   public override beforeDestroy() {
     window.removeEventListener('resize', this.calcDelta);
   }
-  
+
   private calcDelta() {
     const ul = this.$el.querySelector('ul');
     const li = this.$el.querySelector('li');
@@ -32,7 +31,7 @@ export default class MusicCarousel extends BaseComponent {
   }
 
   @Watch('musicService.music.title')
-  private async watchMusic() {
+  private watchMusic() {
     this.$nextTick(this.calcDelta);
   }
 }

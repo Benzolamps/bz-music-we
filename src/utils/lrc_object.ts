@@ -6,18 +6,18 @@ const metaReg = /\[(ti|ar|al|by):[^\]]*]/g;
 const timeReg = /\[[0-9][0-9]:[0-9][0-9].?[0-9]*]/g;
 
 export interface LrcTag {
-  time: number,
-  content: string
+  time: number;
+  content: string;
 }
 export interface MetaTag {
-  key: string,
-  value: string
+  key: string;
+  value: string;
 }
 
 export default class LrcObject {
-  _metaArray: MetaTag[] = [];
-  _lrcArray: LrcTag[] = [];
-  _dirtyLines: string[] = [];
+  _metaArray: Array<MetaTag> = [];
+  _lrcArray: Array<LrcTag> = [];
+  _dirtyLines: Array<string> = [];
   content = '';
 
   public get dirtyLines() {
@@ -68,7 +68,7 @@ export default class LrcObject {
     this._metaArray = this._metaArray.sort((a, b) => metaReg.toString().indexOf(a.key) - metaReg.toString().indexOf(b.key));
   }
 
-  public evalMetaTag(lrc: string): MetaTag[] | false {
+  public evalMetaTag(lrc: string): Array<MetaTag> | false {
     const metaArr = lrc.match(metaReg);
     if (metaArr) {
       return metaArr.map(m => {
@@ -79,7 +79,7 @@ export default class LrcObject {
     return false;
   }
 
-  public evalTimeTag(lrc: string): LrcTag[] | false {
+  public evalTimeTag(lrc: string): Array<LrcTag> | false {
     const timeArr = lrc.match(timeReg);
     const content = lrc.replaceAll(timeReg, '').trim();
     if (timeArr) {

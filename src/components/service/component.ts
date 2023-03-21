@@ -27,7 +27,7 @@ export default class MusicComponent {
 
   protected vue: BaseComponent;
 
-  private listeners: Partial<Record<keyof HTMLMediaElementEventMap, () => void>> = {
+  private readonly listeners: Partial<Record<keyof HTMLMediaElementEventMap, () => void>> = {
     canplaythrough: () => {
       if (!this.playingMusic) {
         return;
@@ -84,7 +84,7 @@ export default class MusicComponent {
     this.vue = new BaseComponent({data: this});
     this.getCurrentTime();
   }
-  
+
   public createAudioElement() {
     this.audio = document.createElement('audio');
     this.audio.style.display = 'none';
@@ -95,7 +95,7 @@ export default class MusicComponent {
   }
 
   protected setMusic(music: Music) {
-    if (this.playingMusic) {       
+    if (this.playingMusic) {
       if (this.playingMusic.objUrl) {
         URL.revokeObjectURL(this.playingMusic.objUrl);
         delete this.playingMusic.objUrl;
@@ -103,6 +103,7 @@ export default class MusicComponent {
     }
     if (music?.id) {
       this.audio.src = music.objUrl || defaultSrc;
+      this.audio.preservesPitch = false;
       this.currentTime = 0;
       this.playingMusic = music;
     } else {
@@ -185,7 +186,7 @@ export default class MusicComponent {
     this.seek(Math.min(this.duration, this.currentTime + seekOffset));
   }
 
-  public on(event:string, callback: (...args: any[]) => void) {
+  public on(event:string, callback: (...args: Array<any>) => void) {
     this.vue.$on(event, callback);
     this.vue.$once('hook:beforeDestroy', () => this.vue.$off(event, callback));
   }

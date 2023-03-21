@@ -37,16 +37,18 @@ export default class PlayerSettings {
   public static getLrcStyles() {
     let result;
     if (window.name === 'MusicLrcDesktop') {
-      if (window.opener && window.opener['lrcStyles']) {
-        result = window.opener['lrcStyles'];
+      if (window.opener && window.opener.lrcStyles) {
+        result = window.opener.lrcStyles;
       } else {
         result = {} as typeof defaultLrcStyles;
         for (const key in defaultLrcStyles) {
-          Object.defineProperty(result, key, {
-            get: () => store.lrcStyles && store.lrcStyles[key]
-          });
+          Object.defineProperty(
+            result,
+            key,
+            {get: () => store.lrcStyles && store.lrcStyles[key]}
+          );
         }
-        window['lrcStyles'] = result;
+        window.lrcStyles = result;
       }
     } else {
       if (store.lrcStyles) {
@@ -57,7 +59,7 @@ export default class PlayerSettings {
       } else {
         result = JSON.parse(JSON.stringify(defaultLrcStyles));
       }
-      window['lrcStyles'] = store.lrcStyles = result;
+      window.lrcStyles = store.lrcStyles = result;
     }
     return result;
   }
@@ -66,7 +68,7 @@ export default class PlayerSettings {
     if (store.visualStyles instanceof Object) {
       const visualStyles = store.visualStyles as typeof defaultVisualStyles;
       visualStyles.starPresets = new Set(visualStyles.starPresets ?? []);
-      return {...(visualStyles), state: defaultVisualStyles.state} as typeof defaultVisualStyles;
+      return {...visualStyles, state: defaultVisualStyles.state} as typeof defaultVisualStyles;
     } else {
       return JSON.parse(JSON.stringify(defaultVisualStyles));
     }
@@ -93,7 +95,10 @@ export default class PlayerSettings {
     }
 
     let error = false;
-    const callback = async (value?: string, oldValue?: string) => {
+    bus.$watch('lrcStyles.font', callback);
+    await callback(bus.lrcStyles.font);
+
+    async function callback(value?: string, oldValue?: string) {
       if (bus.lrcStyles.font.startsWith('custom: ')) {
         return;
       }
@@ -101,19 +106,17 @@ export default class PlayerSettings {
         error = false;
         return;
       }
-      const font = fontList.find(f => f.name == value) ?? fontList[0];
+      const font = fontList.find(f => f.name === value) ?? fontList[0];
       try {
         await PlayerSettings.loadFontFace(font.blob, value);
       } catch {
         error = true;
         bus.lrcStyles.font = oldValue;
       }
-    };
-    bus.$watch('lrcStyles.font', callback);
-    await callback(bus.lrcStyles.font);
+    }
   }
 
-  public static async loadCustomFont(file: File) {
+  public static loadCustomFont(file: File) {
     const name = getFileBaseName(file.name);
     PlayerSettings.loadFontFace(file, name)
       .then(() => bus.lrcStyles.font = 'custom: ' + name)

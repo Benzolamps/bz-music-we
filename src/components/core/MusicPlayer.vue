@@ -40,10 +40,10 @@ export default class MusicPlayer extends BaseComponent {
   private showMusicControl = true;
 
   @Ref('musicControl')
-  private musicControl: MusicControl;
+  private readonly musicControl: MusicControl;
 
   @Ref('musicLrc')
-  private musicLrc: MusicLrc;
+  private readonly musicLrc: MusicLrc;
 
   private timeout = 0;
 
@@ -52,7 +52,7 @@ export default class MusicPlayer extends BaseComponent {
   }
 
   private get showLrc() {
-    return !this.visualStyles.state.show || this.visualStyles.lrcMode != 'caption' || this.visualStyles.state.pip;
+    return !this.visualStyles.state.show || this.visualStyles.lrcMode !== 'caption' || this.visualStyles.state.pip;
   }
 
   private get showInfo() {
@@ -64,7 +64,7 @@ export default class MusicPlayer extends BaseComponent {
       this.visualStyles.state.show = true;
     } else {
       while (!this.visualStyles.state.show) {
-        this.visualStyles.state.show = !!navigator['userActivation'].hasBeenActive;
+        this.visualStyles.state.show = !!navigator.userActivation.hasBeenActive;
         await this.$sleep(1);
       }
     }
@@ -112,7 +112,7 @@ export default class MusicPlayer extends BaseComponent {
     flex-direction: column-reverse;
     justify-content: space-between;
     height: 100%;
-    padding: 20px 20px calc(80px - (1 - var(--show-info)) * 50px);
+    padding: 20px 20px calc(80px - (1 - var(--show-info)) * 50px + var(--taskbar-bottom));
 
     box-sizing: border-box;
 

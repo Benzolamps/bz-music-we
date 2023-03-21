@@ -2,8 +2,7 @@
   <component class="stroke-text" :is="tag" v-text="text" :style="{
     '--stroke-color': color,
     '--stroke-text': JSON.stringify(text)
-  }" v-on="$listeners">
-  </component>
+  }" v-on="$listeners"/>
 </template>
 
 <script lang="ts">
@@ -14,13 +13,13 @@ import {Prop} from 'vue-property-decorator';
 @Component
 export default class StrokeText extends BaseComponent {
   @Prop()
-  private text: string;
+  private readonly text: string;
 
   @Prop()
-  private tag: string;
+  private readonly tag: string;
 
   @Prop()
-  private color: string;
+  private readonly color: string;
 }
 </script>
 

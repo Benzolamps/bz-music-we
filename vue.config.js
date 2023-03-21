@@ -7,7 +7,7 @@ function resolve(...dir) {
   return join(process.cwd(), ...dir);
 }
 
-const { defineConfig } = require('@vue/cli-service');
+const {defineConfig} = require('@vue/cli-service');
 module.exports = defineConfig({
   transpileDependencies: true,
   productionSourceMap: false,
@@ -15,7 +15,7 @@ module.exports = defineConfig({
   devServer: {
     host: '0.0.0.0',
     port: 9826,
-    allowedHosts: 'all',
+    allowedHosts: 'all'
   },
   pages: {
     index: {
@@ -24,7 +24,9 @@ module.exports = defineConfig({
     }
   },
   chainWebpack(config) {
-    config.module.rule('svg').exclude.add(resolve('src/assets/icons/svg'))
+    config.module
+      .rule('svg')
+      .exclude.add(resolve('src/assets/icons/svg'))
       .end();
     config.module
       .rule('icons')
@@ -33,9 +35,7 @@ module.exports = defineConfig({
       .end()
       .use('svg-sprite-loader')
       .loader('svg-sprite-loader')
-      .options({
-        symbolId: 'icon-[name]'
-      })
+      .options({symbolId: 'icon-[name]'})
       .end();
 
     config.module
@@ -49,16 +49,16 @@ module.exports = defineConfig({
       .rule('assemblyscript')
       .test(/\.asc\.ts$/)
       .use('assemblyscript-loader')
-      .loader(resolve("butterchurn/loaders/assemblyscript.js"))
+      .loader(resolve('butterchurn/loaders/assemblyscript.js'))
       .end();
 
     config.plugin('node-polyfill-plugin').use(NodePolyfillPlugin);
-    
+
     config.resolve.alias.set('butterchurn', resolve('butterchurn'));
 
     config.resolve.alias.set('butterchurn-presets', [
       resolve('src/assets/presets'),
-      resolve('node_modules/butterchurn-presets/presets/converted'),
+      resolve('node_modules/butterchurn-presets/presets/converted')
     ]);
 
     config.optimization.splitChunks({

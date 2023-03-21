@@ -47,8 +47,7 @@
           :current-page="currentPage"
           :page-size="pageSize"
           @current-change="onCurrentChange"
-        >
-        </el-pagination>
+        />
         <input type="file" ref="file" multiple accept="audio/*,.lrc" v-show="false" @change="onFileChange"/>
         <el-dropdown trigger="click" @command="cmd => cmd()">
           <el-button type="text"  size="medium" icon="el-icon-more" style="color: #409EFF; font-size: 20px; margin-right: 10px;"/>
@@ -79,18 +78,18 @@ import {getFileBaseName} from '@/utils/common_utils';
 @Component({components: {BScroll}})
 export default class Playlist extends BaseComponent {
   /* 页大小 */
-  private pageSize = 50;
+  private readonly pageSize = 50;
   /* 当前页 */
   private currentPage = 1;
-  
+
   @Ref('file')
-  private file: HTMLInputElement;
+  private readonly file: HTMLInputElement;
 
   @Prop({default: false})
-  private show: boolean;
+  private readonly show: boolean;
 
   @Ref('scroll')
-  private scroll: BScroll;
+  private readonly scroll: BScroll;
 
   private get musicList() {
     return this.musicStorage.musicList;
@@ -107,38 +106,36 @@ export default class Playlist extends BaseComponent {
   }
 
   public override mounted() {
-    this.musicStorage.onReload.add(() => {
-      this.onCurrentChange(this.currentPage);
-    });
+    this.musicStorage.onReload.add(() => this.onCurrentChange(this.currentPage));
   }
-  
+
   private async removeMusic(music: Music) {
     try {
       await this.$confirm(
         this.messages['music.delete'](music.title),
-        this.messages['music.warning'], 
+        this.messages['music.warning'],
         {
           confirmButtonText: this.messages['music.confirm'],
           cancelButtonText: this.messages['music.cancel'],
           type: 'warning',
           center: true,
-          closeOnClickModal: false,
+          closeOnClickModal: false
         }
       );
-      await this.musicStorage.remove(music.id);
+      this.musicStorage.remove(music.id);
       if (music === this.music) {
-        await this.musicService.stop();
+        this.musicService.stop();
       }
     } catch {
-      return;
+      // cancelled
     }
   }
-  
+
   private chooseFile(webkitDirectory: boolean) {
     this.file.webkitdirectory = webkitDirectory;
     this.file.dispatchEvent(new MouseEvent('click'));
   }
-  
+
   private async onFileChange() {
     let files = Array.from(this.file.files);
     this.file.value = '';
@@ -163,24 +160,23 @@ export default class Playlist extends BaseComponent {
         }
       );
     } catch (action) {
-      if (action == 'cancel') {
-        await this.musicStorage.clear();
+      if (action === 'cancel') {
+        this.musicStorage.clear();
       } else {
         this.$message({type: 'warning', message: this.messages['music.cancel_import']});
         return;
       }
     }
     const entries = files.map(f => [getFileBaseName(f.name), f] as [string, Blob]);
-    await this.musicStorage.add(entries);
+    this.musicStorage.add(entries);
     this.$message({type: 'success', message: this.messages['music.import_finish'](audioCount, lrcCount)});
-    if (!this.musicList.find(m => m.id == this.music.id)) {
-      await this.musicService.stop();
+    if (!this.musicList.find(m => m.id === this.music.id)) {
+      this.musicService.stop();
     }
   }
 
   private getAtPage(index: number) {
-    index += 1;
-    return Math.floor(index / this.pageSize) + Math.sign(index % this.pageSize);
+    return Math.floor((index + 1) / this.pageSize) + Math.sign((index + 1) % this.pageSize);
   }
 
   /* 换页 */
@@ -206,7 +202,7 @@ export default class Playlist extends BaseComponent {
       await this.onCurrentChange(this.getAtPage(index));
     }
   }
-  
+
   private onCellClick(music: Music, column: {property: string}) {
     if (column.property) {
       if (music.id !== this.music.id) {
@@ -219,7 +215,7 @@ export default class Playlist extends BaseComponent {
 
   @Watch('music')
   private watchMusic() {
-    this.locateMusic();
+    return this.locateMusic();
   }
 }
 </script>

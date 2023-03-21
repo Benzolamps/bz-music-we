@@ -2,7 +2,7 @@
   <div id="app" :class="{preview: !webgl2Supported}">
     <toast v-if="webgl2Supported"/>
     <music-player v-if="webgl2Supported"/>
-    <span v-if="!webgl2Supported">{{messages.preview}}</span>
+    <span v-if="!webgl2Supported">{{ messages.preview }}</span>
   </div>
 </template>
 
@@ -26,22 +26,22 @@ export default class App extends BaseComponent {
     this.webgl2Supported = !!canvas.getContext('webgl2');
     if (this.webgl2Supported) {
       this.registerWindowAttrs();
-      this.registerMusic();
+      await this.registerMusic();
     }
   }
 
   public override destroyed() {
     location.reload();
   }
- 
-  private registerMusic() {
+
+  private async registerMusic() {
     this.musicStorage = Vue.observable(new MusicStorage());
     this.musicService = Vue.observable(new MusicService());
     this.lrcContext = Vue.observable(new LrcContext());
     this.lrcStyles = Vue.observable(PlayerSettings.getLrcStyles());
     this.visualStyles = Vue.observable(PlayerSettings.getVisualStyles());
-    PlayerSettings.load();
-    this.musicStorage.init();
+    await PlayerSettings.load();
+    await this.musicStorage.init();
   }
 
   private registerWindowAttrs() {
@@ -52,7 +52,7 @@ export default class App extends BaseComponent {
     document.body.style.setProperty('--taskbar-left', (taskbarPosition === 'left' ? taskbarLength : 0) + 'px');
     document.body.style.setProperty('--taskbar-right', (taskbarPosition === 'right' ? taskbarLength : 0) + 'px');
   }
-  
+
   @Watch('wallpaperProperties.taskbar_position')
   @Watch('wallpaperProperties.taskbar_length')
   private watchTaskbar() {

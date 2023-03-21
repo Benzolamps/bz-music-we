@@ -1,5 +1,5 @@
 ﻿import MusicComponent from '@/components/service/component';
-import {emptyMusic, Music} from '@/components/service/music';
+import {Music, emptyMusic} from '@/components/service/music';
 import store from '@/components/service/store';
 import messages from '@/assets/locale/messages';
 
@@ -48,7 +48,7 @@ export default class MusicService extends MusicComponent {
   private choseMusic: Music;
 
   /* 随机歌曲列表 */
-  private randomMusicList: Readonly<Music[]> = [];
+  private randomMusicList: Readonly<Array<Music>> = [];
 
   public constructor() {
     super();
@@ -57,7 +57,7 @@ export default class MusicService extends MusicComponent {
     this.vue.musicStorage.onReload.add(this.initMusic.bind(this));
     this.mapEvents();
   }
-  
+
   private mapEvents() {
     this.on('prevMusic', this.prevMusic.bind(this));
     this.on('nextMusic', this.nextMusic.bind(this));
@@ -66,21 +66,21 @@ export default class MusicService extends MusicComponent {
       console.dir(error);
       this.vue.$message({
         type: 'error',
-        message: messages['music.cannot_play'](this.music.title, error),
+        message: messages['music.cannot_play'](this.music.title, error)
       });
       await this.vue.$sleep(3000);
-      await this.changeMusic();
+      this.changeMusic();
     });
   }
 
-  private async initMusic() {
+  private initMusic() {
     this.musicList = this.vue.musicStorage.musicList;
     this.shuffleMusicList();
 
     const musicId = this.music.id || store.musicId;
     const music = this.musicList.find(m => m.id === musicId);
 
-    if (music && this.music.id == music.id) {
+    if (music && this.music.id === music.id) {
       this.music = music;
       return;
     }
@@ -92,7 +92,7 @@ export default class MusicService extends MusicComponent {
 
       this.nextMusicType = 'next';
       if (this.isEnded) {
-        await this.changeMusic();
+        this.changeMusic();
       } else {
         this.stop();
       }
@@ -100,7 +100,7 @@ export default class MusicService extends MusicComponent {
   }
 
   /* 选中歌曲 */
-  public async chooseMusic(music: Music) {
+  public chooseMusic(music: Music) {
     if (music === this.music) {
       this.playOrPause();
       return true;
@@ -109,36 +109,36 @@ export default class MusicService extends MusicComponent {
     if (this.isPlaying) {
       this.stop();
     } else {
-      await this.changeMusic();
+      this.changeMusic();
       this.play();
     }
     return true;
   }
 
   /* 上一曲 */
-  public async prevMusic() {
+  public prevMusic() {
     this.nextMusicType = 'prev';
     if (this.isPlaying) {
       this.stop();
     } else {
-      await this.changeMusic();
+      this.changeMusic();
       this.play();
     }
   }
 
   /* 下一曲 */
-  public async nextMusic() {
+  public nextMusic() {
     this.nextMusicType = 'next';
     if (this.isPlaying) {
       this.stop();
     } else {
-      await this.changeMusic();
+      this.changeMusic();
       this.play();
     }
   }
 
   /* 更换歌曲 */
-  public async changeMusic() {
+  public changeMusic() {
     let music;
     if (this.choseMusic) {
       music = this.choseMusic;
@@ -161,7 +161,7 @@ export default class MusicService extends MusicComponent {
 
   /* 获取上一曲或者下一曲 */
   private getNearMusic() : Music {
-    let musicList: Readonly<Music[]>;
+    let musicList: Readonly<Array<Music>>;
     if (this.mode.single || this.mode.sequence) {
       musicList = this.musicList;
     } else if (this.mode.random) {
@@ -182,7 +182,7 @@ export default class MusicService extends MusicComponent {
     }
     return emptyMusic();
   }
-  
+
   /* 生成随机歌曲列表 */
   private shuffleMusicList() {
     const randomMusicList = Array.from(this.musicList);

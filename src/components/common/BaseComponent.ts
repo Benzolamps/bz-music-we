@@ -1,4 +1,8 @@
-﻿import {Vue} from 'vue-property-decorator';
+﻿import '@/assets/icons';
+import SvgIcon from '@/components/common/SvgIcon.vue';
+import AnimationRunner from '@/utils/animation_runner';
+import Component from 'vue-class-component';
+import {Vue} from 'vue-property-decorator';
 import MusicStorage from '@/components/service/data';
 import MusicService from '@/components/service/core';
 import {attrSeparator, formatDelta, formatFileSize, sleep} from '@/utils/common_utils';
@@ -11,37 +15,58 @@ import MusicVisualCore from '@/components/visual/core';
 import wallpaperProperties from '@/utils/env';
 import messages from '@/assets/locale/messages';
 
+interface BaseComponentStaticData {
+  $toast: Toast['show'];
+  musicStorage: MusicStorage;
+  musicService: MusicService;
+  musicVisualCore: MusicVisualCore;
+  lrcContext: LrcContext;
+  lrcStyles: typeof defaultLrcStyles;
+  visualStyles: typeof defaultVisualStyles;
+  animationRunner: AnimationRunner;
+}
+
 /**
  * 组件基类
  */
-export default class BaseComponent extends Vue {
+@Component({components: {SvgIcon}})
+export default class BaseComponent extends Vue implements BaseComponentStaticData {
   protected readonly attrSeparator = attrSeparator;
 
-  private static staticData = Vue.observable(new class {
-    musicStorage: MusicStorage;
-    musicService: MusicService;
-    toast: Toast['show'];
-    lrcStyles = defaultLrcStyles;
-    visualStyles = defaultVisualStyles;
-    lrcContext: LrcContext;
-    musicVisualCore: MusicVisualCore;
+  private static readonly staticData: BaseComponentStaticData = Vue.observable({
+    $toast: null,
+    musicStorage: null,
+    musicService: null,
+    musicVisualCore: null,
+    lrcContext: null,
+    lrcStyles: defaultLrcStyles,
+    visualStyles: defaultVisualStyles,
+    animationRunner: new AnimationRunner()
   });
 
   public wallpaperProperties = wallpaperProperties;
   public messages = messages;
 
-  private isAdmin = false === (store.userName as string)?.startsWith('user');
+  private readonly isAdmin = (store.userName as string)?.startsWith('user') === false;
 
   static {
     Vue.filter('fileSize', formatFileSize);
     Vue.filter('delta', formatDelta);
   }
 
-  public get musicStorage(): MusicStorage {
+  public get $toast() {
+    return BaseComponent.staticData.$toast;
+  }
+
+  public set $toast(value) {
+    BaseComponent.staticData.$toast = value;
+  }
+
+  public get musicStorage() {
     return BaseComponent.staticData.musicStorage;
   }
 
-  protected set musicStorage(value: MusicStorage) {
+  public set musicStorage(value) {
     BaseComponent.staticData.musicStorage = value;
   }
 
@@ -49,31 +74,31 @@ export default class BaseComponent extends Vue {
     return BaseComponent.staticData.musicService;
   }
 
-  protected set musicService(value: MusicService) {
+  public set musicService(value) {
     BaseComponent.staticData.musicService = value;
-  }
-
-  public get lrcContext() {
-    return BaseComponent.staticData.lrcContext;
-  }
-
-  protected set lrcContext(value: LrcContext) {
-    BaseComponent.staticData.lrcContext = value;
   }
 
   public get musicVisualCore() {
     return BaseComponent.staticData.musicVisualCore;
   }
 
-  public set musicVisualCore(value: MusicVisualCore) {
+  public set musicVisualCore(value) {
     BaseComponent.staticData.musicVisualCore = value;
+  }
+
+  public get lrcContext() {
+    return BaseComponent.staticData.lrcContext;
+  }
+
+  public set lrcContext(value) {
+    BaseComponent.staticData.lrcContext = value;
   }
 
   public get lrcStyles() {
     return BaseComponent.staticData.lrcStyles;
   }
 
-  protected set lrcStyles(value) {
+  public set lrcStyles(value) {
     BaseComponent.staticData.lrcStyles = value;
   }
 
@@ -81,16 +106,16 @@ export default class BaseComponent extends Vue {
     return BaseComponent.staticData.visualStyles;
   }
 
-  protected set visualStyles(value) {
+  public set visualStyles(value) {
     BaseComponent.staticData.visualStyles = value;
   }
 
-  public get $toast(): Toast['show'] {
-    return BaseComponent.staticData.toast;
+  public get animationRunner() {
+    return BaseComponent.staticData.animationRunner;
   }
 
-  protected set $toast(value: Toast['show']) {
-    BaseComponent.staticData.toast = value;
+  public set animationRunner(value) {
+    BaseComponent.staticData.animationRunner = value;
   }
 
   public beforeCreate() {}
