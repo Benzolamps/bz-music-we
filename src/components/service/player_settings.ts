@@ -6,42 +6,42 @@ import messages from '@/assets/locale/messages';
 import pfsc from '@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf';
 import {getBinaryData, getFileBaseName} from '@/utils/common_utils';
 
-export const fontList: Array<{name: string, blob: Blob}> = [];
-
-export const defaultLrcStyles = {
-  font: '苹方简体',
-  defaultColor: '#2C3E50',
-  pastColor: '#FF1E90',
-  futureColor: '#1E90FF',
-  strokeColor: '#FAFAD2'
-};
-
-export const defaultVisualStyles = {
-  displayRatio: 1,
-  preset: '',
-  starPresets: new Set<string>(),
-  onlyShowStarPresets: false,
-  random: false,
-  interval: 30,
-  showFps: false,
-  lrcMode: 'caption' as 'scroll' | 'caption' | 'mix',
-  state: {
-    show: false,
-    pip: false,
-    canvas: false,
-    video: false
-  }
-};
-
 export default class PlayerSettings {
+  public static readonly fontList: Array<{name: string, blob: Blob}> = [];
+
+  public static readonly defaultLrcStyles = {
+    font: '苹方简体',
+    defaultColor: '#2C3E50',
+    pastColor: '#FF1E90',
+    futureColor: '#1E90FF',
+    strokeColor: '#FAFAD2'
+  };
+
+  public static readonly defaultVisualStyles = {
+    displayRatio: 1,
+    preset: '',
+    starPresets: new Set<string>(),
+    onlyShowStarPresets: false,
+    random: false,
+    interval: 30,
+    showFps: false,
+    lrcMode: 'caption' as 'scroll' | 'caption' | 'mix',
+    state: {
+      show: false,
+      pip: false,
+      canvas: false,
+      video: false
+    }
+  };
+
   public static getLrcStyles() {
     let result;
     if (window.name === 'MusicLrcDesktop') {
       if (window.opener && window.opener.lrcStyles) {
         result = window.opener.lrcStyles;
       } else {
-        result = {} as typeof defaultLrcStyles;
-        for (const key in defaultLrcStyles) {
+        result = {} as typeof this.defaultLrcStyles;
+        for (const key in this.defaultLrcStyles) {
           Object.defineProperty(
             result,
             key,
@@ -52,12 +52,12 @@ export default class PlayerSettings {
       }
     } else {
       if (store.lrcStyles) {
-        result = store.lrcStyles as typeof defaultLrcStyles;
+        result = store.lrcStyles as typeof this.defaultLrcStyles;
         if (result.font.startsWith('custom: ')) {
           result.font = '';
         }
       } else {
-        result = JSON.parse(JSON.stringify(defaultLrcStyles));
+        result = JSON.parse(JSON.stringify(this.defaultLrcStyles));
       }
       window.lrcStyles = store.lrcStyles = result;
     }
@@ -66,11 +66,11 @@ export default class PlayerSettings {
 
   public static getVisualStyles() {
     if (store.visualStyles instanceof Object) {
-      const visualStyles = store.visualStyles as typeof defaultVisualStyles;
+      const visualStyles = store.visualStyles as typeof this.defaultVisualStyles;
       visualStyles.starPresets = new Set(visualStyles.starPresets ?? []);
-      return {...visualStyles, state: defaultVisualStyles.state} as typeof defaultVisualStyles;
+      return {...visualStyles, state: this.defaultVisualStyles.state} as typeof this.defaultVisualStyles;
     } else {
-      return JSON.parse(JSON.stringify(defaultVisualStyles));
+      return JSON.parse(JSON.stringify(this.defaultVisualStyles));
     }
   }
 
@@ -83,12 +83,12 @@ export default class PlayerSettings {
       store.visualStyles = v;
     }, {deep: true});
 
-    fontList.push({
+    this.fontList.push({
       name: '苹方简体',
       blob: await getBinaryData(pfsc)
     });
     for (const lrcFont of lrcFonts) {
-      fontList.push({
+      this.fontList.push({
         name: lrcFont.name,
         blob: await getBinaryData(lrcFont.url)
       });
@@ -106,7 +106,7 @@ export default class PlayerSettings {
         error = false;
         return;
       }
-      const font = fontList.find(f => f.name === value) ?? fontList[0];
+      const font = PlayerSettings.fontList.find(f => f.name === value) ?? PlayerSettings.fontList[0];
       try {
         await PlayerSettings.loadFontFace(font.blob, value);
       } catch {

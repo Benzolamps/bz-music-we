@@ -29,6 +29,7 @@ rules:
          requireLast: false
        multilineDetection: brackets
   '@typescript-eslint/no-empty-function': off
+  '@typescript-eslint/no-empty-interface': off
   '@typescript-eslint/no-explicit-any': off
   '@typescript-eslint/no-extra-parens': [warn, all]
   '@typescript-eslint/no-extra-semi': warn

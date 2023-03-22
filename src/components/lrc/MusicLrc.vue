@@ -45,12 +45,12 @@ export default class MusicLrc extends BaseComponent {
 
   public override mounted() {
     this.refreshScroll();
-    window.addEventListener('resize', this.adjustHeight);
+    window.addEventListener('resize', this.adjustHeight, {signal: this.abortSignal});
     this.$nextTick(this.adjustHeight);
   }
 
   public override beforeDestroy() {
-    window.removeEventListener('resize', this.adjustHeight);
+    this.animationRunner.off(this.updateTime);
   }
 
   public async adjustHeight() {
@@ -110,7 +110,7 @@ export default class MusicLrc extends BaseComponent {
     this.scroll?.refresh();
     const element = this.getScrollToElement();
     if (element instanceof HTMLElement) {
-      this.scroll?.scrollToElement(element, this.lrcContext.currentLrcTime && 500, false, true);
+      this.scroll?.scrollToElement(element, this.lrcContext.currentLrcTime && 500);
     }
   }
 
@@ -124,8 +124,8 @@ export default class MusicLrc extends BaseComponent {
 
   private updateTime() {
     const lrcContainer = this.$refs.lrcContainer as HTMLUListElement;
-    lrcContainer?.style.setProperty('--lrc-progress-past', this.lrcContext.progress * 100 + '%');
-    lrcContainer?.style.setProperty('--lrc-progress-future', this.lrcContext.progress * 200 + '%');
+    lrcContainer.style.setProperty('--lrc-progress-past', this.lrcContext.progress * 100 + '%');
+    lrcContainer.style.setProperty('--lrc-progress-future', this.lrcContext.progress * 200 + '%');
   }
 
   @Watch('musicService.currentTime')

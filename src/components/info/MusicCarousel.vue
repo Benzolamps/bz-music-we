@@ -16,12 +16,8 @@ export default class MusicCarousel extends BaseComponent {
   private delta = 0;
 
   public override mounted() {
-    window.addEventListener('resize', this.calcDelta);
+    window.addEventListener('resize', this.calcDelta, {signal: this.abortSignal});
     this.$nextTick(this.calcDelta);
-  }
-
-  public override beforeDestroy() {
-    window.removeEventListener('resize', this.calcDelta);
   }
 
   private calcDelta() {

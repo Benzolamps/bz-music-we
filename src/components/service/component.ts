@@ -2,12 +2,15 @@
 import {Music} from '@/components/service/music';
 
 import defaultSrc from '@/assets/media/empty.wav';
+import BaseClass from '@/utils/base_class';
 
-export default class MusicComponent {
+export default class MusicComponent extends BaseClass {
   /* 音乐 */
   private playingMusic: Music;
   /* 是否播放 */
   public isPlaying = false;
+  /* 是否已播放 */
+  public isPlayed = false;
   /* 是否暂停 */
   public isPaused = false;
   /* 是否停止 */
@@ -39,10 +42,11 @@ export default class MusicComponent {
       if (!this.playingMusic) {
         return;
       }
-      if (this.isEnded) {
+      if (!this.isPlayed) {
         console.log('开始播放', this.playingMusic.title);
       }
       this.isPlaying = true;
+      this.isPlayed = true;
       this.isPaused = false;
       this.isEnded = false;
       this.audio.playbackRate = this.pitch;
@@ -80,16 +84,17 @@ export default class MusicComponent {
   };
 
   protected init() {
-    this.createAudioElement();
     this.vue = new BaseComponent({data: this});
+    this.createAudioElement();
     this.getCurrentTime();
   }
 
   public createAudioElement() {
     this.audio = document.createElement('audio');
+    this.audio.preservesPitch = false;
     this.audio.style.display = 'none';
     for (const key in this.listeners) {
-      this.audio.addEventListener(key, this.listeners[key], {capture: true});
+      this.audio.addEventListener(key, this.listeners[key], {capture: true, signal: this.vue.abortSignal});
     }
     document.body.append(this.audio);
   }
@@ -103,7 +108,6 @@ export default class MusicComponent {
     }
     if (music?.id) {
       this.audio.src = music.objUrl || defaultSrc;
-      this.audio.preservesPitch = false;
       this.currentTime = 0;
       this.playingMusic = music;
     } else {
@@ -146,6 +150,7 @@ export default class MusicComponent {
       this.setMusic(null);
       this.isEnded = true;
       this.isPlaying = false;
+      this.isPlayed = false;
       this.vue.$nextTick(() => this.vue.$emit('ended'));
     }
   }
@@ -192,9 +197,6 @@ export default class MusicComponent {
   }
 
   public destroy() {
-    for (const key in this.listeners) {
-      this.audio.removeEventListener(key, this.listeners[key]);
-    }
     this.vue.$destroy();
     this.vue = null;
   }

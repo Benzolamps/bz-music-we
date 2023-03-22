@@ -54,14 +54,14 @@ export default class MusicService extends MusicComponent {
     super();
     super.init();
     this.mode = modes[store.mode as ModeKeys] ?? modes.sequence;
-    this.vue.musicStorage.onReload.add(this.initMusic.bind(this));
+    this.vue.musicStorage.onReload.add(this.initMusic);
     this.mapEvents();
   }
 
   private mapEvents() {
-    this.on('prevMusic', this.prevMusic.bind(this));
-    this.on('nextMusic', this.nextMusic.bind(this));
-    this.on('ended', this.changeMusic.bind(this));
+    this.on('prevMusic', this.prevMusic);
+    this.on('nextMusic', this.nextMusic);
+    this.on('ended', this.changeMusic);
     this.on('error', async (error: unknown) => {
       console.dir(error);
       this.vue.$message({

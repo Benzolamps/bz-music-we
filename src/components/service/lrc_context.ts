@@ -1,9 +1,10 @@
 ﻿import {Music} from '@/components/service/music';
+import BaseClass from '@/utils/base_class';
 import LrcObject, {LrcTag} from '@/utils/lrc_object';
 import {bus} from '@/components/common/BaseComponent';
 import messages from '@/assets/locale/messages';
 
-export default class LrcContext {
+export default class LrcContext extends BaseClass {
   private music: Music;
 
   /* 歌词对象 */
@@ -24,10 +25,11 @@ export default class LrcContext {
   public shownLrc: Array<LrcTag> = [];
 
   public constructor() {
+    super();
     this.update();
-    bus.$watch('musicService.music', this.update.bind(this));
-    bus.$watch('musicService.currentTime', this.update.bind(this));
-    bus.$watch('musicService.duration', this.update.bind(this));
+    bus.$watch('musicService.music', this.update);
+    bus.$watch('musicService.currentTime', this.update);
+    bus.$watch('musicService.duration', this.update);
   }
 
   private async update() {

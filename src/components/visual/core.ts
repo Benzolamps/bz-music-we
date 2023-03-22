@@ -1,11 +1,12 @@
 ﻿import {bus} from '@/components/common/BaseComponent';
+import BaseClass from '@/utils/base_class';
 import butterchurn, {MilkDropPresetDesc, Visualizer} from 'butterchurn';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
 import presetList from '@/assets/presets/index';
 import wallpaperProperties from '@/utils/env';
 import messages from '@/assets/locale/messages';
 
-export default class MusicVisualCore {
+export default class MusicVisualCore extends BaseClass {
   private readonly audioContext: AudioContext;
   private mediaSource: MediaElementAudioSourceNode;
   private readonly visualizer: Visualizer;
@@ -18,6 +19,7 @@ export default class MusicVisualCore {
   private randomPresetList: ReadonlyArray<MilkDropPresetDesc>;
 
   public constructor(musicVisual: MusicVisual, canvas: HTMLCanvasElement, getDesireCanvasSize: () => [number, number]) {
+    super();
     this.canvas = canvas;
     if ('OffscreenCanvas' in window) {
       this.canvasDraw = new OffscreenCanvas(...getDesireCanvasSize());
@@ -51,12 +53,8 @@ export default class MusicVisualCore {
     this.mediaSource.connect(this.audioContext.destination);
     this.visualizer.connectAudio(this.mediaSource);
 
-    this.drawEachFrame = this.drawEachFrame.bind(this);
-    this.drawLrcCaption = this.drawLrcCaption.bind(this);
-    this.drawLrcCaptionInner = this.drawLrcCaptionInner.bind(this);
-
-    musicVisual.$watch('visualStyles.onlyShowStarPresets', this.loadPresetList.bind(this));
-    musicVisual.$watch('visualStyles.interval', this.reloadTimeout.bind(this));
+    musicVisual.$watch('visualStyles.onlyShowStarPresets', this.loadPresetList);
+    musicVisual.$watch('visualStyles.interval', this.reloadTimeout);
     musicVisual.$watch('visualStyles.lrcMode', this.drawLrcCaption);
     musicVisual.$watch('lrcContext.currentLrcArray', this.drawLrcCaption);
 

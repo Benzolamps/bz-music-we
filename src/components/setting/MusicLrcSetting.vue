@@ -40,12 +40,12 @@
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
 import Component from 'vue-class-component';
-import PlayerSettings, {defaultLrcStyles, fontList} from '@/components/service/player_settings';
+import PlayerSettings from '@/components/service/player_settings';
 import {Ref} from 'vue-property-decorator';
 
 @Component
 export default class MusicLrcSetting extends BaseComponent {
-  private readonly fonts = fontList;
+  private readonly fonts = PlayerSettings.fontList;
 
   @Ref('file')
   private readonly file: HTMLInputElement;
@@ -63,11 +63,11 @@ export default class MusicLrcSetting extends BaseComponent {
   }
 
   private resetSettings() {
-    this.lrcStyles.font = defaultLrcStyles.font;
-    this.lrcStyles.defaultColor = defaultLrcStyles.defaultColor;
-    this.lrcStyles.strokeColor = defaultLrcStyles.strokeColor;
-    this.lrcStyles.pastColor = defaultLrcStyles.pastColor;
-    this.lrcStyles.futureColor = defaultLrcStyles.futureColor;
+    this.lrcStyles.font = PlayerSettings.defaultLrcStyles.font;
+    this.lrcStyles.defaultColor = PlayerSettings.defaultLrcStyles.defaultColor;
+    this.lrcStyles.strokeColor = PlayerSettings.defaultLrcStyles.strokeColor;
+    this.lrcStyles.pastColor = PlayerSettings.defaultLrcStyles.pastColor;
+    this.lrcStyles.futureColor = PlayerSettings.defaultLrcStyles.futureColor;
   }
 }
 </script>

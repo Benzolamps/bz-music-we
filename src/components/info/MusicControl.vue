@@ -11,8 +11,8 @@
 
     <!-- 时间 -->
     <div class="music-control-time">
-      <span ref="currentTime" class="code-font">{{0 | delta}}</span>
-      <span ref="duration" class="code-font">{{0 | delta}}</span>
+      <span ref="currentTime" class="code-font">{{ 0 | delta }}</span>
+      <span ref="duration" class="code-font">{{ 0 | delta }}</span>
     </div>
 
     <el-badge :value="musicStorage.musicList.length" type="success" class="music-count-badge"/>
@@ -21,7 +21,7 @@
     <div class="music-control-button-group">
       <div class="center">
         <!-- 上一曲 -->
-        <svg-icon icon-name="music_prev" @click="musicService.prevMusic()"/>
+        <svg-icon icon-name="music_prev" @click="musicService.prevMusic"/>
 
         <!-- 快退 -->
         <svg-icon icon-name="music_backward" @click="musicService.seekBackward(5)"/>
@@ -29,7 +29,7 @@
         <!-- 播放/暂停 -->
         <svg-icon
           :icon-name="`music_${musicService.isPlaying ? 'pause' : 'play'}`"
-          @click="musicService.playOrPause()"
+          @click="musicService.playOrPause"
           style="margin: 0 10px;"
         />
 
@@ -37,7 +37,7 @@
         <svg-icon icon-name="music_forward" @click="musicService.seekForward(5)"/>
 
         <!-- 下一曲 -->
-        <svg-icon icon-name="music_next" @click="musicService.nextMusic()"/>
+        <svg-icon icon-name="music_next" @click="musicService.nextMusic"/>
       </div>
 
       <!-- 左侧按钮 -->
@@ -109,7 +109,7 @@
           :icon-name="`music_${musicService.muted ? 'muted' : 'volume'}`"
           class="popover-icon"
           style="cursor: pointer;"
-          @click="musicService.toggleMuted()"
+          @click="musicService.toggleMuted"
         />
 
         <el-slider

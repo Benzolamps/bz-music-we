@@ -24,10 +24,10 @@
         <el-checkbox v-model="visualStyles.random">{{messages['visual.preset.random']}}</el-checkbox>
       </div>
       <el-button @click="showPresetList = true">{{messages['visual.preset.config']}}</el-button>
-      <el-button v-if="visualStyles.state.show" type="success" @click="() => musicVisualCore.prevPreset()">
+      <el-button v-if="visualStyles.state.show" type="success" @click="musicVisualCore.prevPreset">
         {{messages['visual.preset.prev']}}
       </el-button>
-      <el-button v-if="visualStyles.state.show" type="warning" @click="() => musicVisualCore.nextPreset()">
+      <el-button v-if="visualStyles.state.show" type="warning" @click="musicVisualCore.nextPreset">
         {{messages['visual.preset.next']}}
       </el-button>
     </el-form-item>
@@ -87,11 +87,7 @@
             @cell-click="onCellClick"
           >
             <el-table-column width="70" type="index" prop="index" :index="index => index + 1 + pageSize * (currentPage - 1)"/>
-            <el-table-column prop="title">
-              <template v-slot="scope">
-                <span style="padding-right: 10px;">{{ scope.row.name }}</span>
-              </template>
-            </el-table-column>
+            <el-table-column prop="name"/>
             <el-table-column width="50" align="center">
               <template v-slot="scope">
                 <el-button
@@ -127,11 +123,11 @@ import {Ref, Watch} from 'vue-property-decorator';
 import {MilkDropPresetDesc} from 'butterchurn';
 import BScroll from '@/components/common/BScroll.vue';
 import presetList from '@/assets/presets/index';
-import PlayerSettings, {defaultVisualStyles} from '@/components/service/player_settings';
+import PlayerSettings from '@/components/service/player_settings';
 @Component({components: {BScroll}})
 export default class MusicVisualSetting extends BaseComponent {
-  private presetList: Array<MilkDropPresetDesc> = [];
-  private readonly basePresetList: Array<MilkDropPresetDesc> = presetList;
+  private presetList: ReadonlyArray<MilkDropPresetDesc> = [];
+  private readonly basePresetList: ReadonlyArray<MilkDropPresetDesc> = presetList;
 
   /* 页大小 */
   private readonly pageSize = 50;
@@ -173,7 +169,7 @@ export default class MusicVisualSetting extends BaseComponent {
     await this.$nextTick();
     const element = this.scroll?.$el.querySelector('.preset-item-current');
     if (element instanceof HTMLElement) {
-      this.scroll?.scrollToElement(element, 500, true, true);
+      this.scroll?.scrollToElement(element, 500);
     } else {
       this.scroll?.scrollTo(0, 0, 0);
     }
@@ -198,12 +194,12 @@ export default class MusicVisualSetting extends BaseComponent {
   }
 
   private resetSettings() {
-    this.visualStyles.displayRatio = defaultVisualStyles.displayRatio;
-    this.visualStyles.interval = defaultVisualStyles.interval;
-    this.visualStyles.random = defaultVisualStyles.random;
-    this.visualStyles.onlyShowStarPresets = defaultVisualStyles.onlyShowStarPresets;
-    this.visualStyles.lrcMode = defaultVisualStyles.lrcMode;
-    this.visualStyles.showFps = defaultVisualStyles.showFps;
+    this.visualStyles.displayRatio = PlayerSettings.defaultVisualStyles.displayRatio;
+    this.visualStyles.interval = PlayerSettings.defaultVisualStyles.interval;
+    this.visualStyles.random = PlayerSettings.defaultVisualStyles.random;
+    this.visualStyles.onlyShowStarPresets = PlayerSettings.defaultVisualStyles.onlyShowStarPresets;
+    this.visualStyles.lrcMode = PlayerSettings.defaultVisualStyles.lrcMode;
+    this.visualStyles.showFps = PlayerSettings.defaultVisualStyles.showFps;
   }
 
   @Watch('visualStyles.preset')

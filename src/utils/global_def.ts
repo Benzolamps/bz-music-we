@@ -1,8 +1,8 @@
-﻿import {defaultLrcStyles} from '@/components/service/player_settings';
+﻿import PlayerSettings from '@/components/service/player_settings';
 
 declare global {
   interface Window {
-    lrcStyles: typeof defaultLrcStyles;
+    lrcStyles: typeof PlayerSettings.defaultLrcStyles;
     wallpaperProperties: WallpaperProperties;
     wallpaperPropertyListener: WallpaperPropertyListener;
   }

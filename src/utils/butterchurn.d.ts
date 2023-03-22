@@ -1,7 +1,5 @@
 declare module 'butterchurn' {
-  export interface MilkDropPreset {
-    version?: string;
-  }
+  export interface MilkDropPreset {}
 
   export interface MilkDropPresetDesc {
     name: string;

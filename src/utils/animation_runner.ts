@@ -1,11 +1,13 @@
-﻿export default class AnimationRunner {
+﻿import BaseClass from '@/utils/base_class';
+
+export default class AnimationRunner extends BaseClass {
   private readonly alwaysCallbacks = new Set<FrameRequestCallback>();
   private readonly onceCallbacks = new Set<FrameRequestCallback>();
 
   private animation = 0;
 
   public constructor() {
-    this.run = this.run.bind(this);
+    super();
     this.animation = window.requestAnimationFrame(this.run);
   }
 
@@ -30,6 +32,7 @@
 
   public off(callback: FrameRequestCallback) {
     this.alwaysCallbacks.delete(callback);
+    this.onceCallbacks.delete(callback);
   }
 
   public once(callback: FrameRequestCallback) {

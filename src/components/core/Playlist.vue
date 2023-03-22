@@ -188,7 +188,7 @@ export default class Playlist extends BaseComponent {
     await this.$nextTick();
     const element = this.$el.querySelector('.music-item-current');
     if (element instanceof HTMLElement) {
-      this.scroll?.scrollToElement(element, 500, true, true);
+      this.scroll?.scrollToElement(element, 500);
     } else {
       this.scroll?.scrollTo(0, 0, 0);
     }
