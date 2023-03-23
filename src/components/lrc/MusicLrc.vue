@@ -1,10 +1,10 @@
 ﻿<template>
   <b-scroll
-    v-if="lrcContext"
-    ref="scroll"
-    class="music-lrc"
-    :options="{mouseWheel: !lockScroll, disableMouse: lockScroll, disableTouch: lockScroll}"
-    @init-scroll="initScroll"
+      v-if="lrcContext"
+      ref="scroll"
+      class="music-lrc"
+      :options="{mouseWheel: !lockScroll, disableMouse: lockScroll, disableTouch: lockScroll}"
+      @init-scroll="initScroll"
   >
     <ul :style="{
       '--lrc-color-default': lrcStyles.defaultColor,
@@ -14,12 +14,12 @@
       <li v-if="lockScroll" key="s0" class="scroll-locker"/>
       <template v-for="(lrc, index) in lrcContext.shownLrc">
         <stroke-text
-          :key="index"
-          tag="li"
-          :color="lrcStyles.strokeColor"
-          :text="lrc.content || attrSeparator"
-          :class="getLrcClass(lrc)"
-          @click="seek(lrc)"
+            :key="index"
+            tag="li"
+            :color="lrcStyles.strokeColor"
+            :text="lrc.content || attrSeparator"
+            :class="getLrcClass(lrc)"
+            @click="seek(lrc)"
         />
       </template>
       <li v-if="lockScroll" key="s1" class="scroll-locker"/>
@@ -71,6 +71,13 @@ export default class MusicLrc extends BaseComponent {
   }
 
   private initScroll() {
+    this.scroll.scroll.on('scrollEnd', ({x, y}: {x: number, y: number}) => {
+      const lineHeight = parseInt(window.getComputedStyle(this.$el).lineHeight);
+      const newY = Math.round(y / lineHeight) * lineHeight;
+      if (newY !== y) {
+        this.scroll.scrollTo(x, newY, 500);
+      }
+    });
     const hooks = this.scroll.scroll.scroller.hooks;
     hooks.on('momentum', (obj: {newX: number, newY: number, time: number}) => {
       const lineHeight = parseInt(window.getComputedStyle(this.$el).lineHeight);
@@ -81,6 +88,7 @@ export default class MusicLrc extends BaseComponent {
   }
 
   private time = performance.now();
+
   private seek(lrc: LrcTag) {
     if (this.scroll?.scroll.pending) {
       return;
@@ -94,7 +102,7 @@ export default class MusicLrc extends BaseComponent {
   }
 
   private getLrcClass(lrc: LrcTag) {
-    const result : Array<string> = [];
+    const result: Array<string> = [];
     if (lrc?.time === this.lrcContext.currentLrcTime) {
       result.push('music-lrc-item-current');
     } else {
@@ -155,6 +163,7 @@ export default class MusicLrc extends BaseComponent {
 
     li {
       padding: 0 10px;
+
       &, &::before {
         pointer-events: auto;
         width: fit-content;
@@ -169,17 +178,18 @@ export default class MusicLrc extends BaseComponent {
       }
     }
 
-   .music-lrc-item-current {
-     color: var(--lrc-color-future);
-     &.lrc-gradient::before {
-       -webkit-text-fill-color: transparent;
-       -webkit-background-clip: text;
-       background-image: linear-gradient(
-           to right,
-           var(--lrc-color-past) var(--lrc-progress-past, 0%),
-           var(--lrc-color-future) var(--lrc-progress-future, 0%)
-       );
-     }
+    .music-lrc-item-current {
+      color: var(--lrc-color-future);
+
+      &.lrc-gradient::before {
+        -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text;
+        background-image: linear-gradient(
+                to right,
+                var(--lrc-color-past) var(--lrc-progress-past, 0%),
+                var(--lrc-color-future) var(--lrc-progress-future, 0%)
+        );
+      }
     }
 
     .scroll-locker {

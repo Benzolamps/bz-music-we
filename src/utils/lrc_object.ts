@@ -9,6 +9,7 @@ export interface LrcTag {
   time: number;
   content: string;
 }
+
 export interface MetaTag {
   key: string;
   value: string;

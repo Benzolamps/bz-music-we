@@ -168,13 +168,19 @@ export default class MusicVisualCore extends BaseClass {
   public prevPreset() {
     this.loadNearPreset('prev');
     this.reloadTimeout();
-    bus.$message({message: messages['visual.preset.switch'] + messages.colon + bus.visualStyles.preset, type: 'success'});
+    bus.$message({
+      message: messages['visual.preset.switch'] + messages.colon + bus.visualStyles.preset,
+      type: 'success'
+    });
   }
 
   public nextPreset() {
     this.loadNearPreset('next');
     this.reloadTimeout();
-    bus.$message({message: messages['visual.preset.switch'] + messages.colon + bus.visualStyles.preset, type: 'success'});
+    bus.$message({
+      message: messages['visual.preset.switch'] + messages.colon + bus.visualStyles.preset,
+      type: 'success'
+    });
   }
 
   public reloadTimeout() {

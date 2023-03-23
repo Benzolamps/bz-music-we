@@ -8,6 +8,6 @@ export interface Music {
   objUrl?: string;
 }
 
-export function emptyMusic(title = messages['music.no_music']) : Music {
+export function emptyMusic(title = messages['music.no_music']): Music {
   return {title} as Music;
 }

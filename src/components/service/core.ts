@@ -39,7 +39,7 @@ export default class MusicService extends MusicComponent {
   /* 歌曲 */
   public music = emptyMusic();
   /* 播放模式 */
-  public mode : Mode;
+  public mode: Mode;
 
   /* 是否播放下一曲 */
   private nextMusicType: 'prev' | 'next' | 'default' = 'default';
@@ -160,7 +160,7 @@ export default class MusicService extends MusicComponent {
   }
 
   /* 获取上一曲或者下一曲 */
-  private getNearMusic() : Music {
+  private getNearMusic(): Music {
     let musicList: Readonly<Array<Music>>;
     if (this.mode.single || this.mode.sequence) {
       musicList = this.musicList;

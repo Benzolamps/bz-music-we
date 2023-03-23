@@ -191,7 +191,7 @@ export default class MusicComponent extends BaseClass {
     this.seek(Math.min(this.duration, this.currentTime + seekOffset));
   }
 
-  public on(event:string, callback: (...args: Array<any>) => void) {
+  public on(event: string, callback: (...args: Array<any>) => void) {
     this.vue.$on(event, callback);
     this.vue.$once('hook:beforeDestroy', () => this.vue.$off(event, callback));
   }

@@ -26,6 +26,7 @@ export default class StrokeText extends BaseComponent {
 .stroke-text {
   position: relative;
   -webkit-text-stroke: 0.1em var(--stroke-color);
+
   &::before {
     z-index: 1;
     content: var(--stroke-text);

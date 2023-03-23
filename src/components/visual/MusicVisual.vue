@@ -85,7 +85,7 @@ export default class MusicVisual extends BaseComponent {
     this.musicVisualCore.close();
   }
 
-  private getDesireCanvasSize() : [number, number] {
+  private getDesireCanvasSize(): [number, number] {
     if (this.visualStyles.state.canvas) {
       return [this.canvas.clientWidth * window.devicePixelRatio, this.canvas.clientHeight * window.devicePixelRatio];
     } else if (document.pictureInPictureElement) {
