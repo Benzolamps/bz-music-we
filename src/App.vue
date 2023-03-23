@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import {loadBasicFonts} from "@/utils/common_utils";
+import {loadBasicFonts} from '@/utils/common_utils';
 import {Component, Watch} from 'vue-property-decorator';
 import Toast from '@/components/common/Toast.vue';
 import MusicStorage from '@/components/service/data';

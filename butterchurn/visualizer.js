@@ -1,4 +1,4 @@
-import { loadModule } from "eel-wasm";
+import {loadModule} from "eel-wasm";
 import ascLoader from "@assemblyscript/loader";
 import AudioProcessor from "./audio/audioProcessor";
 import Renderer from "./rendering/renderer";

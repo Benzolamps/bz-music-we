@@ -1,5 +1,5 @@
 ﻿import MusicComponent from '@/components/service/component';
-import {Music, emptyMusic} from '@/components/service/music';
+import {emptyMusic, Music} from '@/components/service/music';
 import store from '@/components/service/store';
 import messages from '@/assets/locale/messages';
 

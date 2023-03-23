@@ -1,11 +1,9 @@
 ﻿import '@/assets/icons';
-import SvgIcon from '@/components/common/SvgIcon.vue';
 import AnimationRunner from '@/utils/animation_runner';
-import Vue from 'vue';
+import Vue, {VNode} from 'vue';
 import MusicStorage from '@/components/service/data';
 import MusicService from '@/components/service/core';
-import {attrSeparator, formatDelta, formatFileSize, sleep} from '@/utils/common_utils';
-import {VNode} from 'vue';
+import {attrSeparator, sleep} from '@/utils/common_utils';
 import Toast from '@/components/common/Toast.vue';
 import PlayerSettings from '@/components/service/player_settings';
 import LrcContext from '@/components/service/lrc_context';

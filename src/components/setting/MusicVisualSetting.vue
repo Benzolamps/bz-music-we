@@ -123,6 +123,7 @@ import {MilkDropPresetDesc} from 'butterchurn';
 import BScroll from '@/components/common/BScroll.vue';
 import presetList from '@/assets/presets/index';
 import PlayerSettings from '@/components/service/player_settings';
+
 @Component({components: {BScroll}})
 export default class MusicVisualSetting extends BaseComponent {
   private presetList: ReadonlyArray<MilkDropPresetDesc> = [];

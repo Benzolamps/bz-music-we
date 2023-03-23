@@ -24,7 +24,7 @@ export default class BScroll extends BaseComponent {
 
   @Prop({default: Object})
   protected options: Options;
-  
+
   protected defaultOptions: Options = {
     mouseWheel: true,
     preventDefault: false
