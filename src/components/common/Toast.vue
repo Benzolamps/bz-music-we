@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
-import Component from 'vue-class-component';
+import {Component} from 'vue-property-decorator';
 
 /**
  * Toast弹窗

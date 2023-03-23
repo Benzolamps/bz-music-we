@@ -31,8 +31,7 @@
 import {LrcTag} from '@/utils/lrc_object';
 import BScroll from '@/components/common/BScroll.vue';
 import BaseComponent from '@/components/common/BaseComponent';
-import Component from 'vue-class-component';
-import {Prop, Ref, Watch} from 'vue-property-decorator';
+import {Component, Prop, Ref, Watch} from 'vue-property-decorator';
 import StrokeText from '@/components/common/StrokeText.vue';
 
 @Component({components: {StrokeText, BScroll}})

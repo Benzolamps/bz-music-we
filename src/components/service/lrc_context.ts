@@ -1,7 +1,7 @@
 ﻿import {Music} from '@/components/service/music';
 import BaseClass from '@/utils/base_class';
 import LrcObject, {LrcTag} from '@/utils/lrc_object';
-import {bus} from '@/components/common/BaseComponent';
+import {bus} from '@/components/common/common';
 import messages from '@/assets/locale/messages';
 
 export default class LrcContext extends BaseClass {

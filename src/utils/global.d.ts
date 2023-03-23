@@ -1,8 +1,5 @@
-﻿import PlayerSettings from '@/components/service/player_settings';
-
-declare global {
+﻿declare global {
   interface Window {
-    lrcStyles: typeof PlayerSettings.defaultLrcStyles;
     wallpaperProperties: WallpaperProperties;
     wallpaperPropertyListener: WallpaperPropertyListener;
   }
@@ -38,3 +35,5 @@ declare global {
     applyUserProperties(props: Record<string, {value: string}>): void;
   }
 }
+
+export {};

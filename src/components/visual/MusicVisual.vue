@@ -8,8 +8,7 @@
 
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
-import Component from 'vue-class-component';
-import {Ref, Watch} from 'vue-property-decorator';
+import {Component, Ref, Watch} from 'vue-property-decorator';
 import MusicVisualCore from '@/components/visual/core';
 import PlayerSettings from '@/components/service/player_settings';
 import Hammer from 'hammerjs';

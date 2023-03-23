@@ -170,9 +170,8 @@
 <script lang="ts">
 import {modes} from '@/components/service/core';
 import BaseComponent from '@/components/common/BaseComponent';
-import {Watch} from 'vue-property-decorator';
+import {Component, Watch} from 'vue-property-decorator';
 import {ElSlider} from 'element-ui/types/slider';
-import Component from 'vue-class-component';
 import MusicCarousel from '@/components/info/MusicCarousel.vue';
 import {formatDelta} from '@/utils/common_utils';
 import Playlist from '@/components/core/Playlist.vue';

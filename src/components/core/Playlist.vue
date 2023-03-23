@@ -69,8 +69,7 @@
 
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
-import Component from 'vue-class-component';
-import {Prop, Ref, Watch} from 'vue-property-decorator';
+import {Component, Prop, Ref, Watch} from 'vue-property-decorator';
 import {Music} from '@/components/service/music';
 import BScroll from '@/components/common/BScroll.vue';
 import {getFileBaseName} from '@/utils/common_utils';

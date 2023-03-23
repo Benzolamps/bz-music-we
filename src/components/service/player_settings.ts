@@ -1,5 +1,5 @@
 ﻿import store from '@/components/service/store';
-import {bus} from '@/components/common/BaseComponent';
+import {bus} from '@/components/common/common';
 
 import lrcFonts from '@/assets/fonts/lrc/index';
 import messages from '@/assets/locale/messages';
@@ -48,7 +48,6 @@ export default class PlayerSettings {
             {get: () => store.lrcStyles && store.lrcStyles[key]}
           );
         }
-        window.lrcStyles = result;
       }
     } else {
       if (store.lrcStyles) {
@@ -59,7 +58,7 @@ export default class PlayerSettings {
       } else {
         result = JSON.parse(JSON.stringify(this.defaultLrcStyles));
       }
-      window.lrcStyles = store.lrcStyles = result;
+      store.lrcStyles = result;
     }
     return result;
   }

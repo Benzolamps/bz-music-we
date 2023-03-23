@@ -1,4 +1,4 @@
-﻿import {bus} from '@/components/common/BaseComponent';
+﻿import {bus} from '@/components/common/common';
 import BaseClass from '@/utils/base_class';
 import butterchurn, {MilkDropPresetDesc, Visualizer} from 'butterchurn';
 import MusicVisual from '@/components/visual/MusicVisual.vue';

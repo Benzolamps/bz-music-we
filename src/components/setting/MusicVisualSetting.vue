@@ -118,8 +118,7 @@
 
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
-import Component from 'vue-class-component';
-import {Ref, Watch} from 'vue-property-decorator';
+import {Component, Ref, Watch} from 'vue-property-decorator';
 import {MilkDropPresetDesc} from 'butterchurn';
 import BScroll from '@/components/common/BScroll.vue';
 import presetList from '@/assets/presets/index';

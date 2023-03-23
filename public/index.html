@@ -16,13 +16,13 @@
 
   window.wallpaperPropertyListener = {
     applyGeneralProperties(props) {
-      for (const propsKey in props) {
-        window.wallpaperProperties[propsKey] = props[propsKey];
+      for (const key in props) {
+        window.wallpaperProperties[key] = props[key];
       }
     },
     applyUserProperties(props) {
-      for (const propsKey in props) {
-        window.wallpaperProperties[propsKey] = props[propsKey].value;
+      for (const key in props) {
+        window.wallpaperProperties[key] = props[key].value;
       }
     },
   };

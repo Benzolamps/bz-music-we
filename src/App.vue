@@ -1,12 +1,14 @@
 <template>
-  <div id="app" :class="{preview: !webgl2Supported}">
-    <toast v-if="webgl2Supported"/>
-    <music-player v-if="webgl2Supported"/>
-    <span v-if="!webgl2Supported">{{ messages.preview }}</span>
+  <div id="app">
+    <div class="loading-background"/>
+    <toast v-if="musicRegistered"/>
+    <music-player v-if="musicRegistered"/>
+    <h1 v-if="!webgl2Supported">{{ messages.preview }}</h1>
   </div>
 </template>
 
 <script lang="ts">
+import {loadBasicFonts} from "@/utils/common_utils";
 import {Component, Watch} from 'vue-property-decorator';
 import Toast from '@/components/common/Toast.vue';
 import MusicStorage from '@/components/service/data';
@@ -19,14 +21,17 @@ import MusicPlayer from '@/components/core/MusicPlayer.vue';
 
 @Component({components: {MusicPlayer, Toast}})
 export default class App extends BaseComponent {
-  private webgl2Supported = false;
+  private musicRegistered = false;
+  private webgl2Supported = true;
 
-  public override async created() {
+  public override async mounted() {
+    await loadBasicFonts();
     const canvas = document.createElement('canvas');
     this.webgl2Supported = !!canvas.getContext('webgl2');
     if (this.webgl2Supported) {
       this.registerWindowAttrs();
       await this.registerMusic();
+      this.musicRegistered = true;
     }
   }
 

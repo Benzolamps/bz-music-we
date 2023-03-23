@@ -39,9 +39,8 @@
 
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
-import Component from 'vue-class-component';
 import PlayerSettings from '@/components/service/player_settings';
-import {Ref} from 'vue-property-decorator';
+import {Component, Ref} from 'vue-property-decorator';
 
 @Component
 export default class MusicLrcSetting extends BaseComponent {

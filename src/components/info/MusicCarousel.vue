@@ -7,9 +7,8 @@
 </template>
 
 <script lang="ts">
-import Component from 'vue-class-component';
 import BaseComponent from '@/components/common/BaseComponent';
-import {Watch} from 'vue-property-decorator';
+import {Component, Watch} from 'vue-property-decorator';
 
 @Component
 export default class MusicCarousel extends BaseComponent {

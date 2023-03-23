@@ -5,8 +5,7 @@
 </template>
 
 <script lang="ts">
-import {Prop, Vue} from 'vue-property-decorator';
-import Component from 'vue-class-component';
+import {Component, Prop, Vue} from 'vue-property-decorator';
 
 @Component({inheritAttrs: false})
 export default class SvgIcon extends Vue {

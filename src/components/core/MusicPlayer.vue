@@ -1,5 +1,5 @@
 <template>
-  <article class="music-container" :style="{'--show-info': showInfo ? 1 : 0, backgroundColor: lrcStyles.strokeColor}">
+  <article class="music-container" :style="{'--show-info': showInfo ? 1 : 0}">
     <header>
       <music-visual v-if="visualStyles.state.show"/>
     </header>
@@ -27,13 +27,12 @@
 </template>
 
 <script lang="ts">
-import Component from 'vue-class-component';
 import MusicControl from '@/components/info/MusicControl.vue';
 import MusicLrc from '@/components/lrc/MusicLrc.vue';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
 import BaseComponent from '@/components/common/BaseComponent';
 import StrokeText from '@/components/common/StrokeText.vue';
-import {Ref, Watch} from 'vue-property-decorator';
+import {Component, Ref, Watch} from 'vue-property-decorator';
 
 @Component({components: {StrokeText, MusicVisual, MusicLrc, MusicControl}})
 export default class MusicPlayer extends BaseComponent {
