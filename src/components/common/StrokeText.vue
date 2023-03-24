@@ -1,8 +1,8 @@
 ﻿<template>
-  <component class="stroke-text" :is="tag" v-text="text" :style="{
+  <component :is="tag" :style="{
     '--stroke-color': color,
     '--stroke-text': JSON.stringify(text)
-  }" v-on="$listeners"/>
+  }" class="stroke-text" v-on="$listeners" v-text="text"/>
 </template>
 
 <script lang="ts">

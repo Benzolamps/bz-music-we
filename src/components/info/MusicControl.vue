@@ -1,12 +1,11 @@
 ﻿<template>
   <div class="music-control">
     <!-- 进度条 -->
-    <el-slider
-      class="progress"
-      v-model="sliderTime"
-      ref="slider"
-      :min="0" :max="musicService.duration" :step="0.01" :show-tooltip="false"
-      :disabled="musicService.isEnded"
+    <el-slider ref="slider"
+        v-model="sliderTime"
+        :disabled="musicService.isEnded"
+        :max="musicService.duration" :min="0" :show-tooltip="false" :step="0.01"
+        class="progress"
     />
 
     <!-- 时间 -->
@@ -15,7 +14,7 @@
       <span ref="duration" class="code-font">{{ 0 | delta }}</span>
     </div>
 
-    <el-badge :value="musicStorage.musicList.length" type="success" class="music-count-badge"/>
+    <el-badge :value="musicStorage.musicList.length" class="music-count-badge" type="success"/>
 
     <!-- 按钮组 -->
     <div class="music-control-button-group">
@@ -28,9 +27,9 @@
 
         <!-- 播放/暂停 -->
         <svg-icon
-          :icon-name="`music_${musicService.isPlaying ? 'pause' : 'play'}`"
-          @click="musicService.playOrPause"
-          style="margin: 0 10px;"
+            :icon-name="`music_${musicService.isPlaying ? 'pause' : 'play'}`"
+            style="margin: 0 10px;"
+            @click="musicService.playOrPause"
         />
 
         <!-- 快进 -->
@@ -44,9 +43,9 @@
       <div class="left">
         <!-- 播放列表 -->
         <svg-icon
-          icon-name="music_playlist"
-          width="21" x="2"
-          @click="openPlaylist"
+            icon-name="music_playlist"
+            width="21" x="2"
+            @click="openPlaylist"
         />
 
         <music-carousel style="flex: 1; margin-left: 10px;"/>
@@ -58,102 +57,102 @@
         <svg-icon icon-name="music_more" @click="showMore = true"/>
 
         <!-- 播放模式 -->
-        <svg-icon :icon-name="`music_${musicService.mode.key}`" v-popover:popoverMode/>
+        <svg-icon v-popover:popoverMode :icon-name="`music_${musicService.mode.key}`"/>
 
         <!-- 音量 -->
         <svg-icon
-          :icon-name="`music_${musicService.muted ? 'muted' : 'volume'}`"
-          v-popover:popoverVolume
+            v-popover:popoverVolume
+            :icon-name="`music_${musicService.muted ? 'muted' : 'volume'}`"
         />
 
         <!-- 倍速 -->
-        <span style="line-height: 50px; padding: 0; font-size: 14px;" v-popover:popoverPitch>
+        <span v-popover:popoverPitch style="line-height: 50px; padding: 0; font-size: 14px;">
           {{ musicService.pitch }}x
         </span>
 
         <div style="flex: 1; display: flex; justify-content: flex-end;">
-          <el-tag type="info" v-if="musicService.music.musicProvider">{{musicService.music.musicProvider.type}}</el-tag>
-          <el-tag type="info" v-if="musicService.music.musicProvider">{{musicService.music.musicProvider.size | fileSize}}</el-tag>
-          <el-tag type="info" v-if="musicService.music.musicProvider">{{musicService.duration | delta}}</el-tag>
-          <el-tag type="warning" v-if="!musicService.music.lrcProvider">无歌词</el-tag>
+          <el-tag v-if="musicService.music.musicProvider" type="info">{{ musicService.music.musicProvider.type }}</el-tag>
+          <el-tag v-if="musicService.music.musicProvider" type="info">{{ musicService.music.musicProvider.size | fileSize }}</el-tag>
+          <el-tag v-if="musicService.music.musicProvider" type="info">{{ musicService.duration | delta }}</el-tag>
+          <el-tag v-if="!musicService.music.lrcProvider" type="warning">无歌词</el-tag>
         </div>
       </div>
     </div>
 
     <!-- 播放模式弹出 -->
     <el-popover
-      ref="popoverMode"
-      placement="left"
-      width="400"
-      trigger="click"
-      :append-to-body="false"
+        ref="popoverMode"
+        :append-to-body="false"
+        placement="left"
+        trigger="click"
+        width="400"
     >
       <div class="popover-content">
-        <span v-for="m in modes" :key="m.key" @click="musicService.setMode(m)" style="cursor: pointer; display: flex; align-items: center;">
-          <svg-icon :icon-name="`music_${m.key}`" class="popover-icon" :class="{active: musicService.mode.key === m.key}" style="margin-right: 5px;"/>
-          <span class="popover-text" :class="{active: musicService.mode.key === m.key}">{{ messages['music.mode.' + m.key] }}</span>
+        <span v-for="m in modes" :key="m.key" style="cursor: pointer; display: flex; align-items: center;" @click="musicService.setMode(m)">
+          <svg-icon :class="{active: musicService.mode.key === m.key}" :icon-name="`music_${m.key}`" class="popover-icon" style="margin-right: 5px;"/>
+          <span :class="{active: musicService.mode.key === m.key}" class="popover-text">{{ messages['music.mode.' + m.key] }}</span>
         </span>
       </div>
     </el-popover>
 
     <!-- 音量弹出 -->
     <el-popover
-      ref="popoverVolume"
-      placement="left"
-      width="400"
-      trigger="click"
-      :append-to-body="false"
+        ref="popoverVolume"
+        :append-to-body="false"
+        placement="left"
+        trigger="click"
+        width="400"
     >
       <div class="popover-content">
         <svg-icon
-          :icon-name="`music_${musicService.muted ? 'muted' : 'volume'}`"
-          class="popover-icon"
-          style="cursor: pointer;"
-          @click="musicService.toggleMuted"
+            :icon-name="`music_${musicService.muted ? 'muted' : 'volume'}`"
+            class="popover-icon"
+            style="cursor: pointer;"
+            @click="musicService.toggleMuted"
         />
 
         <el-slider
-          class="popover-slider"
-          :value="musicService.volume"
-          @input="v => musicService.setVolume(v)"
-          :min="0" :max="1" :step="0.01"
-          :show-tooltip="false"
+            :max="1"
+            :min="0"
+            :show-tooltip="false"
+            :step="0.01" :value="musicService.volume" class="popover-slider"
+            @input="v => musicService.setVolume(v)"
         />
       </div>
     </el-popover>
 
     <!-- 倍速弹出 -->
     <el-popover
-      ref="popoverPitch"
-      placement="left"
-      width="400"
-      trigger="click"
-      :append-to-body="false"
+        ref="popoverPitch"
+        :append-to-body="false"
+        placement="left"
+        trigger="click"
+        width="400"
     >
       <div class="popover-content">
-        <span class="popover-text">{{messages['music.pitch']}}</span>
+        <span class="popover-text">{{ messages['music.pitch'] }}</span>
         <el-slider
-          class="popover-slider"
-          :value="musicService.pitch"
-          @input="v => musicService.setPitch(v)"
-          :min="0" :max="2" :step="0.25"
-          :show-stops="true" :show-tooltip="false"
+            :max="2"
+            :min="0"
+            :show-stops="true"
+            :show-tooltip="false" :step="0.25" :value="musicService.pitch"
+            class="popover-slider" @input="v => musicService.setPitch(v)"
         />
       </div>
     </el-popover>
 
     <!-- 更多弹窗 -->
     <el-drawer
-      ref="moreDialog"
-      :modal="false"
-      :visible.sync="showMore"
-      :with-header="true"
-      direction="rtl"
-      size="480px"
-      :append-to-body="true"
-      :modal-append-to-body="true"
+        ref="moreDialog"
+        :append-to-body="true"
+        :modal="false"
+        :modal-append-to-body="true"
+        :visible.sync="showMore"
+        :with-header="true"
+        direction="rtl"
+        size="480px"
     >
-      <el-tabs value="lrc" style="margin: 20px">
+      <el-tabs style="margin: 20px" value="lrc">
         <el-tab-pane :label="messages['lrc.settings']" name="lrc">
           <music-lrc-setting/>
         </el-tab-pane>
@@ -168,15 +167,15 @@
 </template>
 
 <script lang="ts">
-import {modes} from '@/components/service/core';
 import BaseComponent from '@/components/common/BaseComponent';
-import {Component, Watch} from 'vue-property-decorator';
-import {ElSlider} from 'element-ui/types/slider';
-import MusicCarousel from '@/components/info/MusicCarousel.vue';
-import {formatDelta} from '@/utils/common_utils';
 import Playlist from '@/components/core/Playlist.vue';
+import MusicCarousel from '@/components/info/MusicCarousel.vue';
+import {modes} from '@/components/service/core';
 import MusicLrcSetting from '@/components/setting/MusicLrcSetting.vue';
 import MusicVisualSetting from '@/components/setting/MusicVisualSetting.vue';
+import {formatDelta} from '@/utils/common_utils';
+import {ElSlider} from 'element-ui/types/slider';
+import {Component, Watch} from 'vue-property-decorator';
 
 @Component({
   components: {
@@ -214,9 +213,7 @@ export default class MusicControl extends BaseComponent {
       this.sliderTime = this.musicService.currentTime;
       this.isSliding = true;
     };
-    const mouseMoveHandler = () => {
-      this.isSliding && this.$toast(formatDelta(this.sliderTime));
-    };
+    const mouseMoveHandler = () => this.isSliding && this.$toast(formatDelta(this.sliderTime));
     const mouseUpHandler = () => {
       if (this.isSliding && !this.musicService.isEnded) {
         this.musicService.seek(this.sliderTime);
@@ -224,13 +221,14 @@ export default class MusicControl extends BaseComponent {
       this.isSliding = false;
     };
     const sliderButton = slider.$el.querySelector('.el-slider__runway');
-    sliderButton.addEventListener('click', clickHandler);
-    sliderButton.addEventListener('mousedown', mouseDownHandler, {capture: true});
-    sliderButton.addEventListener('touchstart', mouseDownHandler, {capture: true});
-    document.addEventListener('mousemove', mouseMoveHandler, {capture: true});
-    document.addEventListener('touchmove', mouseMoveHandler, {capture: true});
-    document.addEventListener('mouseup', mouseUpHandler, {capture: true});
-    document.addEventListener('touchend', mouseUpHandler, {capture: true});
+    const signal = this.abortSignal;
+    sliderButton.addEventListener('click', clickHandler, {signal});
+    sliderButton.addEventListener('mousedown', mouseDownHandler, {capture: true, signal});
+    sliderButton.addEventListener('touchstart', mouseDownHandler, {capture: true, signal});
+    document.addEventListener('mousemove', mouseMoveHandler, {capture: true, signal});
+    document.addEventListener('touchmove', mouseMoveHandler, {capture: true, signal});
+    document.addEventListener('mouseup', mouseUpHandler, {capture: true, signal});
+    document.addEventListener('touchend', mouseUpHandler, {capture: true, signal});
   }
 
   private openPlaylist() {
@@ -285,10 +283,10 @@ export default class MusicControl extends BaseComponent {
   position: absolute;
   bottom: 0;
   left: var(--taskbar-left);
-  padding: 0px;
+  padding: 0;
   height: calc(80px + var(--taskbar-bottom));
   width: calc(100% - var(--taskbar-right));
-  background-color: #C6E2FFBB;
+  background-color: #c6e2ffbb;
 
   .el-slider.progress {
     margin-top: -20px;
@@ -329,7 +327,7 @@ export default class MusicControl extends BaseComponent {
         color: #606266;
 
         &:hover {
-          color: #409EFF;
+          color: #409eff;
         }
       }
     }
@@ -360,7 +358,7 @@ export default class MusicControl extends BaseComponent {
       font-weight: 700;
 
       &:hover {
-        color: #409EFF;
+        color: #409eff;
       }
     }
   }
@@ -401,10 +399,10 @@ export default class MusicControl extends BaseComponent {
 }
 
 .popover-text, .popover-icon {
-  color: #2C3E50;
+  color: #2c3e50;
 
   &.active {
-    color: dodgerblue;
+    color: #1e90ff;
   }
 }
 </style>

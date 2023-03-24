@@ -14,20 +14,20 @@ parserOptions:
   project: ./tsconfig.json
   extraFileExtensions: [.vue]
 plugins: ['vue', '@typescript-eslint']
-rules: 
+rules:
   '@typescript-eslint/array-type': [warn, {default: generic, readonly: generic}]
   '@typescript-eslint/comma-dangle': [warn, never]
   '@typescript-eslint/dot-notation': warn
   '@typescript-eslint/indent': [warn, 2, {SwitchCase: 1}]
   '@typescript-eslint/member-delimiter-style':
-     - warn
-     - multiline:
-         delimiter: semi
-         requireLast: true
-       singleline:
-         delimiter: comma
-         requireLast: false
-       multilineDetection: brackets
+    - warn
+    - multiline:
+        delimiter: semi
+        requireLast: true
+      singleline:
+        delimiter: comma
+        requireLast: false
+      multilineDetection: brackets
   '@typescript-eslint/no-empty-function': off
   '@typescript-eslint/no-empty-interface': off
   '@typescript-eslint/no-explicit-any': off

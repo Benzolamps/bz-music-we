@@ -11,10 +11,10 @@ export default class PlayerSettings {
 
   public static readonly defaultLrcStyles = {
     font: '苹方简体',
-    defaultColor: '#2C3E50',
-    pastColor: '#FF1E90',
-    futureColor: '#1E90FF',
-    strokeColor: '#FAFAD2'
+    defaultColor: '#2c3e50',
+    pastColor: '#ff1e90',
+    futureColor: '#1e90ff',
+    strokeColor: '#fafad2'
   };
 
   public static readonly defaultVisualStyles = {
@@ -69,7 +69,9 @@ export default class PlayerSettings {
       visualStyles.starPresets = new Set(visualStyles.starPresets ?? []);
       return {...visualStyles, state: this.defaultVisualStyles.state} as typeof this.defaultVisualStyles;
     } else {
-      return JSON.parse(JSON.stringify(this.defaultVisualStyles));
+      const visualStyles = JSON.parse(JSON.stringify(this.defaultVisualStyles));
+      visualStyles.starPresets = new Set();
+      return visualStyles;
     }
   }
 

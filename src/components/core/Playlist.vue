@@ -32,7 +32,7 @@
                 type="text"
                 size="medium"
                 icon="el-icon-close"
-                style="color: #F56C6C; font-size: 20px;"
+                style="color: #f56c6c; font-size: 20px;"
               />
             </template>
           </el-table-column>
@@ -233,7 +233,7 @@ export default class Playlist extends BaseComponent {
   }
 
   .music-item-current {
-    color: #409EFF;
+    color: #409eff;
     background-color: #c6e2ff;
 
     td {

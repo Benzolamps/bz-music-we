@@ -39,7 +39,7 @@ class BaseComponent extends Vue {
 
   private _abortSignal: AbortSignal = null;
 
-  public get abortSignal(): AbortSignal {
+  public get abortSignal() {
     return this._abortSignal ??= (() => {
       const abortController = new AbortController();
       this.$once('hook:beforeDestroy', () => abortController.abort());
@@ -47,19 +47,19 @@ class BaseComponent extends Vue {
     })();
   }
 
-  public beforeCreate() {}
-  public created() {}
-  public beforeMount() {}
-  public mounted() {}
-  public beforeDestroy() {}
-  public destroyed() {}
-  public render() : VNode | void {}
-
   public $sleep(timeout: number) {
     return sleep(timeout);
   }
 }
 
-interface BaseComponent extends BaseComponentStaticData {}
+interface BaseComponent extends BaseComponentStaticData {
+  beforeCreate(): void;
+  created(): void;
+  beforeMount(): void;
+  mounted(): void;
+  beforeDestroy(): void;
+  destroyed(): void;
+  render(): VNode;
+}
 
 export default BaseComponent;

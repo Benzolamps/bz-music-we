@@ -38,6 +38,18 @@ export default class BScroll extends BaseComponent {
     this.scroll.destroy();
   }
 
+  public refresh() {
+    this.scroll?.refresh();
+  }
+
+  public scrollTo(x: number, y: number, time: number) {
+    this.scroll?.scrollTo(x, y, time);
+  }
+
+  public scrollToElement(el: HTMLElement | string, time: number) {
+    this.scroll?.scrollToElement(el, time, true, true);
+  }
+
   @Emit('init-scroll')
   private async initScroll() {
     if (this.wrapper) {
@@ -49,18 +61,6 @@ export default class BScroll extends BaseComponent {
       ...this.defaultOptions,
       ...this.options
     });
-  }
-
-  public refresh() {
-    this.scroll?.refresh();
-  }
-
-  public scrollTo(x: number, y: number, time: number) {
-    this.scroll?.scrollTo(x, y, time);
-  }
-
-  public scrollToElement(el: HTMLElement | string, time: number) {
-    this.scroll?.scrollToElement(el, time, true, true);
   }
 }
 </script>

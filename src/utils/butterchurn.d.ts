@@ -25,7 +25,7 @@ declare module 'butterchurn' {
   }
 
   export default class {
-    declare static createVisualizer(audioContext: AudioContext, canvas: HTMLCanvasElement, opts: {
+    static createVisualizer(audioContext: AudioContext, canvas: HTMLCanvasElement, opts: {
       width: number;
       height: number;
       pixelRatio: number;

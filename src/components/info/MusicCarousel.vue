@@ -54,10 +54,6 @@ export default class MusicCarousel extends BaseComponent {
       font-size: 18px;
       font-weight: 700;
 
-      &:hover {
-        color: #409EFF;
-      }
-
       @keyframes wordsLoop {
         0% {
           left: 0;

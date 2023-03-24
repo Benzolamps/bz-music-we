@@ -245,7 +245,7 @@ export default class MusicVisualSetting extends BaseComponent {
   }
 
   .preset-item-current {
-    color: #409EFF;
+    color: #409eff;
     background-color: #c6e2ff;
 
     td {

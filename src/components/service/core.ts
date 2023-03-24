@@ -19,7 +19,7 @@ export interface Mode extends Readonly<Partial<Record<ModeKeys, boolean>>> {
 /**
  * 播放模式列表
  */
-export const modes: Readonly<Record<ModeKeys, Mode>> = (() => {
+export const modes = (() => {
   const modes: Record<ModeKeys, Mode> = {
     sequence: {key: 'sequence', name: '列表循环'},
     single: {key: 'single', name: '单曲循环'},
@@ -160,7 +160,7 @@ export default class MusicService extends MusicComponent {
   }
 
   /* 获取上一曲或者下一曲 */
-  private getNearMusic(): Music {
+  private getNearMusic() {
     let musicList: Readonly<Array<Music>>;
     if (this.mode.single || this.mode.sequence) {
       musicList = this.musicList;

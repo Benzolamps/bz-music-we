@@ -29,6 +29,7 @@ export default class MusicVisual extends BaseComponent {
   private pipWindow: {width: number, height: number};
 
   public override mounted() {
+    const signal = this.abortSignal;
     this.video.muted = true;
     this.video.disablePictureInPicture = false;
     this.video.playsInline = true;
@@ -38,17 +39,17 @@ export default class MusicVisual extends BaseComponent {
         this.visualStyles.state.canvas = true;
         this.visualStyles.state.pip = false;
       }
-    });
+    }, {signal});
     this.video.addEventListener('enterpictureinpicture', (e: any) => {
       this.visualStyles.state.video = false;
       this.visualStyles.state.canvas = false;
       this.pipWindow = e.pictureInPictureWindow;
-    });
+    }, {signal});
     this.video.addEventListener('leavepictureinpicture', () => {
       this.visualStyles.state.video = false;
       this.visualStyles.state.canvas = true;
       this.visualStyles.state.pip = false;
-    });
+    }, {signal});
 
     this.musicVisualCore = new MusicVisualCore(this, this.canvas, this.getDesireCanvasSize);
     this.handlePip();
@@ -129,9 +130,8 @@ export default class MusicVisual extends BaseComponent {
 
 <style lang="scss">
 .music-visual {
-
   canvas {
-    background-color: #9CDCFE;
+    background-color: #9cdcfe;
     width: 100%;
     height: 100%;
     left: 0;
@@ -150,7 +150,7 @@ export default class MusicVisual extends BaseComponent {
   }
 
   video {
-    background-color: #9CDCFE;
+    background-color: #9cdcfe;
     width: 50vw;
     height: 25vw;
     left: 25vw;

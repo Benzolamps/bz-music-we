@@ -17,7 +17,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 
   /* 解决element-ui弹窗问题 */
-  padding-right: 0px !important;
+  padding-right: 0 !important;
 
   .code-font {
     font-family: 'JetBrains Mono', 'PingFang SC', 'monospace' !important;
@@ -46,7 +46,6 @@ body {
     position: relative;
     top: 0;
     left: 0;
-    background: linear-gradient(135deg, #041D76, #0D7E7E);
 
     .loading-background {
       width: 100%;
@@ -55,7 +54,7 @@ body {
       padding: 0;
       position: absolute;
       z-index: -1;
-      background-image: linear-gradient(135deg, #041D76, #0D7E7E);
+      background-image: linear-gradient(135deg, #041d76, #0d7e7e);
     }
 
     h1 {

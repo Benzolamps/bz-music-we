@@ -1,10 +1,10 @@
 ﻿<template>
   <b-scroll
-      v-if="lrcContext"
-      ref="scroll"
-      class="music-lrc"
-      :options="{mouseWheel: !lockScroll, disableMouse: lockScroll, disableTouch: lockScroll}"
-      @init-scroll="initScroll"
+    v-if="lrcContext"
+    ref="scroll"
+    class="music-lrc"
+    :options="{mouseWheel: !lockScroll, disableMouse: lockScroll, disableTouch: lockScroll}"
+    @init-scroll="initScroll"
   >
     <ul :style="{
       '--lrc-color-default': lrcStyles.defaultColor,
@@ -14,12 +14,12 @@
       <li v-if="lockScroll" key="s0" class="scroll-locker"/>
       <template v-for="(lrc, index) in lrcContext.shownLrc">
         <stroke-text
-            :key="index"
-            tag="li"
-            :color="lrcStyles.strokeColor"
-            :text="lrc.content || attrSeparator"
-            :class="getLrcClass(lrc)"
-            @click="seek(lrc)"
+          :key="index"
+          tag="li"
+          :color="lrcStyles.strokeColor"
+          :text="lrc.content || attrSeparator"
+          :class="getLrcClass(lrc)"
+          @click="seek(lrc)"
         />
       </template>
       <li v-if="lockScroll" key="s1" class="scroll-locker"/>
@@ -88,7 +88,6 @@ export default class MusicLrc extends BaseComponent {
   }
 
   private time = performance.now();
-
   private seek(lrc: LrcTag) {
     if (this.scroll?.scroll.pending) {
       return;
@@ -185,9 +184,9 @@ export default class MusicLrc extends BaseComponent {
         -webkit-text-fill-color: transparent;
         -webkit-background-clip: text;
         background-image: linear-gradient(
-                to right,
-                var(--lrc-color-past) var(--lrc-progress-past, 0%),
-                var(--lrc-color-future) var(--lrc-progress-future, 0%)
+          to right,
+          var(--lrc-color-past) var(--lrc-progress-past, 0%),
+          var(--lrc-color-future) var(--lrc-progress-future, 0%)
         );
       }
     }

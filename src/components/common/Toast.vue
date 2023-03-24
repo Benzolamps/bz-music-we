@@ -55,7 +55,7 @@ export default class Toast extends BaseComponent {
   pointer-events: none;
 
   .toast {
-    background: #000A;
+    background-color: #000a;
     padding: 10px;
     border-radius: 5px;
     color: #fff;

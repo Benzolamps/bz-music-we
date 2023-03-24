@@ -87,8 +87,9 @@ export default class MusicPlayer extends BaseComponent {
         this.timeout = window.setTimeout(() => this.showMusicControl = false, 3000);
       }
     };
-    document.addEventListener('click', handler);
-    document.addEventListener('mousemove', handler);
+    const signal = this.abortSignal;
+    document.addEventListener('click', handler, {signal});
+    document.addEventListener('mousemove', handler, {signal});
   }
 
   @Watch('showInfo')
