@@ -44,11 +44,13 @@ export default class MusicComponent extends BaseClass {
       }
       if (!this.isPlayed) {
         console.log('开始播放', this.playingMusic.title);
+        this.vue.$nextTick(this.updateMediaSession);
       }
       this.isPlaying = true;
       this.isPlayed = true;
       this.isPaused = false;
       this.isEnded = false;
+      this.audio.autoplay = true;
       this.audio.playbackRate = this.pitch;
       this.vue.$emit('play');
     },
@@ -90,13 +92,29 @@ export default class MusicComponent extends BaseClass {
   }
 
   public createAudioElement() {
+    const old = this.audio;
     this.audio = document.createElement('audio');
-    this.audio.preservesPitch = false;
     this.audio.style.display = 'none';
     for (const key in this.listeners) {
+      old?.removeEventListener(key, this.listeners[key], {capture: true});
       this.audio.addEventListener(key, this.listeners[key], {capture: true, signal: this.vue.abortSignal});
     }
     document.body.append(this.audio);
+    if (old) {
+      old.remove();
+      this.audio.src = old.src;
+      const playingMusic = this.playingMusic;
+      const isPlaying = this.isPlaying;
+      this.playingMusic = null;
+      this.audio.play().then(() => {
+        this.playingMusic = playingMusic;
+        this.audio.currentTime = old.currentTime;
+        this.audio.muted = old.muted;
+        this.audio.playbackRate = old.playbackRate;
+        this.audio.volume = old.volume;
+        isPlaying || this.audio.pause();
+      });
+    }
   }
 
   protected setMusic(music: Music) {
@@ -116,7 +134,7 @@ export default class MusicComponent extends BaseClass {
       this.currentTime = 0;
       this.playingMusic = null;
     }
-    this.vue.visualStyles.state.show && this.play();
+    this.audio.autoplay && this.play();
   }
 
   private async getCurrentTime() {
@@ -189,6 +207,27 @@ export default class MusicComponent extends BaseClass {
   /* 快进 */
   public seekForward(seekOffset: number) {
     this.seek(Math.min(this.duration, this.currentTime + seekOffset));
+  }
+
+  /* 设置锁屏界面音乐播放器信息 */
+  private updateMediaSession() {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: this.playingMusic.title,
+        artwork: [{src: 'favicon.png', sizes: '128x128', type: 'image/png'}]
+      });
+      navigator.mediaSession.setActionHandler('previoustrack', () => this.vue.$emit('prevMusic'));
+      navigator.mediaSession.setActionHandler('nexttrack', () => this.vue.$emit('nextMusic'));
+      // navigator.mediaSession.setActionHandler('seekbackward', e => this.seekBackward(e.seekOffset));
+      // navigator.mediaSession.setActionHandler('seekforward', e => this.seekForward(e.seekOffset));
+      navigator.mediaSession.setActionHandler('play', this.play);
+      navigator.mediaSession.setActionHandler('pause', this.pause);
+      navigator.mediaSession.setActionHandler('seekto', e => this.seek(e.seekTime));
+    }
+  }
+
+  public watch(prop: string, callback: (e: any) => void) {
+    this.vue.$watch(prop, callback);
   }
 
   public on(event: string, callback: (...args: Array<any>) => void) {

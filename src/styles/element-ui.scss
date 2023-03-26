@@ -1,4 +1,22 @@
-﻿.el-popover {
+﻿.el-button * {
+  pointer-events: none;
+}
+
+.el-message-box {
+  min-width: 0;
+  width: min(calc(100vw - 35px), 400px);
+}
+
+.el-message {
+  min-width: 0;
+  width: min(calc(100vw - 35px), 400px);
+}
+
+.el-select-dropdown__item {
+  max-width: min(calc(100vw - 35px), 400px);
+}
+
+.el-popover {
   min-width: 0;
 }
 
@@ -34,10 +52,28 @@
   }
 }
 
-.el-drawer__wrapper {
+.el-scrollbar {
+  > .el-scrollbar__bar {
+    opacity: 1 !important;
+  }
+}
+
+.el-scrollbar__wrap:not(.el-select-dropdown__wrap) {
+  overflow-x: hidden;
+}
+
+body[mobile] .el-scrollbar__bar {
+  display: none;
+}
+
+body:not([portable]) .el-drawer__wrapper {
   pointer-events: none;
 
   .el-drawer {
     pointer-events: auto;
   }
+}
+
+body[mobile] .el-table__body td {
+  background-color: transparent !important;
 }

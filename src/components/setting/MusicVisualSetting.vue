@@ -54,7 +54,7 @@
     </el-form-item>
     <el-divider/>
     <el-form-item :label="messages['visual.lrc_mode']">
-      <el-select v-model="visualStyles.lrcMode" style="width: 100%">
+      <el-select v-model="visualStyles.lrcMode" v-bind="inputAttrs" style="width: 100%">
         <el-option key="scroll" value="scroll" :label="messages['visual.lrc_mode.scroll']"/>
         <el-option key="caption" value="caption" :label="messages['visual.lrc_mode.caption']"/>
         <el-option key="mix" value="mix" :label="messages['visual.lrc_mode.mix']"/>
@@ -62,18 +62,21 @@
       <div style="margin: 10px;">
         <el-checkbox v-model="visualStyles.state.pip">{{messages['visual.pip']}}</el-checkbox>
         <el-checkbox v-model="visualStyles.showFps">{{messages['visual.fps']}}</el-checkbox>
+        <el-checkbox v-if="!platform.wallpaper" v-model="visualStyles.useFtt">读取FTT</el-checkbox>
       </div>
     </el-form-item>
     <el-form-item>
+      <el-button v-if="!visualStyles.state.show" type="warning" @click="visualStyles.state.show = true">开启</el-button>
+      <el-button v-if="!platform.wallpaper && visualStyles.state.show" type="success" @click="visualStyles.state.show = false">关闭</el-button>
       <el-button type="warning" @click="resetSettings">{{messages['music.reset_default']}}</el-button>
     </el-form-item>
     <el-drawer
       :modal="false"
       :visible.sync="showPresetList"
-      :wrapper-closable="false"
-      :with-header="true"
-      direction="ltr"
-      size="480px"
+      :wrapper-closable="view.portable"
+      :with-header="!view.portable"
+      :direction="view.portable ? 'btt' : 'ltr'"
+      :size="view.portable ? '80%' : '480px'"
       :append-to-body="true"
       :modal-append-to-body="true"
       @opened="locatePreset"
@@ -227,7 +230,6 @@ export default class MusicVisualSetting extends BaseComponent {
 <style lang="scss">
 .visual-setting-container {
   padding: 20px;
-  height: 100%;
   display: flex;
   flex-direction: column;
 }

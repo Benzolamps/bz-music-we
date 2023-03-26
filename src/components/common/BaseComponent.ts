@@ -3,20 +3,25 @@ import AnimationRunner from '@/utils/animation_runner';
 import Vue, {VNode} from 'vue';
 import MusicStorage from '@/components/service/data';
 import MusicService from '@/components/service/core';
+import platform from '@/utils/platform';
+import view from '@/utils/view';
 import {attrSeparator, sleep} from '@/utils/common_utils';
 import Toast from '@/components/common/Toast.vue';
 import PlayerSettings from '@/components/service/player_settings';
 import LrcContext from '@/components/service/lrc_context';
 import MusicVisualCore from '@/components/visual/core';
-import wallpaperProperties from '@/utils/env';
-import messages from '@/assets/locale/messages';
+import messages, {LanguageKeys} from '@/assets/locale/messages';
 
 class BaseComponentStaticData {
   public readonly window = window;
+  public readonly platform = platform;
+  public readonly view = view;
+  public language: LanguageKeys = null;
   public readonly attrSeparator = attrSeparator;
   public readonly messages = messages;
-  public readonly wallpaperProperties = wallpaperProperties;
-  public $toast: Toast['show'] = null;
+  public readonly wallpaperProperties = window.wallpaperProperties;
+  public page: 'MusicPlayer' | 'MusicLrcEditor' = 'MusicPlayer';
+  public $toast: Toast['utilType'] = null;
   public musicStorage: MusicStorage = null;
   public musicService: MusicService = null;
   public musicVisualCore: MusicVisualCore = null;
@@ -24,6 +29,12 @@ class BaseComponentStaticData {
   public lrcStyles = PlayerSettings.defaultLrcStyles;
   public visualStyles = PlayerSettings.defaultVisualStyles;
   public readonly animationRunner = new AnimationRunner();
+  public readonly inputAttrs = {
+    autocomplete: 'off',
+    autocapitalize: 'off',
+    autocorrect: 'off',
+    spellcheck: 'false'
+  };
 }
 
 /**

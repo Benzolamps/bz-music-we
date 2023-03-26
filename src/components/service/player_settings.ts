@@ -5,6 +5,7 @@ import lrcFonts from '@/assets/fonts/lrc/index';
 import messages from '@/assets/locale/messages';
 import pfsc from '@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf';
 import {getBinaryData, getFileBaseName} from '@/utils/common_utils';
+import platform from '@/utils/platform';
 
 export default class PlayerSettings {
   public static readonly fontList: Array<{name: string, blob: Blob}> = [];
@@ -22,18 +23,19 @@ export default class PlayerSettings {
     preset: '',
     starPresets: new Set<string>(),
     onlyShowStarPresets: false,
+    useFtt: !platform.mobile,
     random: false,
     interval: 30,
     showFps: false,
     lrcMode: 'caption' as 'scroll' | 'caption' | 'mix',
     state: {
-      show: false,
+      show: platform.wallpaper,
       pip: false,
       canvas: false,
       video: false
     }
   };
-
+  
   public static getLrcStyles() {
     let result;
     if (window.name === 'MusicLrcDesktop') {

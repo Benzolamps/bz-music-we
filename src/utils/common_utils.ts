@@ -1,5 +1,6 @@
 ﻿import pfsc from '@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf';
 import jbm from '@/assets/fonts/JetBrainsMono-Regular.ttf';
+import {bus} from '@/components/common/common';
 
 export const attrSeparator = '\u3000';
 
@@ -27,6 +28,66 @@ export function getFileBaseName(fileName: string) {
   result = result.replace(/.*\//, '');
   result = result.replace(/\.[^.]*$/, '');
   return result;
+}
+
+
+export interface KeyMapping {
+  code?: string | RegExp;
+  type?: keyof DocumentEventMap | string;
+  target?: EventTarget;
+  ctrlKey?: boolean;
+  shiftKey?: boolean;
+  altKey?: boolean;
+  handler?: () => void;
+}
+
+export const keyMappings = new Set<KeyMapping>();
+
+export function registerEvents() {
+  const signal = bus.abortSignal;
+
+  const args: [(ev: Event) => void, AddEventListenerOptions] = [
+    event => {
+      if (event.type !== 'mousedown' || !(event instanceof MouseEvent) || event.button === 1 || event.button === 2) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    },
+    {capture: true, signal}
+  ];
+  document.addEventListener('drag', ...args);
+  document.addEventListener('drop', ...args);
+  document.addEventListener('dragenter', ...args);
+  document.addEventListener('dragover', ...args);
+  document.addEventListener('dragstart', ...args);
+  document.addEventListener('contextmenu', ...args);
+  document.addEventListener('mousedown', ...args);
+  document.addEventListener('dblclick', ...args);
+
+  const keyArgs: [(ev: KeyboardEvent) => void, AddEventListenerOptions] = [
+    event => {
+      let result = false;
+      keyMappings.forEach(value => {
+        if ((value.code === event.code || value.code instanceof RegExp && event.code.match(value.code))
+          && value.type === event.type
+          && (!value.target || event.composedPath().includes(value.target))
+          && !!value.ctrlKey === event.ctrlKey
+          && !!value.shiftKey === event.shiftKey
+          && !!value.altKey === event.altKey
+        ) {
+          result = true;
+          value.handler?.call(null);
+        }
+      });
+      if (result) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    },
+    {capture: true, signal}
+  ];
+  document.addEventListener('keydown', ...keyArgs);
+  document.addEventListener('keyup', ...keyArgs);
 }
 
 export function sleep(timeout: number) {

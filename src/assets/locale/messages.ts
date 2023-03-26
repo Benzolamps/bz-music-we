@@ -1,4 +1,4 @@
-﻿import wallpaperProperties from '@/utils/env';
+﻿import {bus} from '@/components/common/common';
 
 export type LanguageKeys = 'en-us' | 'zh-chs' | 'zh-cht';
 
@@ -30,6 +30,7 @@ export interface Message extends Readonly<unknown> {
   'music.mode.random': string;
   'music.reset_default': string;
   'lrc.settings': string;
+  'lrc.editor': string;
   'lrc.font': string;
   'lrc.apply_font_success': string;
   'lrc.apply_font_failed': string;
@@ -89,6 +90,7 @@ const languages: LanguageRecord = {
     'music.mode.random': 'Shuffle',
     'music.reset_default': 'Restore default settings',
     'lrc.settings': 'Lyrics settings',
+    'lrc.editor': 'Lyrics editor',
     'lrc.font': 'Font',
     'lrc.apply_font_success': 'Font applied',
     'lrc.apply_font_failed': 'Font apply failed',
@@ -144,6 +146,7 @@ const languages: LanguageRecord = {
     'music.mode.random': '随机播放',
     'music.reset_default': '恢复默认设置',
     'lrc.settings': '歌词设置',
+    'lrc.editor': '歌词编辑',
     'lrc.font': '字体',
     'lrc.apply_font_success': '字体应用成功',
     'lrc.apply_font_failed': '字体应用失败',
@@ -199,6 +202,7 @@ const languages: LanguageRecord = {
     'music.mode.random': '隨機播放',
     'music.reset_default': '恢復默認設置',
     'lrc.settings': '歌詞設置',
+    'lrc.editor': '歌詞編輯',
     'lrc.font': '字體',
     'lrc.apply_font_success': '字體應用成功',
     'lrc.apply_font_failed': '字體應用失敗',
@@ -230,7 +234,7 @@ const languages: LanguageRecord = {
 
 export default new Proxy(languages['en-us'], {
   get(target: Message, p: keyof Message) {
-    const lang = wallpaperProperties.language;
+    const lang = bus?.language;
     const messages = (languages[lang] ?? target) as Message;
     return messages[p] || p;
   }

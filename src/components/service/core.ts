@@ -1,4 +1,7 @@
-﻿import MusicComponent from '@/components/service/component';
+﻿import {KeyMapping, keyMappings} from '@/utils/common_utils';
+import FlacHandler from '@/utils/flac_handler';
+import platform from '@/utils/platform';
+import MusicComponent from '@/components/service/component';
 import {emptyMusic, Music} from '@/components/service/music';
 import store from '@/components/service/store';
 import messages from '@/assets/locale/messages';
@@ -50,12 +53,19 @@ export default class MusicService extends MusicComponent {
   /* 随机歌曲列表 */
   private randomMusicList: Readonly<Array<Music>> = [];
 
+  /* flac处理器 */
+  private readonly flacHandler: FlacHandler;
+
   public constructor() {
     super();
     super.init();
     this.mode = modes[store.mode as ModeKeys] ?? modes.sequence;
     this.vue.musicStorage.onReload.add(this.initMusic);
     this.mapEvents();
+
+    if (platform.ios) {
+      this.flacHandler = new FlacHandler();
+    }
   }
 
   private mapEvents() {
@@ -69,8 +79,19 @@ export default class MusicService extends MusicComponent {
         message: messages['music.cannot_play'](this.music.title, error)
       });
       await this.vue.$sleep(3000);
-      this.changeMusic();
+      await this.changeMusic();
     });
+
+    const mappings: Array<KeyMapping> = [
+      {type: 'keydown', code: 'ArrowLeft', ctrlKey: true, handler: () => 0},
+      {type: 'keydown', code: 'ArrowRight', ctrlKey: true, handler: () => 0},
+      {type: 'keydown', code: 'Space', ctrlKey: true, handler: () => 0},
+      {type: 'keyup', code: 'ArrowLeft', ctrlKey: true, handler: this.prevMusic},
+      {type: 'keyup', code: 'ArrowRight', ctrlKey: true, handler: this.nextMusic},
+      {type: 'keyup', code: 'Space', ctrlKey: true, handler: this.playOrPause}
+    ];
+    mappings.forEach(e => keyMappings.add(e));
+    this.vue.$once('hook:beforeDestroy', () => mappings.forEach(e => keyMappings.delete(e)));
   }
 
   private initMusic() {
@@ -100,7 +121,7 @@ export default class MusicService extends MusicComponent {
   }
 
   /* 选中歌曲 */
-  public chooseMusic(music: Music) {
+  public async chooseMusic(music: Music) {
     if (music === this.music) {
       this.playOrPause();
       return true;
@@ -109,36 +130,36 @@ export default class MusicService extends MusicComponent {
     if (this.isPlaying) {
       this.stop();
     } else {
-      this.changeMusic();
+      await this.changeMusic();
       this.play();
     }
     return true;
   }
 
   /* 上一曲 */
-  public prevMusic() {
+  public async prevMusic() {
     this.nextMusicType = 'prev';
     if (this.isPlaying) {
       this.stop();
     } else {
-      this.changeMusic();
+      await this.changeMusic();
       this.play();
     }
   }
 
   /* 下一曲 */
-  public nextMusic() {
+  public async nextMusic() {
     this.nextMusicType = 'next';
     if (this.isPlaying) {
       this.stop();
     } else {
-      this.changeMusic();
+      await this.changeMusic();
       this.play();
     }
   }
 
   /* 更换歌曲 */
-  public changeMusic() {
+  public async changeMusic() {
     let music;
     if (this.choseMusic) {
       music = this.choseMusic;
@@ -148,8 +169,15 @@ export default class MusicService extends MusicComponent {
       music = this.getNearMusic();
     }
     if (music.id) {
-      const blob = music.musicProvider;
-      music.objUrl = URL.createObjectURL(blob);
+      if (platform.ios && music.musicProvider.type === 'audio/flac') {
+        const wav = await this.flacHandler.flacToWav(music.musicProvider);
+        if (wav) {
+          music.objUrl = wav;
+        }
+      } else {
+        const blob = music.musicProvider;
+        music.objUrl = URL.createObjectURL(blob);
+      }
     }
     this.setMusic(this.music = music);
     if (music.id) {
@@ -197,5 +225,6 @@ export default class MusicService extends MusicComponent {
 
   public override destroy() {
     super.destroy();
+    this.flacHandler?.destroy();
   }
 }

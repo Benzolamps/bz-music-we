@@ -8,8 +8,8 @@
       <music-lrc ref="musicLrc" v-if="showLrc"/>
 
       <!-- 歌曲信息 -->
-      <div v-show="showInfo" class="music-info" :style="{color: lrcStyles.defaultColor}">
-        <stroke-text tag="span" :color="lrcStyles.strokeColor" :text="music.title" style="cursor: pointer;"/>
+      <div v-show="showInfo" class="music-info" :style="{color: lrcStyles.strokeColor}">
+        <stroke-text tag="div" :color="lrcStyles.defaultColor" :text="music.title" style="cursor: pointer;"/>
         <div style="padding: 10px">
           <el-tag type="info" v-if="music.musicProvider">{{music.musicProvider.type}}</el-tag>
           <el-tag type="info" v-if="music.musicProvider">{{music.musicProvider.size | fileSize}}</el-tag>
@@ -21,7 +21,7 @@
 
     <footer>
       <!-- 音乐播放控制 -->
-      <music-control ref="musicControl" :style="showMusicControl || showInfo || {height: '0px'}"/>
+      <music-control ref="musicControl" :style="showMusicControl || showInfo || {height: 0}"/>
     </footer>
   </article>
 </template>
@@ -58,17 +58,6 @@ export default class MusicPlayer extends BaseComponent {
     return !this.visualStyles.state.show || this.visualStyles.state.pip;
   }
 
-  public override async created() {
-    if (this.wallpaperProperties.fps > 0) {
-      this.visualStyles.state.show = true;
-    } else {
-      while (!this.visualStyles.state.show) {
-        this.visualStyles.state.show = !!navigator.userActivation.hasBeenActive;
-        await this.$sleep(1);
-      }
-    }
-  }
-
   public override mounted() {
     const handler = (event: Event | MouseEvent | TouchEvent) => {
       let clientY: number;
@@ -89,6 +78,7 @@ export default class MusicPlayer extends BaseComponent {
     };
     const signal = this.abortSignal;
     document.addEventListener('click', handler, {signal});
+    document.addEventListener('touchmove', handler, {signal});
     document.addEventListener('mousemove', handler, {signal});
   }
 

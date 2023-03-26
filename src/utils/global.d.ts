@@ -1,22 +1,13 @@
-﻿declare global {
+﻿import {LanguageKeys} from "@/assets/locale/messages";
+
+declare global {
   interface Window {
     wallpaperProperties: WallpaperProperties;
     wallpaperPropertyListener: WallpaperPropertyListener;
   }
 
-  interface Navigator {
-    userActivation: {
-      hasBeenActive: boolean;
-      isActive: boolean;
-    };
-  }
-
   interface Array<T> {
     shuffle(): void;
-  }
-
-  interface HTMLAudioElement {
-    preservesPitch: boolean;
   }
 
   class OffscreenCanvas extends HTMLCanvasElement {
@@ -25,7 +16,7 @@
 
   interface WallpaperProperties {
     fps: number;
-    language: string;
+    language: LanguageKeys;
     taskbar_position: 'bottom' | 'top' | 'left' | 'right';
     taskbar_length: number;
   }

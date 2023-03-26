@@ -3,7 +3,6 @@ import BaseClass from '@/utils/base_class';
 import butterchurn, {MilkDropPresetDesc, Visualizer} from 'butterchurn';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
 import presetList from '@/assets/presets/index';
-import wallpaperProperties from '@/utils/env';
 import messages from '@/assets/locale/messages';
 
 export default class MusicVisualCore extends BaseClass {
@@ -48,15 +47,13 @@ export default class MusicVisualCore extends BaseClass {
       this.loadPreset();
       this.reloadTimeout();
     });
-
-    this.mediaSource = this.audioContext.createMediaElementSource(bus.musicService.audio);
-    this.mediaSource.connect(this.audioContext.destination);
-    this.visualizer.connectAudio(this.mediaSource);
-
     musicVisual.$watch('visualStyles.onlyShowStarPresets', this.loadPresetList);
     musicVisual.$watch('visualStyles.interval', this.reloadTimeout);
+    musicVisual.$watch('visualStyles.useFtt', this.handleUseFtt);
     musicVisual.$watch('visualStyles.lrcMode', this.drawLrcCaption);
     musicVisual.$watch('lrcContext.currentLrcArray', this.drawLrcCaption);
+
+    this.handleUseFtt();
 
     bus.animationRunner.on(this.drawEachFrame);
     bus.animationRunner.once(this.drawLrcCaption);
@@ -97,12 +94,12 @@ export default class MusicVisualCore extends BaseClass {
     this.last = now;
 
     // If there is an FPS limit, abort updating the animation if we have reached the desired FPS
-    if (wallpaperProperties.fps > 0) {
+    if (bus.wallpaperProperties.fps > 0) {
       this.fpsThreshold += dt;
-      if (this.fpsThreshold < 1.0 / wallpaperProperties.fps) {
+      if (this.fpsThreshold < 1.0 / bus.wallpaperProperties.fps) {
         return true;
       }
-      this.fpsThreshold -= 1.0 / wallpaperProperties.fps;
+      this.fpsThreshold -= 1.0 / bus.wallpaperProperties.fps;
     }
     return false;
   }
@@ -193,6 +190,21 @@ export default class MusicVisualCore extends BaseClass {
     }
   }
 
+  private handleUseFtt() {
+    if (bus.visualStyles.useFtt) {
+      this.mediaSource = this.audioContext.createMediaElementSource(bus.musicService.audio);
+      this.mediaSource.connect(this.audioContext.destination);
+      this.visualizer.connectAudio(this.mediaSource);
+    } else {
+      if (this.mediaSource) {
+        this.visualizer.disconnectAudio(this.mediaSource);
+        this.mediaSource.disconnect();
+        this.mediaSource = null;
+        bus.musicService.createAudioElement();
+      }
+    }
+  }
+
   /* 绘制标题歌词 */
   private drawLrcCaption() {
     if (bus.visualStyles.lrcMode === 'scroll') {
@@ -263,8 +275,10 @@ export default class MusicVisualCore extends BaseClass {
     let startY = (height - totalHeight) / 2;
     for (const line of drawLines) {
       context2d.font = `${line.y}px ${fontFamily}`;
-      context2d.lineWidth = Math.max(3 * window.devicePixelRatio, line.y / 10);
-      context2d.strokeText(line.text, line.x, startY);
+      if (strokeColor) {
+        context2d.lineWidth = Math.max(3 * window.devicePixelRatio, line.y / 10);
+        context2d.strokeText(line.text, line.x, startY);
+      }
       context2d.fillText(line.text, line.x, startY);
       startY += line.y + margin;
     }

@@ -2,10 +2,10 @@
   <el-drawer
     :modal="false"
     :visible="show"
-    :wrapper-closable="false"
-    :with-header="true"
-    direction="ltr"
-    size="480px"
+    :wrapper-closable="view.portable"
+    :with-header="!view.portable"
+    :direction="view.portable ? 'btt' : 'ltr'"
+    :size="view.portable ? '80%' : '480px'"
     :append-to-body="true"
     :modal-append-to-body="true"
     @opened="locateMusic"
@@ -48,10 +48,10 @@
           :page-size="pageSize"
           @current-change="onCurrentChange"
         />
-        <input type="file" ref="file" multiple accept="audio/*,.lrc" v-show="false" @change="onFileChange"/>
-        <el-dropdown trigger="click" @command="cmd => cmd()">
+        <input type="file" ref="file" multiple :accept="platform.mobile || 'audio/*,.lrc'" v-show="false" @change="onFileChange"/>
+        <el-dropdown trigger="click" size="large" @command="cmd => cmd()">
           <el-button type="text"  size="medium" icon="el-icon-more" style="color: #409EFF; font-size: 20px; margin-right: 10px;"/>
-          <el-dropdown-menu slot="dropdown" style="text-align: left">
+          <el-dropdown-menu slot="dropdown" style="text-align: left;">
               <el-dropdown-item :command="() => chooseFile(false)">
                 <i class="el-icon-document"/>
                 {{messages['music.add_files']}}

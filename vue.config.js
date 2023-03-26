@@ -2,10 +2,13 @@
 
 const {join} = require('path');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 function resolve(...dir) {
   return join(process.cwd(), ...dir);
 }
+
+const libflacPath = './node_modules/libflacjs/';
 
 const {defineConfig} = require('@vue/cli-service');
 module.exports = defineConfig({
@@ -24,6 +27,7 @@ module.exports = defineConfig({
     }
   },
   chainWebpack(config) {
+    /* region svg-sprite-loader */
     config.module
       .rule('svg')
       .exclude.add(resolve('src/assets/icons/svg'))
@@ -37,6 +41,15 @@ module.exports = defineConfig({
       .loader('svg-sprite-loader')
       .options({symbolId: 'icon-[name]'})
       .end();
+    /* endregion */
+
+    /* region libflac */
+    config.plugin('copy-libflac').use(
+      CopyWebpackPlugin, [[
+        {from: resolve(libflacPath, 'dist/libflac.min.wasm.wasm'), to: '.'}
+      ]]
+    );
+    /* endregion */
 
     config.module
       .rule('lrc')
@@ -51,8 +64,6 @@ module.exports = defineConfig({
       .use('assemblyscript-loader')
       .loader(resolve('butterchurn/loaders/assemblyscript.js'))
       .end();
-
-    config.plugin('node-polyfill-plugin').use(NodePolyfillPlugin);
 
     config.resolve.alias.set('butterchurn', resolve('butterchurn'));
 
@@ -81,5 +92,7 @@ module.exports = defineConfig({
         }
       }
     });
+
+    config.plugin('node-polyfill-plugin').use(NodePolyfillPlugin);
   }
 });

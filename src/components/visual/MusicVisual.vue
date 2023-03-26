@@ -11,6 +11,7 @@ import BaseComponent from '@/components/common/BaseComponent';
 import {Component, Ref, Watch} from 'vue-property-decorator';
 import MusicVisualCore from '@/components/visual/core';
 import PlayerSettings from '@/components/service/player_settings';
+import {KeyMapping, keyMappings} from '@/utils/common_utils';
 import Hammer from 'hammerjs';
 
 @Component
@@ -57,6 +58,14 @@ export default class MusicVisual extends BaseComponent {
     const starHandler = () => PlayerSettings.starPreset(this.visualStyles.preset);
     const prevHandler = () => this.musicVisualCore.prevPreset();
     const nextHandler = () => this.musicVisualCore.nextPreset();
+
+    const mappings: Array<KeyMapping> = [
+      {type: 'keyup', code: 'Numpad5', ctrlKey: true, handler: starHandler},
+      {type: 'keyup', code: 'Numpad4', ctrlKey: true, handler: prevHandler},
+      {type: 'keyup', code: 'Numpad6', ctrlKey: true, handler: nextHandler}
+    ];
+    mappings.forEach(e => keyMappings.add(e));
+    this.$once('hook:beforeDestroy', () => mappings.forEach(e => keyMappings.delete(e)));
 
     this.hammer = new Hammer.Manager(this.canvas, {
       enable: this.visualStyles.lrcMode !== 'scroll'
