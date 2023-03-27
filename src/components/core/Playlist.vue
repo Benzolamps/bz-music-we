@@ -212,7 +212,7 @@ export default class Playlist extends BaseComponent {
     }
   }
 
-  @Watch('music')
+  @Watch('music.id')
   private watchMusic() {
     return this.locateMusic();
   }

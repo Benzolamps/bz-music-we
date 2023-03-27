@@ -65,6 +65,14 @@ export default class LrcContext extends BaseClass {
         this.shownLrc.push({time: time += 2, content: messages['music.no_lrc_1']});
       }
     }
+
+    if (this.lrcObj.dirtyLines.length > 0) {
+      for (const line of this.lrcObj.dirtyLines) {
+        this.shownLrc.push({time, content: `<${line}>`});
+        time += 5;
+      }
+    }
+    return this.shownLrc;
   }
 
   private generateLrcTime() {

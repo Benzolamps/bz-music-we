@@ -86,9 +86,6 @@ export default class MusicVisual extends BaseComponent {
   }
 
   public override beforeDestroy() {
-    if (this.visualStyles.state.show) {
-      location.reload();
-    }
     if (document.pictureInPictureElement) {
       document.exitPictureInPicture();
     }

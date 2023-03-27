@@ -1,44 +1,31 @@
 ﻿<template>
   <section class="music-lrc-editor">
     <header class="music-lrc-editor-buttons">
-      <template v-if="!platform.mobile">
-        <el-button round icon="el-icon-right" @click="insertTag">
-          添加标签<span class="code-font" ref="currentTime">{{ lrcObj.appendTimeTag(0, '') }}</span>
+      <music-carousel v-if="view.portable" style="line-height: 40px; width: calc(100% - 10px); margin-left: 10px;"/>
+      <template>
+        <el-button v-if="!platform.mobile" round icon="el-icon-right" @click="insertTag">
+          {{messages['lrc.editor.insert.tag']}}
+          <span class="code-font" ref="currentTime">{{ lrcObj.appendTimeTag(0, '') }}</span>
         </el-button>
-        <el-button round icon="el-icon-back" @click="deleteTag">删除标签</el-button>
-        <el-button round icon="el-icon-close" @click="clearTag">清空标签</el-button>
-        <el-button round icon="el-icon-sort" @click="sortTag">重新排列</el-button>
-        <el-button round icon="el-icon-paperclip" @click="openMeta">设置元数据</el-button>
-        <el-button round icon="el-icon-document-checked" @click="save">保存</el-button>
-        <el-button round icon="el-icon-document-checked" @click="page = 'MusicPlayer'">退出</el-button>
+        <el-button v-if="!platform.mobile" round icon="el-icon-back" @click="deleteTag">
+          {{messages['lrc.editor.delete.tag']}}
+        </el-button>
+        <el-button round icon="el-icon-close" @click="clearTag">
+          {{messages['lrc.editor.clear.tag']}}
+        </el-button>
+        <el-button round icon="el-icon-sort" @click="sortTag">
+          {{messages['lrc.editor.sort.tag']}}
+        </el-button>
+        <el-button round icon="el-icon-paperclip" @click="openMeta">
+          {{messages['lrc.editor.metadata']}}
+        </el-button>
+        <el-button round icon="el-icon-document-checked" @click="save">
+          {{messages['lrc.editor.save']}}
+        </el-button>
+        <el-button round icon="el-icon-document-checked" @click="page = 'MusicPlayer'">
+          {{messages['lrc.editor.quit']}}
+        </el-button>
       </template>
-
-      <music-carousel v-else style="line-height: 40px; width: calc(100% - 10px); margin-left: 10px;"/>
-
-      <div ref="dropdown" class="menu">
-        <el-dropdown trigger="click" placement="bottom" size="large" @command="cmd => cmd()">
-          <div class="button" ref="menuButton0"/>
-          <el-dropdown-menu slot="dropdown" style="text-align: left;">
-            <el-dropdown-item :command="clearTag">
-              <i class="el-icon-close"/>
-              清空标签
-            </el-dropdown-item>
-            <el-dropdown-item :command="sortTag">
-              <i class="el-icon-sort"/>
-              重新排列
-            </el-dropdown-item>
-            <el-dropdown-item :command="openMeta">
-              <i class="el-icon-paperclip"/>
-              设置元数据
-            </el-dropdown-item>
-            <el-dropdown-item :command="save">
-              <i class="el-icon-document-checked"/>
-              保存
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-
     </header>
     <main class="el-card is-always-shadow">
       <el-scrollbar style="width: 100%; height: 100%;">
@@ -57,8 +44,7 @@
           <td/>
           <td>
             <el-button type="primary" circle plain size="large" icon="el-icon-back" @click="textEditor.undo()"/>
-            <el-button type="primary" circle plain size="large" icon="el-icon-right" @click="textEditor.redo()"/>
-            <el-button type="primary" circle plain size="large" icon="el-icon-more" @click="e => openMenu(0, e)"/>
+            <el-button type="primary" circle plain size="large" icon="el-icon-right" style="margin-right: 25px;" @click="textEditor.redo()"/>
           </td>
         </tr>
         <tr>
@@ -72,7 +58,9 @@
             <el-button type="primary" icon="el-icon-right" size="large" round plain @click="forwardSlight"/>
           </td>
           <td>
-            <el-button type="danger" round plain size="large" icon="el-icon-back" style="width: 140px;" @click="deleteTag">删除标签</el-button>
+            <el-button type="danger" round plain size="large" icon="el-icon-back" style="width: 140px;" @click="deleteTag">
+              {{messages['lrc.editor.delete.tag']}}
+            </el-button>
           </td>
         </tr>
         <tr>
@@ -82,7 +70,9 @@
           </td>
           <td/>
           <td>
-            <el-button type="primary" round plain size="medium" icon="el-icon-right" style="width: 140px;" @click="insertTag">添加标签</el-button>
+            <el-button type="primary" round plain size="medium" icon="el-icon-right" style="width: 140px;" @click="insertTag">
+              {{messages['lrc.editor.insert.tag']}}
+            </el-button>
           </td>
         </tr>
       </table>
@@ -162,10 +152,9 @@ export default class MusicLrcEditor extends BaseComponent {
         code: 'NumpadMultiply',
         handler: () => {
           this.follow = !this.follow;
-          this.$toast(`播放跟随已${this.follow ? '打开' : '关闭'}`);
+          this.$toast(this.messages['lrc.editor.follow'](this.follow));
         }
       },
-      {type: 'keyup', code: 'NumpadDivide', handler: () => this.openMenu(0)},
       {type: 'keyup', code: 'Numpad4', handler: () => this.musicService.seekBackward(5)},
       {type: 'keyup', code: 'Numpad6', handler: () => this.musicService.seekForward(5)},
       {type: 'keyup', code: 'Numpad2', handler: this.nextLine},
@@ -285,31 +274,6 @@ export default class MusicLrcEditor extends BaseComponent {
     this.showMeta = true;
   }
 
-  private async openMenu(type: number, event?: PointerEvent) {
-    const t = event?.target as HTMLElement;
-    const dropdown = this.$refs.dropdown as HTMLDivElement;
-    if (t) {
-      const {left, top, width, height} = t.getClientRects()[0];
-      dropdown.style.position = 'absolute';
-      dropdown.style.left = left + 'px';
-      dropdown.style.top = top + 'px';
-      dropdown.style.width = width + 'px';
-      dropdown.style.height = height + 'px';
-    } else {
-      if (type === 0) {
-        dropdown.style.position = 'relative';
-        dropdown.style.left = '0%';
-        dropdown.style.top = '0%';
-        dropdown.style.width = '100%';
-        dropdown.style.height = '0%';
-      }
-    }
-    await this.$nextTick();
-    const menuButton = dropdown.children.item(type).children.item(0) as HTMLDivElement;
-    menuButton.focus();
-    menuButton.dispatchEvent(new MouseEvent('click'));
-  }
-
   private async save() {
     await this.sortTag();
     const lrcText = this.lrcObj.toString().replaceAll(/\r?\n/g, '\r\n');
@@ -361,7 +325,6 @@ export default class MusicLrcEditor extends BaseComponent {
   width: 100%;
   height: 100%;
   padding: 20px;
-  overflow: hidden;
 
   [client]:not([fullscreen]) & {
     padding-top: 50px;
@@ -375,14 +338,9 @@ export default class MusicLrcEditor extends BaseComponent {
     z-index: 1;
     display: flex;
     flex-wrap: wrap;
-    margin-right: 50px;
 
     > .el-button {
       margin: 5px !important;
-    }
-
-    body[mobile] & {
-      flex-direction: column;
     }
 
     .menu {

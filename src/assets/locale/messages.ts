@@ -1,6 +1,8 @@
 ﻿import {bus} from '@/components/common/common';
 
-export type LanguageKeys = 'en-us' | 'zh-chs' | 'zh-cht';
+export type LanguageKeys = 'en' | 'zh';
+
+type MusicTip = [string, string];
 
 export interface Message extends Readonly<unknown> {
   'colon': string;
@@ -29,8 +31,13 @@ export interface Message extends Readonly<unknown> {
   'music.mode.single': string;
   'music.mode.random': string;
   'music.reset_default': string;
+  'music.tips': [
+    [MusicTip, MusicTip, MusicTip],
+    [MusicTip, MusicTip, MusicTip],
+    [MusicTip, MusicTip, MusicTip],
+    [MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip]
+  ];
   'lrc.settings': string;
-  'lrc.editor': string;
   'lrc.font': string;
   'lrc.apply_font_success': string;
   'lrc.apply_font_failed': string;
@@ -39,7 +46,18 @@ export interface Message extends Readonly<unknown> {
   'lrc.color.future': string;
   'lrc.color.past': string;
   'lrc.color.stroke': string;
+  'lrc.editor': string;
+  'lrc.editor.insert.tag': string;
+  'lrc.editor.delete.tag': string;
+  'lrc.editor.clear.tag': string;
+  'lrc.editor.sort.tag': string;
+  'lrc.editor.metadata': string;
+  'lrc.editor.save': string;
+  'lrc.editor.quit': string;
+  'lrc.editor.follow': (follow: boolean) => string;
   'visual.settings': string;
+  'visual.start': string;
+  'visual.stop': string;
   'visual.display_ratio': string;
   'visual.preset': string;
   'visual.preset.unstar': string;
@@ -57,12 +75,13 @@ export interface Message extends Readonly<unknown> {
   'visual.lrc_mode.mix': string;
   'visual.pip': string;
   'visual.fps': string;
+  'visual.ftt': string;
 }
 
 type LanguageRecord = Readonly<Record<LanguageKeys, Message>>;
 
 const languages: LanguageRecord = {
-  'en-us': {
+  en: {
     'colon': ': ',
     'preview': 'Preview is not supported.',
     'music.no_music': '<No music>',
@@ -89,8 +108,37 @@ const languages: LanguageRecord = {
     'music.mode.single': 'Single loop',
     'music.mode.random': 'Shuffle',
     'music.reset_default': 'Restore default settings',
+    'music.tips': [
+      [
+        ['Ctrl + <-', 'Prev track'],
+        ['Ctrl + ->', 'Next track'],
+        ['Ctrl + Space', 'Play/Pause']
+      ],
+      [
+        ['Ctrl + NumPad4', 'Prev preset'],
+        ['Ctrl + NumPad6', 'Next preset'],
+        ['Ctrl + NumPad5', 'Star/Unstar current preset']
+      ],
+      [
+        ['Swipe Down/Right', 'Prev preset'],
+        ['Swipe Left/Up', 'Next preset'],
+        ['Long press', 'Star/Unstar current preset']
+      ],
+      [
+        ['NumPad+', 'Insert tag'],
+        ['NumPad-', 'Delete tag'],
+        ['NumPad4', 'Seek back 5s'],
+        ['NumPad6', 'Seek forward 5s'],
+        ['NumPad2', 'Seek prev line'],
+        ['NumPad5', 'Seek current line'],
+        ['NumPad8', 'Seek next line'],
+        ['NumPad7', 'Current line time -0.05s'],
+        ['NumPad9', 'Current line time +0.05s'],
+        ['NumPad*', 'Toggle follow mode'],
+        ['NumPad0', 'Play/Pause']
+      ]
+    ],
     'lrc.settings': 'Lyrics settings',
-    'lrc.editor': 'Lyrics editor',
     'lrc.font': 'Font',
     'lrc.apply_font_success': 'Font applied',
     'lrc.apply_font_failed': 'Font apply failed',
@@ -99,7 +147,18 @@ const languages: LanguageRecord = {
     'lrc.color.future': 'Future color',
     'lrc.color.past': 'Past color',
     'lrc.color.stroke': 'Stroke color',
+    'lrc.editor': 'Lyrics editor',
+    'lrc.editor.insert.tag': 'Insert tag',
+    'lrc.editor.delete.tag': 'Delete tag',
+    'lrc.editor.clear.tag': 'Clear tag',
+    'lrc.editor.sort.tag': 'Sort tag',
+    'lrc.editor.metadata': 'Set metadata',
+    'lrc.editor.save': 'Save',
+    'lrc.editor.quit': 'Quit',
+    'lrc.editor.follow': follow => `Follow mode ${follow ? 'activated' : 'deactivated'}.`,
     'visual.settings': 'Visualization settings',
+    'visual.start': 'Start',
+    'visual.stop': 'Stop',
     'visual.display_ratio': 'Display resolution',
     'visual.preset': '[Milk Drop] preset',
     'visual.preset.unstar': 'Unstarred',
@@ -116,9 +175,10 @@ const languages: LanguageRecord = {
     'visual.lrc_mode.caption': 'Caption',
     'visual.lrc_mode.mix': 'Mix',
     'visual.pip': '[Picture in Picture] mode',
-    'visual.fps': 'Show FPS'
+    'visual.fps': 'Show FPS',
+    'visual.ftt': 'Use FTT'
   },
-  'zh-chs': {
+  zh: {
     'colon': '：',
     'preview': '暂不支持预览',
     'music.no_music': '<暂无歌曲>',
@@ -145,8 +205,37 @@ const languages: LanguageRecord = {
     'music.mode.single': '单曲循环',
     'music.mode.random': '随机播放',
     'music.reset_default': '恢复默认设置',
+    'music.tips': [
+      [
+        ['Ctrl + <-', '上一曲'],
+        ['Ctrl + ->', '下一曲'],
+        ['Ctrl + 空格', '播放/暂停']
+      ],
+      [
+        ['Ctrl + 数字键4', '上一个预设'],
+        ['Ctrl + 数字键6', '下一个预设'],
+        ['Ctrl + 数字键5', '收藏/取消收藏当前预设']
+      ],
+      [
+        ['右滑/下滑', '上一个预设'],
+        ['左滑/上滑', '下一个预设'],
+        ['长按', '收藏/取消收藏当前预设']
+      ],
+      [
+        ['数字键+', '添加标签'],
+        ['数字键-', '删除标签'],
+        ['数字键4', '快退5s'],
+        ['数字键6', '快进5s'],
+        ['数字键8', '上一行'],
+        ['数字键5', '当前行'],
+        ['数字键2', '下一行'],
+        ['数字键7', '当前行时间-0.05s'],
+        ['数字键9', '当前行时间+0.05s'],
+        ['数字键*', '切换跟随模式'],
+        ['数字键0', '播放/暂停']
+      ]
+    ],
     'lrc.settings': '歌词设置',
-    'lrc.editor': '歌词编辑',
     'lrc.font': '字体',
     'lrc.apply_font_success': '字体应用成功',
     'lrc.apply_font_failed': '字体应用失败',
@@ -155,7 +244,18 @@ const languages: LanguageRecord = {
     'lrc.color.future': '未播放颜色',
     'lrc.color.past': '已播放颜色',
     'lrc.color.stroke': '描边颜色',
+    'lrc.editor': '歌词编辑',
+    'lrc.editor.insert.tag': '添加标签',
+    'lrc.editor.delete.tag': '删除标签',
+    'lrc.editor.clear.tag': '清空标签',
+    'lrc.editor.sort.tag': '重新排列',
+    'lrc.editor.metadata': '设置元数据',
+    'lrc.editor.save': '保存',
+    'lrc.editor.quit': '退出',
+    'lrc.editor.follow': follow => `播放跟随已${follow ? '打开' : '关闭'}`,
     'visual.settings': '可视化设置',
+    'visual.start': '开启',
+    'visual.stop': '关闭',
     'visual.display_ratio': '展示分辨率',
     'visual.preset': 'Milk Drop 预设',
     'visual.preset.unstar': '已取消收藏',
@@ -172,67 +272,12 @@ const languages: LanguageRecord = {
     'visual.lrc_mode.caption': '标题',
     'visual.lrc_mode.mix': '组合',
     'visual.pip': '画中画模式',
-    'visual.fps': '显示FPS'
-  },
-  'zh-cht': {
-    'colon': '：',
-    'preview': '暫不支持預覽',
-    'music.no_music': '<暫無歌曲>',
-    'music.no_lrc': '無歌詞',
-    'music.no_lrc_1': '<暫無歌詞>',
-    'music.add_files': '添加文件',
-    'music.add_folder': '添加文件夾',
-    'music.warning': '系统提醒',
-    'music.delete': content => `確定要刪除${content}？`,
-    'music.confirm': '确定',
-    'music.cancel': '取消',
-    'music.no_proper_files': '沒有符合條件的文件',
-    'music.about_to_import': (audioCount, lrcCount) => `即將導入${audioCount}個音頻文件和${lrcCount}個歌詞文件，是否保留列表中已有的文件？`,
-    'music.keep': '保留',
-    'music.do_not_keep': '不保留',
-    'music.cancel_import': '取消導入',
-    'music.import_finish': (audioCount, lrcCount) => `導入${audioCount}個音頻文件和${lrcCount}個歌詞文件完成`,
-    'music.cannot_play': (title, error) => `無法播放${title}：${error}`,
-    'music.pitch': '倍速',
-    'music.mute': '靜音',
-    'music.unmute': '取消靜音',
-    'music.volume': '音量',
-    'music.mode.sequence': '列表循環',
-    'music.mode.single': '單曲循環',
-    'music.mode.random': '隨機播放',
-    'music.reset_default': '恢復默認設置',
-    'lrc.settings': '歌詞設置',
-    'lrc.editor': '歌詞編輯',
-    'lrc.font': '字體',
-    'lrc.apply_font_success': '字體應用成功',
-    'lrc.apply_font_failed': '字體應用失敗',
-    'lrc.font.custom': '自定義',
-    'lrc.color.default': '默認顏色',
-    'lrc.color.future': '未播放顏色',
-    'lrc.color.past': '已播放顏色',
-    'lrc.color.stroke': '描邊顏色',
-    'visual.settings': '可視化設置',
-    'visual.display_ratio': '展示分辨率',
-    'visual.preset': 'Milk Drop 預設',
-    'visual.preset.unstar': '已取消收藏',
-    'visual.preset.star': '已收藏',
-    'visual.preset.only_show_stars': '衹顯示',
-    'visual.preset.random': '隨機切換',
-    'visual.preset.config': '配置',
-    'visual.preset.prev': '上一個',
-    'visual.preset.next': '下一個',
-    'visual.preset.interval': '切換間隔',
-    'visual.preset.switch': '已切換到',
-    'visual.lrc_mode': '歌詞展示方式',
-    'visual.lrc_mode.scroll': '滾動',
-    'visual.lrc_mode.caption': '標題',
-    'visual.lrc_mode.mix': '組合',
-    'visual.pip': '畫中畫模式',
-    'visual.fps': '顯示FPS'
+    'visual.fps': '显示FPS',
+    'visual.ftt': '使用FTT'
   }
 };
 
-export default new Proxy(languages['en-us'], {
+export default new Proxy(languages.en, {
   get(target: Message, p: keyof Message) {
     const lang = bus?.language;
     const messages = (languages[lang] ?? target) as Message;

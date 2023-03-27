@@ -10,8 +10,8 @@ export interface Platform extends Readonly<Partial<Record<PlatformKeys, boolean>
   readonly key: PlatformKeys;
   readonly name: string;
   readonly mobile: boolean;
-  readonly standalone?: boolean;
   readonly wallpaper?: boolean;
+  readonly standalone?: boolean;
 }
 
 /**
@@ -19,8 +19,8 @@ export interface Platform extends Readonly<Partial<Record<PlatformKeys, boolean>
  */
 export const platforms = (() => {
   const client_standalone: Omit<Platform, 'key' | 'name' | 'mobile'> = {
-    standalone: window.matchMedia('(display-mode: standalone)').matches,
-    wallpaper: Object.keys(window).some(k => k.match(/^wallpaper/))
+    wallpaper: Object.keys(window).some(k => k.match(/^wallpaper/)),
+    standalone: window.matchMedia('(display-mode: standalone)').matches
   };
 
   const platforms: Record<PlatformKeys, Platform> = {

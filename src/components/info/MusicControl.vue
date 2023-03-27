@@ -82,29 +82,17 @@
       :size="view.portable ? '90%' : '480px'"
     >
       <section class="music-control-drawer">
-<!--        <el-tabs class="music-control-drawer-head" v-model="tabName">-->
-<!--          <el-tab-pane :label="messages['lrc.settings']" name="lrc"/>-->
-<!--          <el-tab-pane :label="messages['visual.settings']" name="visual"/>-->
-<!--          <el-tab-pane label="歌词编辑" name="editor"/>-->
-<!--        </el-tabs>-->
-<!--        <music-lrc-editor v-if="tabName === 'editor'"/>-->
-<!--        <el-scrollbar v-else class="music-control-drawer-body">-->
-<!--          <music-lrc-setting v-if="tabName === 'lrc'"/>-->
-<!--          <music-visual-setting v-if="tabName === 'visual'"/>-->
-<!--        </el-scrollbar>-->
         <template v-if="tabName === 'index'">
-          <div style="flex: 1">
-            <p>Ctrl + → {{attrSeparator}} 下一曲</p>
-            <p>Ctrl + ← {{attrSeparator}} 上一曲</p>
-            <p>Ctrl + Space {{attrSeparator}} 播放/暂停</p>
-            <p>NumPad 4 {{attrSeparator}} 上一个预设</p>
-            <p>NumPad 6 {{attrSeparator}} 下一个预设</p>
-            <p>NumPad 5 {{attrSeparator}} 收藏/取消收藏</p>
+          <div class="music-control-tip">
+            <ul v-for="tip in tips" :key="tip[0]">
+              <li class="code-font">{{tip[0]}}</li>
+              <li>{{tip[1]}}</li>
+            </ul>
           </div>
           <div v-show="page === 'MusicPlayer'">
-            <el-button @click="tabName = 'lrc'" size="medium" round>{{messages['lrc.settings']}}</el-button>
-            <el-button @click="tabName = 'visual'" size="medium" round>{{messages['visual.settings']}}</el-button>
-            <el-button v-if="!platform.wallpaper" @click="page = 'MusicLrcEditor'" size="medium" round>{{messages['lrc.editor']}}</el-button>
+            <el-button @click="tabName = 'lrc'" size="mini" round>{{ messages['lrc.settings'] }}</el-button>
+            <el-button @click="tabName = 'visual'" size="mini" round>{{ messages['visual.settings'] }}</el-button>
+            <el-button v-if="!platform.wallpaper" @click="page = 'MusicLrcEditor'" size="mini" round>{{ messages['lrc.editor'] }}</el-button>
           </div>
           <div class="popover-drawer">
             <music-mode/>
@@ -113,11 +101,11 @@
           </div>
         </template>
         <template v-else-if="tabName === 'lrc'">
-          <el-page-header @back="tabName = 'index'" content="歌词设置"/>
+          <el-page-header @back="tabName = 'index'" :content="messages['lrc.settings']"/>
           <music-lrc-setting/>
         </template>
         <template v-else-if="tabName === 'visual'">
-          <el-page-header @back="tabName = 'index'" content="可视化设置"/>
+          <el-page-header @back="tabName = 'index'" :content="messages['visual.settings']"/>
           <music-visual-setting/>
         </template>
       </section>
@@ -168,7 +156,24 @@ export default class MusicControl extends BaseComponent {
     appendToBody: false
   };
 
-  private readonly tabName: 'index' | 'lrc' | 'visual' | 'editor' = 'index';
+  private readonly tabName: 'index' | 'lrc' | 'visual' = 'index';
+  
+  private get tips() {
+    const tips = this.messages['music.tips'];
+    if (this.page === 'MusicPlayer') {
+      if (this.platform.wallpaper) {
+        return tips[2];
+      } else {
+        if (this.visualStyles.state.show) {
+          return tips.slice(0, 3).flatMap(t => t);
+        } else {
+          return tips[0];
+        }
+      }
+    } else {
+      return tips[3];
+    }
+  }
 
   public override mounted() {
     this.addSliderEventListeners();
@@ -361,6 +366,19 @@ export default class MusicControl extends BaseComponent {
   flex-direction: column;
   justify-content: space-between;
   
+  .music-control-tip {
+    flex: 1;
+
+    ul {
+      display: flex;
+      text-align: left;
+
+      li {
+        flex: 1;
+      }
+    }
+  }
+
   .el-button-group {
     display: flex;
     justify-content: center;

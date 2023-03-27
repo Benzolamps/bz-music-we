@@ -26,18 +26,19 @@
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
 import {Component} from 'vue-property-decorator';
+import {getAbsoluteUrl} from '@/utils/common_utils';
 
 @Component
 export default class HeadDefinition extends BaseComponent {
   private readonly themeColor = '#C6E2FF';
-  private readonly favicon = 'favicon.png';
+  private readonly favicon = getAbsoluteUrl('favicon.png');
 
   private get manifestUrl() {
     const manifest = {
       name: document.title,
       short_name: document.title,
       description: document.title + ' - ' + location.host,
-      start_url: 'index.html',
+      start_url: getAbsoluteUrl('index.html'),
       display: 'standalone',
       background_color: this.themeColor,
       theme_color: this.themeColor,
@@ -61,7 +62,7 @@ export default class HeadDefinition extends BaseComponent {
     for (const element of children) {
       document.head.appendChild(element);
     }
-    navigator.serviceWorker?.register('sw.js');
+    navigator.serviceWorker?.register(getAbsoluteUrl('sw.js'));
     this.$destroy();
   }
 }

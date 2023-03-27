@@ -2,9 +2,9 @@
   <div id="app">
     <head-definition/>
     <div class="loading-background"/>
-    <toast/>
     <music-player v-if="page === 'MusicPlayer' && musicRegistered"/>
     <music-lrc-editor v-if="page === 'MusicLrcEditor' && musicRegistered"/>
+    <toast/>
     <h1 v-if="!webgl2Supported">{{ messages.preview }}</h1>
   </div>
 </template>
@@ -37,19 +37,12 @@ export default class App extends BaseComponent {
   public override async mounted() {
     this.$toast.showLoading();
     await loadBasicFonts();
-    await this.$sleep(100);
-    this.$toast.close();
-    
-    if (this.wallpaperProperties.language) {
-      this.language = this.wallpaperProperties.language;
-    } else {
-      if (navigator.language.match(/(^en$)|(^en-)/)) {
-        this.language = 'en-us';
-      } else if (navigator.language.match(/(^zh-TW$)|(^zh-HK$)/)) {
-        this.language = 'zh-cht';
-      } else if (navigator.language.match(/(^zh$)|(^zh-)/)) {
-        this.language = 'zh-chs';
-      }
+  
+    const nativeLanguage = this.wallpaperProperties.language || navigator.language;
+    if (nativeLanguage.match(/(^en$)|(^en-)/)) {
+      this.language = 'en';
+    } else if (nativeLanguage.match(/(^zh$)|(^zh-)/)) {
+      this.language = 'zh';
     }
 
     const canvas = document.createElement('canvas');
@@ -58,6 +51,9 @@ export default class App extends BaseComponent {
       await this.registerMusic();
       this.musicRegistered = true;
     }
+
+    await this.$sleep(100);
+    this.$toast.close();
   }
 
   public override destroyed() {
@@ -97,19 +93,23 @@ export default class App extends BaseComponent {
     const musicTitle = this.musicService?.music?.title;
     document.title = [musicTitle, title].filter(t => t).join(' - ');
   }
+
+  @Watch('wallpaperProperties.language')
+  private watchWallpaperLanguage(value: string) {
+    if (value.match(/(^en$)|(^en-)/)) {
+      this.language = 'en';
+    } else if (value.match(/(^zh$)|(^zh-)/)) {
+      this.language = 'zh';
+    }
+  }
   
   @Watch('language')
-  @Watch('wallpaperProperties.language')
   private watchLanguage(value: LanguageKeys) {
-    this.language = value;
     const locale = require('element-ui/lib/locale/index.js');
-    const zhChsLang = require('element-ui/lib/locale/lang/zh-CN.js').default;
-    const zhChtLang = require('element-ui/lib/locale/lang/zh-TW.js').default;
+    const zhLang = require('element-ui/lib/locale/lang/zh-CN.js').default;
     const enLang = require('element-ui/lib/locale/lang/en.js').default;
-    if (value === 'zh-chs') {
-      locale.use(zhChsLang);
-    } else if (value === 'zh-cht') {
-      locale.use(zhChtLang);
+    if (value === 'zh') {
+      locale.use(zhLang);
     } else {
       locale.use(enLang);
     }

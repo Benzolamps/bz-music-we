@@ -68,6 +68,10 @@ export default class MusicService extends MusicComponent {
     }
   }
 
+  private get useForLrcEditor() {
+    return this.vue.page === 'MusicLrcEditor';
+  }
+
   private mapEvents() {
     this.on('prevMusic', this.prevMusic);
     this.on('nextMusic', this.nextMusic);
@@ -94,7 +98,7 @@ export default class MusicService extends MusicComponent {
     this.vue.$once('hook:beforeDestroy', () => mappings.forEach(e => keyMappings.delete(e)));
   }
 
-  private initMusic() {
+  private async initMusic() {
     this.musicList = this.vue.musicStorage.musicList;
     this.shuffleMusicList();
 
@@ -113,7 +117,7 @@ export default class MusicService extends MusicComponent {
 
       this.nextMusicType = 'next';
       if (this.isEnded) {
-        this.changeMusic();
+        await this.changeMusic();
       } else {
         this.stop();
       }
@@ -163,14 +167,14 @@ export default class MusicService extends MusicComponent {
     let music;
     if (this.choseMusic) {
       music = this.choseMusic;
-    } else if (this.nextMusicType === 'default' && this.mode.single && this.music.id) {
+    } else if (this.nextMusicType === 'default' && (this.mode.single || this.useForLrcEditor) && this.music.id) {
       music = this.music;
     } else {
       music = this.getNearMusic();
     }
     if (music.id) {
       if (platform.ios && music.musicProvider.type === 'audio/flac') {
-        const wav = await this.flacHandler.flacToWav(music.musicProvider);
+        const wav = await this.flacHandler.flacToWav(music.musicProvider, music.title);
         if (wav) {
           music.objUrl = wav;
         }

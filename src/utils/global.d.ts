@@ -16,7 +16,7 @@ declare global {
 
   interface WallpaperProperties {
     fps: number;
-    language: LanguageKeys;
+    language: string;
     taskbar_position: 'bottom' | 'top' | 'left' | 'right';
     taskbar_length: number;
   }

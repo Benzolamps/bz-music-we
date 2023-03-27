@@ -62,12 +62,15 @@
       <div style="margin: 10px;">
         <el-checkbox v-model="visualStyles.state.pip">{{messages['visual.pip']}}</el-checkbox>
         <el-checkbox v-model="visualStyles.showFps">{{messages['visual.fps']}}</el-checkbox>
-        <el-checkbox v-if="!platform.wallpaper" v-model="visualStyles.useFtt">读取FTT</el-checkbox>
+        <el-checkbox v-if="!platform.wallpaper" v-model="visualStyles.useFtt">{{messages['visual.ftt']}}</el-checkbox>
       </div>
     </el-form-item>
     <el-form-item>
-      <el-button v-if="!visualStyles.state.show" type="warning" @click="visualStyles.state.show = true">开启</el-button>
-      <el-button v-if="!platform.wallpaper && visualStyles.state.show" type="success" @click="visualStyles.state.show = false">关闭</el-button>
+      <el-button
+        v-if="!platform.wallpaper"
+        :type="visualStyles.state.show ? 'success' : 'warning'"
+        @click="visualStyles.state.show = !visualStyles.state.show"
+      >{{visualStyles.state.show ? messages['visual.stop'] : messages['visual.start']}}</el-button>
       <el-button type="warning" @click="resetSettings">{{messages['music.reset_default']}}</el-button>
     </el-form-item>
     <el-drawer
@@ -147,9 +150,9 @@ export default class MusicVisualSetting extends BaseComponent {
   }
 
   private loadPresetList() {
-    this.presetList = this.visualStyles.onlyShowStarPresets
+    this.presetList = Object.freeze(this.visualStyles.onlyShowStarPresets
       ? this.basePresetList.filter(p => this.visualStyles.starPresets.has(p.name))
-      : Array.from(this.basePresetList);
+      : Array.from(this.basePresetList));
     this.onCurrentChange(this.currentPage);
   }
 

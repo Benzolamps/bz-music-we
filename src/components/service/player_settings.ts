@@ -23,7 +23,7 @@ export default class PlayerSettings {
     preset: '',
     starPresets: new Set<string>(),
     onlyShowStarPresets: false,
-    useFtt: !platform.mobile,
+    useFtt: true,
     random: false,
     interval: 30,
     showFps: false,
@@ -35,7 +35,7 @@ export default class PlayerSettings {
       video: false
     }
   };
-  
+
   public static getLrcStyles() {
     let result;
     if (window.name === 'MusicLrcDesktop') {
@@ -69,7 +69,8 @@ export default class PlayerSettings {
     if (store.visualStyles instanceof Object) {
       const visualStyles = store.visualStyles as typeof this.defaultVisualStyles;
       visualStyles.starPresets = new Set(visualStyles.starPresets ?? []);
-      return {...visualStyles, state: this.defaultVisualStyles.state} as typeof this.defaultVisualStyles;
+      const {useFtt, state} = this.defaultVisualStyles;
+      return {...visualStyles, useFtt, state} as typeof this.defaultVisualStyles;
     } else {
       const visualStyles = JSON.parse(JSON.stringify(this.defaultVisualStyles));
       visualStyles.starPresets = new Set();

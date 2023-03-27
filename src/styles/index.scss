@@ -19,15 +19,11 @@ body {
   /* 解决element-ui弹窗问题 */
   padding-right: 0 !important;
 
-  &:not([mobile]) .code-font, .cm-editor * {
+  .code-font, .cm-editor * {
     font-family: 'JetBrains Mono', 'PingFang SC', 'monospace' !important;
   }
 
-  &[mobile] :not([class*=icon]) {
-    font-family: 'Arial', 'sans-serif';
-  }
-
-  &:not([mobile]) :not([class*=icon]) {
+  :not([class*=icon]) {
     font-family: 'PingFang SC', 'Arial', 'sans-serif';
   }
 

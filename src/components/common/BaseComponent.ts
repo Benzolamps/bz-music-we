@@ -19,7 +19,7 @@ class BaseComponentStaticData {
   public language: LanguageKeys = null;
   public readonly attrSeparator = attrSeparator;
   public readonly messages = messages;
-  public readonly wallpaperProperties = window.wallpaperProperties;
+  public readonly wallpaperProperties = window.wallpaperProperties ?? {} as WallpaperProperties;
   public page: 'MusicPlayer' | 'MusicLrcEditor' = 'MusicPlayer';
   public $toast: Toast['utilType'] = null;
   public musicStorage: MusicStorage = null;

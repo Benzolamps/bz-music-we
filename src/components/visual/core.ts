@@ -66,9 +66,9 @@ export default class MusicVisualCore extends BaseClass {
   }
 
   private loadPresetList() {
-    this.presetList = bus.visualStyles.onlyShowStarPresets
+    this.presetList = Object.freeze(bus.visualStyles.onlyShowStarPresets
       ? this.basePresetList.filter(p => bus.visualStyles.starPresets.has(p.name))
-      : Array.from(this.basePresetList);
+      : Array.from(this.basePresetList));
     const presetList = Array.from(this.presetList);
     presetList.shuffle();
     this.randomPresetList = Object.freeze(presetList);
@@ -235,11 +235,8 @@ export default class MusicVisualCore extends BaseClass {
 
     const strokeColor = bus.lrcStyles.strokeColor;
 
-    const fontSize = Math.max(50 * window.devicePixelRatio, Math.min(width, height) * .12);
-
+    const fontSize = Math.min(width, height) * .12;
     const fontFamily = 'LrcFont';
-
-    const margin = 50 * window.devicePixelRatio;
 
     /* endregion */
 
@@ -261,7 +258,7 @@ export default class MusicVisualCore extends BaseClass {
       for (validFontSize = fontSize; validFontSize > 9; validFontSize--) {
         context2d.font = `${validFontSize}px ${fontFamily}`;
         textWidth = context2d.measureText(line).width;
-        if (textWidth < width - 2 * margin) {
+        if (textWidth < width - 2 * fontSize) {
           break;
         }
       }
@@ -271,7 +268,7 @@ export default class MusicVisualCore extends BaseClass {
     /* endregion */
 
     /* region 绘制各行 */
-    const totalHeight = margin * (lines.length - 1) + drawLines.map(line => line.y).reduce((a, b) => a + b, 0);
+    const totalHeight = fontSize * (lines.length - 1) / 2 + drawLines.map(line => line.y).reduce((a, b) => a + b, 0);
     let startY = (height - totalHeight) / 2;
     for (const line of drawLines) {
       context2d.font = `${line.y}px ${fontFamily}`;
@@ -280,7 +277,7 @@ export default class MusicVisualCore extends BaseClass {
         context2d.strokeText(line.text, line.x, startY);
       }
       context2d.fillText(line.text, line.x, startY);
-      startY += line.y + margin;
+      startY += line.y + fontSize / 2;
     }
 
     /* endregion */
