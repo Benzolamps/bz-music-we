@@ -38,6 +38,7 @@ export default class MusicComponent extends BaseClass {
       }
       this.isEnded = false;
       this.isPaused = !this.isPlaying;
+      this.duration = this.audio.duration || this.duration;
     },
     play: () => {
       if (!this.playingMusic) {
@@ -69,9 +70,6 @@ export default class MusicComponent extends BaseClass {
         this.setMusic(null);
         return;
       }
-      this.isPlaying = false;
-      this.isPaused = false;
-      this.isEnded = true;
       this.stop();
     },
     error: () => {
@@ -165,11 +163,12 @@ export default class MusicComponent extends BaseClass {
 
   /* 停止 */
   public stop() {
+    this.isEnded = true;
+    this.isPlaying = false;
+    this.isPlayed = false;
+    this.isPaused = false;
     if (this.playingMusic) {
       this.setMusic(null);
-      this.isEnded = true;
-      this.isPlaying = false;
-      this.isPlayed = false;
       this.vue.$nextTick(() => this.vue.$emit('ended'));
     }
   }

@@ -45,6 +45,7 @@ export default class MusicLrc extends BaseComponent {
   public override mounted() {
     this.refreshScroll();
     window.addEventListener('resize', this.adjustHeight, {signal: this.abortSignal});
+    this.animationRunner.once(this.updateTime);
     this.$nextTick(this.adjustHeight);
   }
 
@@ -134,6 +135,7 @@ export default class MusicLrc extends BaseComponent {
     lrcContainer.style.setProperty('--lrc-progress-future', this.lrcContext.progress * 200 + '%');
   }
 
+  @Watch('musicService.duration')
   @Watch('musicService.currentTime')
   private watchCurrentTime() {
     this.animationRunner.once(this.updateTime);

@@ -140,6 +140,7 @@ export default class MusicLrcEditor extends BaseComponent {
     if (this.music) {
       this.readLrc();
     }
+    this.animationRunner.once(this.updateTime);
   }
 
   private mapKey() {
@@ -308,6 +309,7 @@ export default class MusicLrcEditor extends BaseComponent {
     }
   }
 
+  @Watch('musicService.duration')
   @Watch('musicService.currentTime')
   private watchCurrentTime() {
     this.animationRunner.once(this.updateTime);

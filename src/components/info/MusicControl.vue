@@ -177,6 +177,7 @@ export default class MusicControl extends BaseComponent {
 
   public override mounted() {
     this.addSliderEventListeners();
+    this.animationRunner.once(this.updateTime);
   }
 
   public override beforeDestroy() {
@@ -252,6 +253,7 @@ export default class MusicControl extends BaseComponent {
     oldValue && this.$toast(this.messages['music.volume'] + this.messages.colon + Math.floor(value * 100));
   }
 
+  @Watch('musicService.duration')
   @Watch('musicService.currentTime')
   private watchCurrentTime() {
     this.animationRunner.once(this.updateTime);
