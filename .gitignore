@@ -4,6 +4,7 @@ node_modules
 /dist_electron
 /build
 /data
+/src/assets/**/sample
 
 # local env files
 .env.local

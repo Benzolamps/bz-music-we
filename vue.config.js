@@ -68,14 +68,14 @@ module.exports = defineConfig({
     config.resolve.alias.set('butterchurn', resolve('butterchurn'));
 
     config.resolve.alias.set('butterchurn-presets', [
-      resolve('src/assets/presets'),
+      resolve('src/assets/presets/sample'),
       resolve('node_modules/butterchurn-presets/presets/converted')
     ]);
 
     config.optimization.splitChunks({
       chunks: 'all',
       cacheGroups: {
-        libs: {
+        vendors: {
           name: 'chunk-vendors',
           test: resolve('node_modules'),
           chunks: 'initial'
@@ -88,7 +88,8 @@ module.exports = defineConfig({
         presets: {
           name: 'butterchurn-presets',
           test: /presets/,
-          chunks: 'initial'
+          chunks: 'initial',
+          priority: 1
         }
       }
     });

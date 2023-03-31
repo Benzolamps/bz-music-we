@@ -231,7 +231,7 @@ export default class MusicVisualCore extends BaseClass {
       bus.lrcStyles.defaultColor,
       bus.lrcStyles.pastColor,
       bus.lrcStyles.futureColor
-    ][Math.floor(Math.random() * 4)];
+    ][Math.floor(Math.random() * 3)];
 
     const strokeColor = bus.lrcStyles.strokeColor;
 
