@@ -3,7 +3,6 @@ import {Music} from '@/components/service/music';
 
 import defaultSrc from '@/assets/media/empty.wav';
 import BaseClass from '@/utils/base_class';
-import {getAbsoluteUrl} from '@/utils/common_utils';
 
 export default class MusicComponent extends BaseClass {
   /* 音乐 */
@@ -214,7 +213,7 @@ export default class MusicComponent extends BaseClass {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: this.playingMusic.title,
-        artwork: [{src: getAbsoluteUrl('favicon.png'), sizes: '128x128', type: 'image/png'}]
+        artwork: [{src: new URL('favicon.png', document.baseURI).toString(), sizes: '128x128', type: 'image/png'}]
       });
       navigator.mediaSession.setActionHandler('previoustrack', () => this.vue.$emit('prevMusic'));
       navigator.mediaSession.setActionHandler('nexttrack', () => this.vue.$emit('nextMusic'));

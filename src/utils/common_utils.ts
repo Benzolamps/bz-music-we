@@ -145,7 +145,3 @@ export function getTextData(url: string) {
 export function getBinaryData(url: string) {
   return fetch(url).then(res => res.blob());
 }
-
-export function getAbsoluteUrl(url: string) {
-  return new URL(url, location.origin).toString();
-}

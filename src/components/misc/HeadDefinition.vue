@@ -1,6 +1,5 @@
 ﻿<template>
-  <head>
-    <title v-if="false"/>
+  <div>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta http-equiv="Expires" content="0"/>
@@ -20,25 +19,24 @@
     <link rel="icon" type="image/png" :href="favicon"/>
     <link rel="apple-touch-icon" :href="favicon"/>
     <link rel="manifest" :href="manifestUrl"/>
-  </head>
+  </div>
 </template>
 
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
 import {Component} from 'vue-property-decorator';
-import {getAbsoluteUrl} from '@/utils/common_utils';
 
 @Component
 export default class HeadDefinition extends BaseComponent {
   private readonly themeColor = '#C6E2FF';
-  private readonly favicon = getAbsoluteUrl('favicon.png');
+  private readonly favicon = new URL('favicon.png', document.baseURI).toString();
 
   private get manifestUrl() {
     const manifest = {
       name: document.title,
       short_name: document.title,
       description: document.title + ' - ' + location.host,
-      start_url: getAbsoluteUrl('index.html'),
+      start_url: new URL('index.html', location.origin),
       display: 'standalone',
       background_color: this.themeColor,
       theme_color: this.themeColor,
@@ -57,12 +55,11 @@ export default class HeadDefinition extends BaseComponent {
 
   public override mounted() {
     const children = this.$el.children;
-    const elements = document.body.querySelectorAll('meta');
-    elements.forEach(element => element.remove());
     for (const element of children) {
       document.head.appendChild(element);
     }
-    navigator.serviceWorker?.register(getAbsoluteUrl('sw.js'));
+    navigator.serviceWorker?.register(new URL('sw.js', location.origin));
+    this.$el.remove();
     this.$destroy();
   }
 }
