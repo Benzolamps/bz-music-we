@@ -1,14 +1,43 @@
 ﻿import pfsc from '@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf';
 import jbm from '@/assets/fonts/JetBrainsMono-Regular.ttf';
 import {bus} from '@/components/common/common';
+import fileAssets, {clearFileAssets} from '@/components/service/file_assets';
+import {readAsBlob} from '@/utils/file_handle';
 
 export const attrSeparator = '\u3000';
+
+String.prototype.hash = function () {
+  let h = 5381;
+  let index = this.length;
+  while (index) {
+    h = h * 33 ^ this.charCodeAt(--index);
+  }
+  return h >>> 0;
+};
+
+export function randomHash() {
+  return JSON.stringify([Date.now(), Math.random()]).hash();
+}
 
 Array.prototype.shuffle = function () {
   let i = this.length;
   while (i) {
     const j = Math.floor(Math.random() * i--);
     [this[j], this[i]] = [this[i], this[j]];
+  }
+};
+
+Array.prototype.remove = function (element) {
+  const index = this.findIndex(e => e === element);
+  if (index >= 0) {
+    this.splice(index, 1);
+  }
+};
+
+Array.prototype.removeIf = function (predicate) {
+  const index = this.findIndex(predicate);
+  if (index >= 0) {
+    this.splice(index, 1);
   }
 };
 
@@ -29,7 +58,6 @@ export function getFileBaseName(fileName: string) {
   result = result.replace(/\.[^.]*$/, '');
   return result;
 }
-
 
 export interface KeyMapping {
   code?: string | RegExp;
@@ -56,7 +84,6 @@ export function registerEvents() {
     {capture: true, signal}
   ];
   document.addEventListener('drag', ...args);
-  document.addEventListener('drop', ...args);
   document.addEventListener('dragenter', ...args);
   document.addEventListener('dragover', ...args);
   document.addEventListener('dragstart', ...args);
@@ -67,8 +94,8 @@ export function registerEvents() {
   const keyArgs: [(ev: KeyboardEvent) => void, AddEventListenerOptions] = [
     event => {
       let result = false;
-      keyMappings.forEach(value => {
-        if ((value.code === event.code || value.code instanceof RegExp && event.code.match(value.code))
+      for (const value of keyMappings) {
+        if ((value.code === event.code || value.code instanceof RegExp && value.code.test(event.code))
           && value.type === event.type
           && (!value.target || event.composedPath().includes(value.target))
           && !!value.ctrlKey === event.ctrlKey
@@ -76,9 +103,9 @@ export function registerEvents() {
           && !!value.altKey === event.altKey
         ) {
           result = true;
-          value.handler?.call(null);
+          value.handler?.();
         }
-      });
+      }
       if (result) {
         event.stopPropagation();
         event.preventDefault();
@@ -109,39 +136,41 @@ export function formatFileSize(value: number) {
  * @param delta {number} 秒数
  * @returns {string}
  */
-export function formatDelta(delta: number) {
-  let h = delta;
-  const s = (h % 60).toFixed(2);
-  h = Math.floor(h / 60);
-  const m = h % 60;
-  h = Math.floor(h / 60);
-  let str = '';
-  if (h > 0) {
-    str += (h < 10 ? '0' + h : h) + ':';
+export function formatDelta(delta: number): string {
+  const hours = Math.floor(delta / 3600); // 计算小时数
+  const minutes = Math.floor(delta % 3600 / 60); // 计算分钟数
+  const seconds = delta % 60; // 计算秒数
+  const timeArr = new Array<string>(); // 初始化时间数组
+  if (hours > 0) {
+    timeArr.push(hours.toString().padStart(2, '0')); // 将小时数添加到时间数组中
   }
-  str += (m < 10 ? '0' + m : m) + ':';
-  str += parseDelta(s) < 10 ? '0' + s : s;
-  return str;
+  timeArr.push(minutes.toString().padStart(2, '0')); // 将分钟数添加到时间数组中
+  timeArr.push(seconds.toFixed(2).padStart(5, '0')); // 将秒数添加到时间数组中，并保留两位小数
+  return timeArr.join(':'); // 将时间数组中的元素用冒号连接，并返回时间字符串
 }
 
 export function parseDelta(delta: string) {
-  const parts = delta.split(':');
-  let s = parseFloat(parts.pop());
-  const m = parseInt(parts.pop());
-  const h = parseInt(parts.pop());
-  if (m) {
-    s += m * 60;
-  }
-  if (h) {
-    s += h * 60;
-  }
-  return s;
+  return delta.split(':').map(Number).reduce((a, b) => 60 * a + b, 0);
 }
 
 export function getTextData(url: string) {
+  if (fileAssets.length > 0) {
+    const file = fileAssets.find(f => f.path === url);
+    if (!file) {
+      clearFileAssets().then(location.reload);
+    }
+    return readAsBlob(file).then(res => res.text());
+  }
   return fetch(url).then(res => res.text());
 }
 
 export function getBinaryData(url: string) {
+  if (fileAssets.length > 0) {
+    const file = fileAssets.find(f => f.path === url);
+    if (!file) {
+      clearFileAssets().then(location.reload);
+    }
+    return readAsBlob(file);
+  }
   return fetch(url).then(res => res.blob());
 }

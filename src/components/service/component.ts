@@ -4,6 +4,7 @@ import {Music} from '@/components/service/music';
 import defaultSrc from '@/assets/media/empty.wav';
 import createAudioUrl from '@/utils/audio_decoder';
 import BaseClass from '@/utils/base_class';
+import {readAsBlob} from '@/utils/file_handle';
 
 export default class MusicComponent extends BaseClass {
   /* 音乐 */
@@ -95,6 +96,9 @@ export default class MusicComponent extends BaseClass {
     const old = this.audio;
     this.audio = document.createElement('audio');
     this.audio.style.display = 'none';
+    ['preservesPitch', 'mozPreservesPitch', 'webkitPreservesPitch']
+      .filter(k => k in this.audio)
+      .forEach(k => this.audio[k] = false);
     for (const key in this.listeners) {
       old?.removeEventListener(key, this.listeners[key], {capture: true});
       this.audio.addEventListener(key, this.listeners[key], {capture: true, signal: this.vue.abortSignal});
@@ -123,12 +127,22 @@ export default class MusicComponent extends BaseClass {
       this.urls.length = 0;
     }
     if (music?.id) {
-      if (this.pitch >= 0) {
-        this.urls[0] = await createAudioUrl(music.musicProvider, false);
-        this.audio.src = this.urls[0] || defaultSrc;
-      } else {
-        this.urls[1] = await createAudioUrl(music.musicProvider, true);
-        this.audio.src = this.urls[1] || defaultSrc;
+      try {
+        if (this.pitch >= 0) {
+          this.urls[0] = await createAudioUrl(await readAsBlob(music.musicFile), false);
+          this.audio.src = this.urls[0] || defaultSrc;
+        } else {
+          this.urls[1] = await createAudioUrl(await readAsBlob(music.musicFile), true);
+          this.audio.src = this.urls[1] || defaultSrc;
+        }
+      } catch (e) {
+        this.vue.$sleep(100).then(() => {
+          this.isPlaying = false;
+          this.isPaused = false;
+          this.isEnded = true;
+          this.vue.$emit('error', e);
+          this.setMusic(null);
+        });
       }
       this.currentTime = 0;
       this.playingMusic = music;
@@ -192,7 +206,7 @@ export default class MusicComponent extends BaseClass {
   public seek(value: number) {
     if (!(this.isEnded || value < 0 || value >= this.duration)) {
       this.currentTime = value;
-      if (this.pitch >= 0 ) {
+      if (this.pitch >= 0) {
         this.audio.currentTime = this.currentTime;
       } else {
         this.audio.currentTime = this.duration - this.currentTime;
@@ -211,35 +225,38 @@ export default class MusicComponent extends BaseClass {
     this.volume = this.audio.volume = value;
   }
 
+  private changePitch: Promise<void>;
+
   /* 设置倍速 */
-  public async setPitch(value: number) {
-    const needExchange = this.pitch >= 0 !== value >= 0;
+  public setPitch(value: number) {
+    const old = this.pitch;
     this.pitch = value;
-    this.audio.playbackRate = Math.abs(this.pitch);
-    if (needExchange) {
+    this.changePitch = (async () => {
+      await this.changePitch;
+      if (old >= 0 === value >= 0) {
+        this.audio.playbackRate = Math.abs(value);
+        return;
+      }
       const playingMusic = this.playingMusic;
       const isPlaying = this.isPlaying;
       this.playingMusic = null;
       if (value >= 0) {
-        this.urls[0] ??= await createAudioUrl(playingMusic.musicProvider, false);
+        this.urls[0] ??= await createAudioUrl(await readAsBlob(playingMusic.musicFile), false);
         this.audio.src = this.urls[0] || defaultSrc;
       } else {
-        this.urls[1] ??= await createAudioUrl(playingMusic.musicProvider, true);
+        this.urls[1] ??= await createAudioUrl(await readAsBlob(playingMusic.musicFile), true);
         this.audio.src = this.urls[1] || defaultSrc;
       }
-      this.audio.play().then(() => {
-        this.playingMusic = playingMusic;
-        if (value >= 0) {
-          this.audio.currentTime = this.currentTime;
-        } else {
-          this.audio.currentTime = this.duration - this.currentTime;
-        }
-        this.audio.muted = this.muted;
-        this.audio.playbackRate = Math.abs(this.pitch);
-        this.audio.volume = this.volume;
-        isPlaying || this.audio.pause();
-      });
-    }
+      await this.audio.play();
+      this.playingMusic = playingMusic;
+      if (value >= 0) {
+        this.audio.currentTime = this.currentTime;
+      } else {
+        this.audio.currentTime = this.duration - this.currentTime;
+      }
+      this.audio.playbackRate = Math.abs(value);
+      isPlaying || this.audio.pause();
+    })();
   }
 
   /* 快退 */

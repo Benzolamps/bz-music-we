@@ -23,7 +23,8 @@
           <el-table-column prop="title">
             <template v-slot="scope">
               <span style="padding-right: 10px;">{{ scope.row.title }}</span>
-              <el-tag type="warning" v-if="!scope.row.lrcProvider" size="mini" :disableTransitions="true">{{messages['music.no_lrc']}}</el-tag>
+              <el-tag type="info" v-if="scope.row.duration" size="mini" :disable-transitions="true">{{scope.row.duration | delta}}</el-tag>
+              <el-tag type="warning" v-if="!scope.row.lrcFile" size="mini" :disable-transitions="true">{{messages['music.no_lrc']}}</el-tag>
             </template>
           </el-table-column>
           <el-table-column width="50" align="center">
@@ -38,30 +39,34 @@
           </el-table-column>
         </el-table>
       </b-scroll>
-      <footer style="display: flex; justify-content: space-between; align-items: center;">
+      <footer>
         <el-pagination
           background
           small
           layout="prev,pager,next"
+          hide-on-single-page
           :total="musicList.length"
           :current-page="currentPage"
           :page-size="pageSize"
           @current-change="onCurrentChange"
         />
-        <input type="file" ref="file" multiple :accept="platform.mobile || 'audio/*,.lrc'" v-show="false" @change="onFileChange"/>
-        <el-dropdown trigger="click" size="large" @command="cmd => cmd()">
-          <el-button type="text"  size="medium" icon="el-icon-more" style="color: #409EFF; font-size: 20px; margin-right: 10px;"/>
-          <el-dropdown-menu slot="dropdown" style="text-align: left;">
-              <el-dropdown-item :command="() => chooseFile(false)">
-                <i class="el-icon-document"/>
-                {{messages['music.add_files']}}
-              </el-dropdown-item>
-              <el-dropdown-item :command="() => chooseFile(true)">
-                <i class="el-icon-folder"/>
-                {{messages['music.add_folder']}}
-              </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+        <div>
+          <div v-if="!platform.mobile && platform.hasFsApi && musicList.length <= 50">
+            <el-button size="mini" round @click="chooseFile">导入文件</el-button>
+            <el-button size="mini" round @click="chooseFolder">导入文件夹</el-button>
+          </div>
+          <div style="margin-top: 10px; position: relative; overflow: hidden;">
+            <el-input size="small" v-show="showSearch" v-model="musicService.query" style="position: absolute; z-index: 1; left: 5%; width: 90%;">
+              <el-button slot="append" icon="el-icon-close" @click="showSearch = false; musicService.query = '';"/>
+            </el-input>
+            <el-button v-if="!platform.wallpaper" size="small" type="success" circle plain icon="el-icon-search" title="搜素" @click="showSearch = true;"/>
+            <el-button v-if="platform.hasFsApi" size="small" type="success" circle plain icon="el-icon-refresh" title="刷新" @click="musicStorage.refresh"/>
+            <el-button v-if="platform.hasFsApi" size="small" type="warning" circle plain icon="el-icon-menu" title="列表管理"/>
+            <el-button v-if="!platform.hasFsApi" size="small" type="warning" circle plain icon="el-icon-document" title="导入文件" @click="chooseFile"/>
+            <el-button v-if="!platform.hasFsApi && !platform.mobile" size="small" type="warning" circle plain icon="el-icon-folder" title="导入文件夹" @click="chooseFolder"/>
+            <el-button size="small" type="danger" circle plain icon="el-icon-delete" title="清空" @click="musicStorage.clear"/>
+          </div>
+        </div>
       </footer>
     </div>
   </el-drawer>
@@ -72,7 +77,7 @@ import BaseComponent from '@/components/common/BaseComponent';
 import {Component, Prop, Ref, Watch} from 'vue-property-decorator';
 import {Music} from '@/components/service/music';
 import BScroll from '@/components/common/BScroll.vue';
-import {getFileBaseName} from '@/utils/common_utils';
+import {chooseFile, chooseFolder} from '@/utils/file_handle';
 
 @Component({components: {BScroll}})
 export default class Playlist extends BaseComponent {
@@ -80,9 +85,8 @@ export default class Playlist extends BaseComponent {
   private readonly pageSize = 50;
   /* 当前页 */
   private currentPage = 1;
-
-  @Ref('file')
-  private readonly file: HTMLInputElement;
+  
+  private readonly showSearch = false;
 
   @Prop({default: false})
   private readonly show: boolean;
@@ -91,7 +95,7 @@ export default class Playlist extends BaseComponent {
   private readonly scroll: BScroll;
 
   private get musicList() {
-    return this.musicStorage.musicList;
+    return this.musicService.musicList;
   }
 
   private get musicPage() {
@@ -106,6 +110,19 @@ export default class Playlist extends BaseComponent {
 
   public override mounted() {
     this.musicStorage.onReload.add(() => this.onCurrentChange(this.currentPage));
+    (async () => {
+      let music: Music;
+      while (this.musicStorage) {
+        const newMusic = this.music.id && !this.music.props ? this.music : this.musicPage.find(m => !m.props);
+        if (music && !newMusic) {
+          await this.$nextTick();
+          this.scroll?.refresh();
+        }
+        music = newMusic;
+        music && await this.musicStorage.generateMusicProps(music);
+        await this.$sleep(0);
+      }
+    })();
   }
 
   private async removeMusic(music: Music) {
@@ -121,8 +138,8 @@ export default class Playlist extends BaseComponent {
           closeOnClickModal: false
         }
       );
-      this.musicStorage.remove(music.id);
-      if (music === this.music) {
+      this.musicStorage.remove(music);
+      if (music.id === this.music.id) {
         this.musicService.stop();
       }
     } catch {
@@ -130,50 +147,14 @@ export default class Playlist extends BaseComponent {
     }
   }
 
-  private chooseFile(webkitDirectory: boolean) {
-    this.file.webkitdirectory = webkitDirectory;
-    this.file.dispatchEvent(new MouseEvent('click'));
+  private chooseFile() {
+    return chooseFile('audio').then(this.musicStorage.add).catch(() => 0);
   }
-
-  private async onFileChange() {
-    let files = Array.from(this.file.files);
-    this.file.value = '';
-    if (!files?.length) {
-      return;
-    }
-    files = files.filter(f => f.type.startsWith('audio/') || f.name.endsWith('.lrc'));
-    const audioCount = files.filter(f => f.type.startsWith('audio/')).length;
-    const lrcCount = files.filter(f => f.name.endsWith('.lrc')).length;
-    if (files.length === 0) {
-      this.$message({type: 'warning', message: this.messages['music.no_proper_files']});
-      return;
-    }
-    try {
-      await this.$confirm(
-        this.messages['music.about_to_import'](audioCount, lrcCount),
-        this.messages['music.warning'],
-        {
-          distinguishCancelAndClose: true,
-          confirmButtonText: this.messages['music.keep'],
-          cancelButtonText: this.messages['music.do_not_keep']
-        }
-      );
-    } catch (action) {
-      if (action === 'cancel') {
-        this.musicStorage.clear();
-      } else {
-        this.$message({type: 'warning', message: this.messages['music.cancel_import']});
-        return;
-      }
-    }
-    const entries = files.map(f => [getFileBaseName(f.name), f] as [string, Blob]);
-    this.musicStorage.add(entries);
-    this.$message({type: 'success', message: this.messages['music.import_finish'](audioCount, lrcCount)});
-    if (!this.musicList.find(m => m.id === this.music.id)) {
-      this.musicService.stop();
-    }
+  
+  private chooseFolder() {
+    return chooseFolder().then(this.musicStorage.add).catch(() => 0);
   }
-
+  
   private getAtPage(index: number) {
     return Math.floor((index + 1) / this.pageSize) + Math.sign((index + 1) % this.pageSize);
   }
@@ -215,6 +196,11 @@ export default class Playlist extends BaseComponent {
   @Watch('music.id')
   private watchMusic() {
     return this.locateMusic();
+  }
+
+  @Watch('musicService.query')
+  private watchQuery() {
+    this.onCurrentChange(this.currentPage);
   }
 }
 </script>

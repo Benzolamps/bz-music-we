@@ -1,19 +1,25 @@
-﻿const store: Record<string, unknown> = new Proxy({}, {
+﻿import db from '@/utils/db';
+
+
+const obj = {id: 'BzMusic'.hash()};
+
+(async () => {
+  const res = await db.table('settings').get(obj.id);
+  Object.assign(obj, res ?? {});
+})();
+
+const store: Record<string, unknown> = new Proxy(obj, {
   get(target, property: string) {
-    const json = localStorage.getItem(property);
-    try {
-      return JSON.parse(json);
-    } catch {
-      return null;
-    }
+    return target[property];
   },
   set(target, property: string, value) {
-    const json = JSON.stringify(value);
-    localStorage.setItem(property, json);
+    target[property] = value;
+    db.table('settings').put(obj);
     return true;
   },
   deleteProperty(target, property: string) {
-    localStorage.removeItem(property);
+    delete target[property];
+    db.table('settings').put(obj);
     return true;
   }
 });

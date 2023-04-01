@@ -52,6 +52,7 @@ rules:
   eqeqeq: warn
   func-style: [warn, declaration]
   implicit-arrow-linebreak: [warn, beside]
+  no-cond-assign: off
   no-param-reassign: warn
   no-sequences: warn
   no-unneeded-ternary: warn

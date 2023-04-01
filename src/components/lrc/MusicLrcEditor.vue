@@ -105,6 +105,7 @@
 <script lang="ts">
 import MusicCarousel from '@/components/info/MusicCarousel.vue';
 import MusicControl from '@/components/info/MusicControl.vue';
+import {readAsBlob} from '@/utils/file_handle';
 import LrcObject from '@/utils/lrc_object';
 import TextEditor from '@/components/common/TextEditor.vue';
 import {KeyMapping, keyMappings} from '@/utils/common_utils';
@@ -277,17 +278,18 @@ export default class MusicLrcEditor extends BaseComponent {
 
   private async save() {
     await this.sortTag();
-    const lrcText = this.lrcObj.toString().replaceAll(/\r?\n/g, '\r\n');
-    this.music.lrcProvider = new Blob([lrcText], {type: 'text/plain'});
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(this.music.lrcProvider);
-    link.download = this.music.title + '.lrc';
-    link.click();
+    // const lrcText = this.lrcObj.toString().replaceAll(/\r?\n/g, '\r\n');
+    // this.music.lrcProvider = new File([lrcText], this.music.lrcFile.name, {type: this.music.lrcProvider.type});
+    // const link = document.createElement('a');
+    // link.href = URL.createObjectURL(this.music.lrcProvider);
+    // link.download = this.music.title + '.lrc';
+    // link.onload = link.onerror = () => URL.revokeObjectURL(link.href);
+    // link.click();
   }
 
   /* 读取歌词 */
   private async readLrc() {
-    const lrcContent = await this.music.lrcProvider.text();
+    const lrcContent = await (await readAsBlob(this.music.lrcFile)).text();
     this.lrcObj = new LrcObject(lrcContent);
     await this.$nextTick();
     this.textEditor.reset();

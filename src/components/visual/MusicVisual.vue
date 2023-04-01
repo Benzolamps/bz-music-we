@@ -1,6 +1,6 @@
 ﻿<template>
   <div class="music-visual">
-    <canvas ref="canvas" :class="visualStyles.state.canvas || 'hidden'"/>
+    <canvas ref="canvas" :class="{hidden: !visualStyles.state.canvas, 'no-interactive': visualStyles.lrcMode === 'scroll'}"/>
     <div ref="shade" :class="visualStyles.state.video || 'hidden'"/>
     <video ref="video" muted controls playsinline autoplay :class="visualStyles.state.video || 'hidden'"/>
   </div>
@@ -60,6 +60,9 @@ export default class MusicVisual extends BaseComponent {
     const nextHandler = () => this.musicVisualCore.nextPreset();
 
     const mappings: Array<KeyMapping> = [
+      {type: 'keydown', code: 'Numpad5', ctrlKey: true},
+      {type: 'keydown', code: 'Numpad4', ctrlKey: true},
+      {type: 'keydown', code: 'Numpad6', ctrlKey: true},
       {type: 'keyup', code: 'Numpad5', ctrlKey: true, handler: starHandler},
       {type: 'keyup', code: 'Numpad4', ctrlKey: true, handler: prevHandler},
       {type: 'keyup', code: 'Numpad6', ctrlKey: true, handler: nextHandler}
@@ -67,9 +70,7 @@ export default class MusicVisual extends BaseComponent {
     mappings.forEach(e => keyMappings.add(e));
     this.$once('hook:beforeDestroy', () => mappings.forEach(e => keyMappings.delete(e)));
 
-    this.hammer = new Hammer.Manager(this.canvas, {
-      enable: this.visualStyles.lrcMode !== 'scroll'
-    });
+    this.hammer = new Hammer.Manager(this.canvas);
     const press = new Hammer.Press();
     this.hammer.add(press);
     const swipe = new Hammer.Swipe({direction: Hammer.DIRECTION_ALL});
@@ -113,6 +114,9 @@ export default class MusicVisual extends BaseComponent {
     } else {
       this.visualStyles.state.video = false;
       this.visualStyles.state.canvas = true;
+      if (this.video.srcObject instanceof MediaStream) {
+        this.video.srcObject.getTracks().forEach(t => t.stop());
+      }
       this.video.srcObject = null;
       if (document.pictureInPictureElement) {
         document.exitPictureInPicture();
@@ -123,11 +127,6 @@ export default class MusicVisual extends BaseComponent {
   @Watch('visualStyles.state.pip')
   private watchPip() {
     this.handlePip();
-  }
-
-  @Watch('visualStyles.lrcMode')
-  private changeHammer() {
-    this.hammer.set({enable: this.visualStyles.lrcMode !== 'scroll'});
   }
 
   /* endregion */
@@ -171,12 +170,17 @@ export default class MusicVisual extends BaseComponent {
     opacity: 0;
     pointer-events: none;
   }
+  
+  canvas.no-interactive {
+    pointer-events: none;
+  }
 
   div.hidden {
     display: none;
   }
 
   video.hidden {
+    display: none;
     pointer-events: none;
     opacity: 0;
   }

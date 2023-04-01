@@ -5,7 +5,6 @@
         <el-option v-for="font in fonts" :key="font.name" :value="font.name" :label="font.name"/>
       </el-select>
       <el-button style="width: 20%" @click="chooseCustomFont">{{messages['lrc.font.custom']}}</el-button>
-      <input type="file" ref="file" :accept="platform.mobile || '.ttf,.otf,.woff,.woff2'" @change="setCustomFont" v-show="false"/>
     </el-form-item>
     <el-form-item :label="messages['lrc.color.default']">
       <div style="display: flex">
@@ -40,6 +39,7 @@
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
 import PlayerSettings from '@/components/service/player_settings';
+import {chooseFile} from '@/utils/file_handle';
 import {Component, Ref} from 'vue-property-decorator';
 
 @Component
@@ -50,15 +50,10 @@ export default class MusicLrcSetting extends BaseComponent {
   private readonly file: HTMLInputElement;
 
   private chooseCustomFont() {
-    this.file.dispatchEvent(new MouseEvent('click'));
-  }
-
-  private setCustomFont() {
-    const f = this.file.files[0];
-    this.file.value = '';
-    if (f) {
-      PlayerSettings.loadCustomFont(f);
-    }
+    chooseFile('font').then(async e => {
+      const file = e[0] instanceof File ? e[0] : await e[0].getFile();
+      PlayerSettings.loadCustomFont(file);
+    }).catch(() => 0);
   }
 
   private resetSettings() {

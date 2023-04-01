@@ -12,6 +12,7 @@ export default class PlayerSettings {
 
   public static readonly defaultLrcStyles = {
     font: '苹方简体',
+    customFont: null as File,
     defaultColor: '#2c3e50',
     pastColor: '#ff1e90',
     futureColor: '#1e90ff',
@@ -54,9 +55,6 @@ export default class PlayerSettings {
     } else {
       if (store.lrcStyles) {
         result = store.lrcStyles as typeof this.defaultLrcStyles;
-        if (result.font.startsWith('custom: ')) {
-          result.font = '';
-        }
       } else {
         result = JSON.parse(JSON.stringify(this.defaultLrcStyles));
       }
@@ -100,12 +98,18 @@ export default class PlayerSettings {
 
     let error = false;
     bus.$watch('lrcStyles.font', callback);
-    await callback(bus.lrcStyles.font);
+
+    if (bus.lrcStyles.customFont) {
+      this.loadCustomFont(bus.lrcStyles.customFont);
+    } else {
+      await callback(bus.lrcStyles.font);
+    }
 
     async function callback(value?: string, oldValue?: string) {
       if (bus.lrcStyles.font.startsWith('custom: ')) {
         return;
       }
+      bus.lrcStyles.customFont = null;
       if (error) {
         error = false;
         return;
@@ -123,7 +127,10 @@ export default class PlayerSettings {
   public static loadCustomFont(file: File) {
     const name = getFileBaseName(file.name);
     PlayerSettings.loadFontFace(file, name)
-      .then(() => bus.lrcStyles.font = 'custom: ' + name)
+      .then(() => {
+        bus.lrcStyles.font = 'custom: ' + name;
+        bus.lrcStyles.customFont = file;
+      })
       .catch(() => 0);
   }
 

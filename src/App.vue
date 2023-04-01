@@ -12,7 +12,10 @@
 <script lang="ts">
 import {LanguageKeys} from '@/assets/locale/messages';
 import MusicLrcEditor from '@/components/lrc/MusicLrcEditor.vue';
+import FileSystemTip from '@/components/misc/FileSystemTip.vue';
 import HeadDefinition from '@/components/misc/HeadDefinition.vue';
+import {initBlazor} from '@/components/service/blazor';
+import {loadFileAssets} from '@/components/service/file_assets';
 import {loadBasicFonts, registerEvents} from '@/utils/common_utils';
 import {Component, Watch} from 'vue-property-decorator';
 import Toast from '@/components/common/Toast.vue';
@@ -35,9 +38,10 @@ export default class App extends BaseComponent {
   }
 
   public override async mounted() {
+    await loadFileAssets();
     this.$toast.showLoading();
     await loadBasicFonts();
-  
+    
     const nativeLanguage = this.wallpaperProperties.language || navigator.language;
     if (nativeLanguage.match(/(^en$)|(^en-)/)) {
       this.language = 'en';
@@ -48,10 +52,10 @@ export default class App extends BaseComponent {
     const canvas = document.createElement('canvas');
     this.webgl2Supported = !!canvas.getContext('webgl2');
     if (this.webgl2Supported) {
+      await initBlazor();
       await this.registerMusic();
       this.musicRegistered = true;
     }
-
     await this.$sleep(100);
     this.$toast.close();
   }
@@ -85,6 +89,15 @@ export default class App extends BaseComponent {
   @Watch('wallpaperProperties.taskbar_length')
   private watchTaskbar() {
     this.registerWindowAttrs();
+  }
+
+  @Watch('wallpaperProperties.clipboard')
+  private watchClipboard() {
+    const activeElement = document.activeElement as HTMLInputElement;
+    if (activeElement?.tagName === 'INPUT') {
+      activeElement.value = this.wallpaperProperties.clipboard;
+      activeElement.dispatchEvent(new Event('input'));
+    }
   }
 
   @Watch('musicService.music.title')

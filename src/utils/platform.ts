@@ -12,6 +12,8 @@ export interface Platform extends Readonly<Partial<Record<PlatformKeys, boolean>
   readonly mobile: boolean;
   readonly wallpaper?: boolean;
   readonly standalone?: boolean;
+  readonly static?: boolean;
+  readonly hasFsApi?: boolean;
 }
 
 /**
@@ -20,7 +22,13 @@ export interface Platform extends Readonly<Partial<Record<PlatformKeys, boolean>
 export const platforms = (() => {
   const client_standalone: Omit<Platform, 'key' | 'name' | 'mobile'> = {
     wallpaper: Object.keys(window).some(k => k.match(/^wallpaper/)),
-    standalone: window.matchMedia('(display-mode: standalone)').matches
+    standalone: window.matchMedia('(display-mode: standalone)').matches,
+    static: location.protocol === 'file:',
+    hasFsApi: window.isSecureContext
+      && 'FileSystemHandle' in window
+      && 'showOpenFilePicker' in window
+      && 'showDirectoryPicker' in window
+      && 'getAsFileSystemHandle' in DataTransferItem.prototype
   };
 
   const platforms: Record<PlatformKeys, Platform> = {

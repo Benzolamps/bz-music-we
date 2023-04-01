@@ -32,3 +32,7 @@ declare module 'butterchurn' {
     }): Visualizer;
   }
 }
+
+declare module 'butterchurn/blankPreset' {
+  export default {} as MilkDropPreset;
+}

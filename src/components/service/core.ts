@@ -41,6 +41,8 @@ export default class MusicService extends MusicComponent {
   public music = emptyMusic();
   /* 播放模式 */
   public mode: Mode;
+  
+  private _query: string;
 
   /* 是否播放下一曲 */
   private nextMusicType: 'prev' | 'next' | 'default' = 'default';
@@ -61,6 +63,17 @@ export default class MusicService extends MusicComponent {
 
   private get useForLrcEditor() {
     return this.vue.page === 'MusicLrcEditor';
+  }
+
+  get query(): string {
+    return this._query;
+  }
+
+  set query(value: string) {
+    if (value !== this._query) {
+      this._query = value;
+      this.initMusic();
+    }
   }
 
   private mapEvents() {
@@ -90,7 +103,7 @@ export default class MusicService extends MusicComponent {
   }
 
   private async initMusic() {
-    this.musicList = this.vue.musicStorage.musicList;
+    this.musicList = this.vue.musicStorage.musicList.filter(m => !this.query || this.query.split(/[\s\u3000 ]+/g).every(q => m.title.includes(q)));
     this.shuffleMusicList();
 
     const musicId = this.music.id || store.musicId;
@@ -102,7 +115,7 @@ export default class MusicService extends MusicComponent {
     }
 
     if (!this.music.id) {
-      if (music?.musicProvider) {
+      if (music?.id) {
         this.choseMusic = music;
       }
 
@@ -164,10 +177,8 @@ export default class MusicService extends MusicComponent {
       music = this.getNearMusic();
     }
     await this.setMusic(music);
-    if (music.id) {
-      this.music = music;
-      store.musicId = music.id;
-    }
+    this.music = music;
+    store.musicId = music.id;
     this.nextMusicType = 'default';
     this.choseMusic = null;
   }
@@ -197,7 +208,7 @@ export default class MusicService extends MusicComponent {
         index = musicList.length - 1;
       }
       const music = musicList[index];
-      if (music.musicProvider) {
+      if (music.id) {
         return music;
       }
     }

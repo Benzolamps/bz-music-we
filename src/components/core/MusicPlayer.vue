@@ -8,13 +8,19 @@
       <music-lrc ref="musicLrc" v-if="showLrc"/>
 
       <!-- 歌曲信息 -->
-      <div v-show="showInfo" class="music-info" :style="{color: lrcStyles.strokeColor}">
-        <stroke-text tag="div" :color="lrcStyles.defaultColor" :text="music.title" style="cursor: pointer;"/>
-        <div style="padding: 10px">
-          <el-tag type="info" v-if="music.musicProvider">{{music.musicProvider.type}}</el-tag>
-          <el-tag type="info" v-if="music.musicProvider">{{music.musicProvider.size | fileSize}}</el-tag>
-          <el-tag type="info" v-if="music.musicProvider">{{musicService.duration | delta}}</el-tag>
-          <el-tag type="warning" v-if="!musicService.music.lrcProvider">无歌词</el-tag>
+      <div v-show="showInfo" class="music-info" style="color: #FFF">
+        <div>{{ music.name || music.title }}</div>
+        <div v-if="music.author">演唱：{{ music.author }}</div>
+        <div v-if="music.album">专辑：{{ music.album }}</div>
+        <div v-if="music.props" style="padding: 10px calc(50% - 200px);">
+          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.musicFile">{{ music.musicFile.type }}</el-tag>
+          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.fileSize">{{ music.fileSize | fileSize }}</el-tag>
+          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.duration">{{ music.duration | delta }}</el-tag>
+          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.props.audioBitrate">{{ music.props.audioBitrate }} kbps</el-tag>
+          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.props.audioSampleRate">{{ music.props.audioSampleRate }} Hz</el-tag>
+          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.props.bitsPerSample">{{ music.props.bitsPerSample }} bits</el-tag>
+          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.props.audioChannels">{{ music.props.audioChannels > 1 ? 'STEREO' : 'MONO' }}</el-tag>
+          <el-tag effect="dark" type="warning" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="!music.lrcFile">无歌词</el-tag>
         </div>
       </div>
     </main>
@@ -22,19 +28,21 @@
     <footer>
       <!-- 音乐播放控制 -->
       <music-control ref="musicControl" :style="showMusicControl || showInfo || {height: 0}"/>
+      <file-importer/>
     </footer>
   </article>
 </template>
 
 <script lang="ts">
+import BaseComponent from '@/components/common/BaseComponent';
+import StrokeText from '@/components/common/StrokeText.vue';
+import FileImporter from '@/components/core/FileImporter.vue';
 import MusicControl from '@/components/info/MusicControl.vue';
 import MusicLrc from '@/components/lrc/MusicLrc.vue';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
-import BaseComponent from '@/components/common/BaseComponent';
-import StrokeText from '@/components/common/StrokeText.vue';
 import {Component, Ref, Watch} from 'vue-property-decorator';
 
-@Component({components: {StrokeText, MusicVisual, MusicLrc, MusicControl}})
+@Component({components: {FileImporter, StrokeText, MusicVisual, MusicLrc, MusicControl}})
 export default class MusicPlayer extends BaseComponent {
   private showMusicControl = true;
 
@@ -64,7 +72,7 @@ export default class MusicPlayer extends BaseComponent {
       if (event instanceof MouseEvent) {
         clientY = event.clientY;
       } else if (event instanceof TouchEvent) {
-        clientY = Array.from(event.touches).map(t => t.clientY).reduce((a, b) => a > b ? a : b);
+        clientY = Array.from(event.touches).map(t => t.clientY).reduce((a, b) => Math.max(a, b), 0);
       }
       let below = 100;
       if (this.wallpaperProperties.taskbar_position === 'bottom') {
@@ -102,12 +110,11 @@ export default class MusicPlayer extends BaseComponent {
     flex-direction: column-reverse;
     justify-content: space-between;
     height: 100%;
-    padding: 20px 20px calc(80px - (1 - var(--show-info)) * 50px + var(--taskbar-bottom));
+    padding: calc(20px + var(--taskbar-top)) 20px calc(80px - (1 - var(--show-info)) * 50px + var(--taskbar-bottom));
 
     box-sizing: border-box;
 
     .music-info {
-      height: 70px;
       font-size: medium;
 
       ul {

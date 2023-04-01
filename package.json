@@ -20,6 +20,8 @@
     "@codemirror/legacy-modes": "^6.3.1",
     "@codemirror/state": "^6.1.4",
     "@types/hammerjs": "^2.0.41",
+    "@types/lodash": "^4.14.192",
+    "@types/mime-types": "^2.1.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",
@@ -61,5 +63,10 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "dependencies": {
+    "dexie": "^3.2.3",
+    "jszip": "^3.10.1",
+    "mime-types": "^2.1.35"
+  }
 }

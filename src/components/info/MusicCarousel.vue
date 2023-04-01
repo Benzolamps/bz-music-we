@@ -55,23 +55,11 @@ export default class MusicCarousel extends BaseComponent {
       font-weight: 700;
 
       @keyframes wordsLoop {
-        0% {
+        0%, 10%, 90%, 100% {
           left: 0;
         }
-        10% {
-          left: 0;
-        }
-        40% {
+        40%, 60% {
           left: var(--delta);
-        }
-        60% {
-          left: var(--delta);
-        }
-        90% {
-          left: 0;
-        }
-        100% {
-          left: 0;
         }
       }
     }

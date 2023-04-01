@@ -149,6 +149,12 @@ export default class MusicLrc extends BaseComponent {
     this.animationRunner.once(this.updateTime);
   }
 
+  @Watch('musicService.music.id')
+  @Watch('musicService.music.props')
+  private watchMusic() {
+    this.adjustHeight();
+  }
+
   @Watch('lrcContext.shownLrc.length')
   @Watch('visualStyles.state.show')
   @Watch('lrcContext.currentLrcTime')

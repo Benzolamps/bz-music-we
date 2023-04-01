@@ -9,3 +9,7 @@ declare module '*.wav' {
 declare module '*.ttf' {
   export default '';
 }
+
+declare module '*.zip' {
+  export default '';
+}

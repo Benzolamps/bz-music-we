@@ -1,6 +1,7 @@
 ﻿import {bus} from '@/components/common/common';
 import BaseClass from '@/utils/base_class';
 import butterchurn, {MilkDropPresetDesc, Visualizer} from 'butterchurn';
+import blankPreset from 'butterchurn/blankPreset';
 import MusicVisual from '@/components/visual/MusicVisual.vue';
 import presetList from '@/assets/presets/index';
 import messages from '@/assets/locale/messages';
@@ -9,7 +10,7 @@ export default class MusicVisualCore extends BaseClass {
   private mediaSource: MediaElementAudioSourceNode;
   private readonly visualizer: Visualizer;
   private readonly canvas: HTMLCanvasElement;
-  private readonly canvasDraw: HTMLCanvasElement;
+  private readonly canvasDraw: HTMLCanvasElement | OffscreenCanvas;
   private readonly getDesireCanvasSize: () => [number, number];
   private timeout: number;
   private readonly basePresetList: ReadonlyArray<MilkDropPresetDesc> = presetList;
@@ -60,7 +61,6 @@ export default class MusicVisualCore extends BaseClass {
     this.loadPresetList();
     this.loadPreset();
     this.reloadTimeout();
-
     bus.musicVisualCore = this;
   }
 
@@ -74,12 +74,11 @@ export default class MusicVisualCore extends BaseClass {
   }
 
   private loadPreset() {
-    const name = bus.visualStyles.preset;
-    const preset = this.presetList.find(d => d.name === name) ?? this.presetList[0];
+    const preset = this.presetList.find(d => d.name === bus.visualStyles.preset);
     if (preset) {
       this.visualizer.loadPreset(preset.preset, 2.0);
     } else {
-      this.visualizer.loadPreset({}, 2.0);
+      this.visualizer.loadPreset(blankPreset, 2.0);
     }
   }
 
@@ -272,7 +271,7 @@ export default class MusicVisualCore extends BaseClass {
     for (const line of drawLines) {
       context2d.font = `${line.y}px ${fontFamily}`;
       if (strokeColor) {
-        context2d.lineWidth = Math.max(3 * window.devicePixelRatio, line.y / 10);
+        context2d.lineWidth = line.y * 0.05;
         context2d.strokeText(line.text, line.x, startY);
       }
       context2d.fillText(line.text, line.x, startY);

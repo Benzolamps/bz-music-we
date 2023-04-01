@@ -16,7 +16,7 @@
       <span ref="duration" class="code-font">{{ 0 | delta }}</span>
     </div>
 
-    <el-badge :value="musicStorage.musicList.length" type="success" class="music-count-badge"/>
+    <el-badge :value="musicService.musicList.length" type="success" class="music-count-badge"/>
 
     <!-- 按钮组 -->
     <div class="music-control-button-group">

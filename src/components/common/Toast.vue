@@ -81,7 +81,7 @@ export default class Toast extends BaseComponent {
 
 <style lang="scss">
 .toast-container {
-  z-index: 9999;
+  z-index: 10;
   width: 100%;
   height: 100%;
   position: absolute;
