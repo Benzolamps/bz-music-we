@@ -6,7 +6,6 @@ import presetList from '@/assets/presets/index';
 import messages from '@/assets/locale/messages';
 
 export default class MusicVisualCore extends BaseClass {
-  private readonly audioContext: AudioContext;
   private mediaSource: MediaElementAudioSourceNode;
   private readonly visualizer: Visualizer;
   private readonly canvas: HTMLCanvasElement;
@@ -27,8 +26,8 @@ export default class MusicVisualCore extends BaseClass {
     }
     this.getDesireCanvasSize = getDesireCanvasSize;
 
-    this.audioContext = new AudioContext();
-    this.visualizer = butterchurn.createVisualizer(this.audioContext, this.canvas, {
+    bus.audioContext.resume();
+    this.visualizer = butterchurn.createVisualizer(bus.audioContext, this.canvas, {
       width: 0,
       height: 0,
       pixelRatio: bus.visualStyles.displayRatio
@@ -192,8 +191,8 @@ export default class MusicVisualCore extends BaseClass {
 
   private handleUseFtt() {
     if (bus.visualStyles.useFtt) {
-      this.mediaSource = this.audioContext.createMediaElementSource(bus.musicService.audio);
-      this.mediaSource.connect(this.audioContext.destination);
+      this.mediaSource = bus.audioContext.createMediaElementSource(bus.musicService.audio);
+      this.mediaSource.connect(bus.audioContext.destination);
       this.visualizer.connectAudio(this.mediaSource);
     } else {
       if (this.mediaSource) {
@@ -292,7 +291,10 @@ export default class MusicVisualCore extends BaseClass {
          * .9-.95 保持 1
          * .95-1 退出 1-0
          */
-        const progress = bus.lrcContext.progress;
+        let progress = bus.lrcContext.progress;
+        if (bus.musicService.pitch < 0) {
+          progress = 1 - progress;
+        }
         if (progress < .9) {
           return progress / .9;
         } else if (progress >= .9 && progress < .95) {
@@ -368,7 +370,6 @@ export default class MusicVisualCore extends BaseClass {
       this.mediaSource = null;
       bus.musicService.createAudioElement();
     }
-    this.audioContext.close();
     bus.musicVisualCore = null;
   }
 }

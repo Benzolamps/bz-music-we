@@ -29,6 +29,7 @@ class BaseComponentStaticData {
   public lrcStyles = PlayerSettings.defaultLrcStyles;
   public visualStyles = PlayerSettings.defaultVisualStyles;
   public readonly animationRunner = new AnimationRunner();
+  public readonly audioContext = new AudioContext();
   public readonly inputAttrs = {
     autocomplete: 'off',
     autocapitalize: 'off',

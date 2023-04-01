@@ -95,8 +95,16 @@ export default class MusicLrc extends BaseComponent {
     }
     const current = performance.now();
     if (current - this.time < 500) {
-      const seekTime = lrc.time + 0.01;
-      this.musicService.seek(seekTime);
+      if (this.musicService.pitch < 0) {
+        const t = this.lrcContext.shownLrc.find(t => t.time > lrc.time);
+        if (t) {
+          const seekTime = t.time - 0.02;
+          this.musicService.seek(seekTime);
+        }
+      } else {
+        const seekTime = lrc.time + 0.01;
+        this.musicService.seek(seekTime);
+      }
     }
     this.time = current;
   }

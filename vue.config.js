@@ -8,8 +8,6 @@ function resolve(...dir) {
   return join(process.cwd(), ...dir);
 }
 
-const libflacPath = './node_modules/libflacjs/';
-
 const {defineConfig} = require('@vue/cli-service');
 module.exports = defineConfig({
   transpileDependencies: true,
@@ -41,14 +39,6 @@ module.exports = defineConfig({
       .loader('svg-sprite-loader')
       .options({symbolId: 'icon-[name]'})
       .end();
-    /* endregion */
-
-    /* region libflac */
-    config.plugin('copy-libflac').use(
-      CopyWebpackPlugin, [[
-        {from: resolve(libflacPath, 'dist/libflac.min.wasm.wasm'), to: '.'}
-      ]]
-    );
     /* endregion */
 
     config.module

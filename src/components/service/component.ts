@@ -2,11 +2,13 @@
 import {Music} from '@/components/service/music';
 
 import defaultSrc from '@/assets/media/empty.wav';
+import createAudioUrl from '@/utils/audio_decoder';
 import BaseClass from '@/utils/base_class';
 
 export default class MusicComponent extends BaseClass {
   /* 音乐 */
   private playingMusic: Music;
+  private urls: Array<string> = [];
   /* 是否播放 */
   public isPlaying = false;
   /* 是否已播放 */
@@ -52,7 +54,7 @@ export default class MusicComponent extends BaseClass {
       this.isPaused = false;
       this.isEnded = false;
       this.audio.autoplay = true;
-      this.audio.playbackRate = this.pitch;
+      this.audio.playbackRate = Math.abs(this.pitch);
       this.vue.$emit('play');
     },
     pause: () => {
@@ -115,15 +117,19 @@ export default class MusicComponent extends BaseClass {
     }
   }
 
-  protected setMusic(music: Music) {
-    if (this.playingMusic) {
-      if (this.playingMusic.objUrl) {
-        URL.revokeObjectURL(this.playingMusic.objUrl);
-        delete this.playingMusic.objUrl;
-      }
+  protected async setMusic(music: Music) {
+    if (this.urls.length > 0) {
+      this.urls.forEach(URL.revokeObjectURL);
+      this.urls.length = 0;
     }
     if (music?.id) {
-      this.audio.src = music.objUrl || defaultSrc;
+      if (this.pitch >= 0) {
+        this.urls[0] = await createAudioUrl(music.musicProvider, false);
+        this.audio.src = this.urls[0] || defaultSrc;
+      } else {
+        this.urls[1] = await createAudioUrl(music.musicProvider, true);
+        this.audio.src = this.urls[1] || defaultSrc;
+      }
       this.currentTime = 0;
       this.playingMusic = music;
     } else {
@@ -142,7 +148,12 @@ export default class MusicComponent extends BaseClass {
         continue;
       }
       const duration = this.audio.duration || this.duration;
-      const currentTime = Math.min(this.audio.currentTime, this.duration) || 0;
+      let currentTime: number;
+      if (this.pitch >= 0) {
+        currentTime = Math.min(this.audio.currentTime, this.duration) || 0;
+      } else {
+        currentTime = Math.min(this.duration - this.audio.currentTime, this.duration) || 0;
+      }
       if (this.duration !== duration || this.currentTime !== currentTime) {
         this.duration = duration;
         this.currentTime = Math.floor(currentTime * 100) / 100;
@@ -179,7 +190,14 @@ export default class MusicComponent extends BaseClass {
 
   /* 设置当前时间 */
   public seek(value: number) {
-    this.isEnded || value < 0 || value >= this.duration || (this.audio.currentTime = value);
+    if (!(this.isEnded || value < 0 || value >= this.duration)) {
+      this.currentTime = value;
+      if (this.pitch >= 0 ) {
+        this.audio.currentTime = this.currentTime;
+      } else {
+        this.audio.currentTime = this.duration - this.currentTime;
+      }
+    }
   }
 
   /* 切换静音 */
@@ -194,8 +212,34 @@ export default class MusicComponent extends BaseClass {
   }
 
   /* 设置倍速 */
-  public setPitch(value: number) {
-    this.pitch = this.audio.playbackRate = value;
+  public async setPitch(value: number) {
+    const needExchange = this.pitch >= 0 !== value >= 0;
+    this.pitch = value;
+    this.audio.playbackRate = Math.abs(this.pitch);
+    if (needExchange) {
+      const playingMusic = this.playingMusic;
+      const isPlaying = this.isPlaying;
+      this.playingMusic = null;
+      if (value >= 0) {
+        this.urls[0] ??= await createAudioUrl(playingMusic.musicProvider, false);
+        this.audio.src = this.urls[0] || defaultSrc;
+      } else {
+        this.urls[1] ??= await createAudioUrl(playingMusic.musicProvider, true);
+        this.audio.src = this.urls[1] || defaultSrc;
+      }
+      this.audio.play().then(() => {
+        this.playingMusic = playingMusic;
+        if (value >= 0) {
+          this.audio.currentTime = this.currentTime;
+        } else {
+          this.audio.currentTime = this.duration - this.currentTime;
+        }
+        this.audio.muted = this.muted;
+        this.audio.playbackRate = Math.abs(this.pitch);
+        this.audio.volume = this.volume;
+        isPlaying || this.audio.pause();
+      });
+    }
   }
 
   /* 快退 */

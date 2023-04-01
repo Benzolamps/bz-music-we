@@ -1,6 +1,4 @@
 ﻿import {KeyMapping, keyMappings} from '@/utils/common_utils';
-import FlacHandler from '@/utils/flac_handler';
-import platform from '@/utils/platform';
 import MusicComponent from '@/components/service/component';
 import {emptyMusic, Music} from '@/components/service/music';
 import store from '@/components/service/store';
@@ -53,19 +51,12 @@ export default class MusicService extends MusicComponent {
   /* 随机歌曲列表 */
   private randomMusicList: Readonly<Array<Music>> = [];
 
-  /* flac处理器 */
-  private readonly flacHandler: FlacHandler;
-
   public constructor() {
     super();
     super.init();
     this.mode = modes[store.mode as ModeKeys] ?? modes.sequence;
     this.vue.musicStorage.onReload.add(this.initMusic);
     this.mapEvents();
-
-    if (platform.ios) {
-      this.flacHandler = new FlacHandler();
-    }
   }
 
   private get useForLrcEditor() {
@@ -172,19 +163,9 @@ export default class MusicService extends MusicComponent {
     } else {
       music = this.getNearMusic();
     }
+    await this.setMusic(music);
     if (music.id) {
-      if (platform.ios && music.musicProvider.type === 'audio/flac') {
-        const wav = await this.flacHandler.flacToWav(music.musicProvider, music.title);
-        if (wav) {
-          music.objUrl = wav;
-        }
-      } else {
-        const blob = music.musicProvider;
-        music.objUrl = URL.createObjectURL(blob);
-      }
-    }
-    this.setMusic(this.music = music);
-    if (music.id) {
+      this.music = music;
       store.musicId = music.id;
     }
     this.nextMusicType = 'default';
@@ -201,7 +182,15 @@ export default class MusicService extends MusicComponent {
     }
     let index = musicList.findIndex(m => m.id === this.music.id);
     for (let i = 0; i < musicList.length; i++) {
-      index += this.nextMusicType === 'prev' ? -1 : 1;
+      if (this.nextMusicType === 'prev') {
+        index--;
+      } else if (this.nextMusicType === 'next') {
+        index++;
+      } else if (this.pitch < 0) {
+        index--;
+      } else {
+        index++;
+      }
       if (index >= musicList.length) {
         index = 0;
       } else if (index <= -1) {
@@ -229,6 +218,5 @@ export default class MusicService extends MusicComponent {
 
   public override destroy() {
     super.destroy();
-    this.flacHandler?.destroy();
   }
 }

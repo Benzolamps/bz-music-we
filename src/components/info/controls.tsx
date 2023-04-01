@@ -55,7 +55,7 @@ export class MusicPitch extends BaseComponent {
         <span class="popover-text">{this.messages['music.pitch']}</span>
         <el-slider
           value={this.musicService.pitch}
-          props={{min: 0, max: 2, step: 0.25, showStops: true, showTooltip: false}}
+          props={{min: -2, max: 2, step: 0.25, showStops: true, showTooltip: false}}
           on={{input: this.musicService.setPitch}}
           class="popover-slider"
         />
