@@ -99,7 +99,7 @@ export async function chooseFile(category: 'audio' | 'font') {
       types = [{
         description: '字体文件',
         accept: {
-          'font/*': ['.ttf','.otf','.woff','.woff2']
+          'font/*': ['.ttf', '.otf', '.woff', '.woff2']
         }
       }];
     }
@@ -128,6 +128,7 @@ export function chooseFolder() {
 }
 
 let rejectFn: () => void;
+
 function chooseFileByInput(accept: string, multiple: boolean, webkitDirectory: boolean) {
   rejectFn?.();
   const input = document.createElement('input');
@@ -168,19 +169,21 @@ export interface FileEntity {
 }
 
 export function resolveFiles(files: Array<File>): Array<FileEntity> {
-  return files.map(f => {
-    const path = f.path || f.webkitRelativePath || f.name;
-    return {
-      id: path.hash(),
-      name: f.name,
-      path,
-      timestamp: f.lastModified,
-      type: getFileType(path),
-      size: f.size,
-      handle: null,
-      blob: f
-    };
-  });
+  return files.map(resolveFile);
+}
+
+export function resolveFile(file: File): FileEntity {
+  const path = file.path || file.webkitRelativePath || file.name;
+  return {
+    id: path.hash(),
+    name: file.name,
+    path,
+    timestamp: file.lastModified,
+    type: getFileType(path),
+    size: file.size,
+    handle: null,
+    blob: file
+  };
 }
 
 export async function resolveFileHandles(files: Array<FileSystemHandle>, parent?: FileEntity, playlist = false) {
@@ -189,7 +192,7 @@ export async function resolveFileHandles(files: Array<FileSystemHandle>, parent?
       return resolveDirectoryHandle(handle);
     } else {
       return resolveFileHandle(handle, parent, playlist);
-    } 
+    }
   });
   return Promise.all(promises);
 }
@@ -205,7 +208,7 @@ export async function resolveFileHandle(handle: FileSystemHandle, parent: FileEn
   } else {
     path = file.name;
   }
-  
+
   if (playlist) {
     id = JSON.stringify([parent.id, path]).hash();
   } else {
@@ -239,6 +242,23 @@ export function resolveDirectoryHandle(handle: FileSystemHandle): FileEntity {
   };
 }
 
+export async function writeHandle(handle: FileSystemHandle, blob: Blob, parent: FileSystemHandle, paths: Array<string>) {
+  let resHandle = handle;
+  if (!handle) {
+    resHandle = parent;
+    for (let i = 0; i < paths.length; i++) {
+      if (i < paths.length - 1) {
+        resHandle = await resHandle.getDirectoryHandle(paths[i], {create: true});
+      } else {
+        resHandle = await resHandle.getFileHandle(paths[i], {create: true});
+      }
+    }
+  }
+  const stream = await resHandle.createWritable();
+  await stream.write(blob);
+  await stream.close();
+}
+
 function getFileType(path: string) {
   return path.match(/\.lrc$/i) ? 'text/lrc' : mime.lookup(path) || '';
 }
@@ -255,17 +275,21 @@ export async function readAsBlob(file: FileEntity) {
 }
 
 let promise: Promise<void>;
+
 export async function grantPermission(fileHandle: FileSystemHandle) {
   await promise;
   promise = (async () => {
     let granted = await fileHandle.queryPermission({mode: 'read'}) === 'granted';
     if (!granted && platform.wallpaper) {
-      await bus.$alert('为了能播放上次选择的歌曲, 请设置CEF命令行为<br/>--enable-experimental-web-platform-features', {dangerouslyUseHTMLString: true});
+      await bus.$alert('为了能播放上次选择的歌曲, 请设置CEF命令行为<br/>--enable-experimental-web-platform-features', {
+        type: 'warning',
+        dangerouslyUseHTMLString: true
+      });
       throw new Error('Permission denied');
     }
     while (!granted) {
       if (!navigator.userActivation.isActive) {
-        await bus.$alert(`请对“${fileHandle.name}”进行授权`).catch(() => 0);
+        await bus.$alert(`请对“${fileHandle.name}”进行授权`, {type: 'warning'}).catch(() => 0);
       }
       await bus.$sleep(100);
       granted = await fileHandle.requestPermission({mode: 'read'}) === 'granted';

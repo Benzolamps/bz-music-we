@@ -19,6 +19,8 @@
     isSameEntry(fileSystemHandle: FileSystemHandle): Promise<boolean>;
     remove(): Promise<undefined>;
     getFile(): Promise<File>;
+    getDirectoryHandle(name: string, options: {create: true}): Promise<FileSystemHandle>;
+    getFileHandle(name: string, options: {create: true}): Promise<FileSystemHandle>;
     createWritable(): Promise<FileSystemWritableFileStream>;
     values(): AsyncIterable<FileSystemHandle>;
     resolve(possibleDescendant: FileSystemHandle): Promise<Array<string>>;
@@ -28,6 +30,7 @@
 
   interface FileSystemWritableFileStream {
     write(data: Blob): Promise<undefined>;
+    close(): Promise<undefined>;
   }
 
   interface ShowOpenFilePickerOptions {

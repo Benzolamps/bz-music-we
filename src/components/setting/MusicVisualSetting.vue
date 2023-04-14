@@ -79,7 +79,7 @@
       :wrapper-closable="view.portable"
       :with-header="!view.portable"
       :direction="view.portable ? 'btt' : 'ltr'"
-      :size="view.portable ? '80%' : '480px'"
+      :size="view.portable ? '90%' : '480px'"
       :append-to-body="true"
       :modal-append-to-body="true"
       @opened="locatePreset"

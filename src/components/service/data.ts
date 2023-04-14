@@ -1,4 +1,5 @@
-﻿import messages from '@/assets/locale/messages';
+﻿import lrc from "@/assets/fonts/lrc";
+import messages from '@/assets/locale/messages';
 import {bus} from '@/components/common/common';
 import readMetadata from '@/components/service/blazor';
 import {Music, Playlist} from '@/components/service/music';
@@ -114,10 +115,13 @@ class MusicStorageItems {
           timestamp: file.timestamp,
           title: getFileBaseName(file.path),
           musicFile: file,
-          lrcFile: null
+          lrcFile: this.findLrc(file)
         };
       }
-      music.lrcFile = this.findLrc(file);
+      const lrcFile = this.findLrc(file);
+      if (!music.lrcFile || lrcFile && (music.lrcFile.id !== lrcFile.id || music.lrcFile.timestamp !== lrcFile.timestamp)) {
+        music.lrcFile = lrcFile;
+      }
       return music;
     });
   }
@@ -209,12 +213,7 @@ export default class MusicStorage extends BaseClass {
     this.musicList = this.musicStorageItems.toMusicList(this.musicList);
     this.musicList.sort((a, b) => a.musicFile.path.localeCompare(b.musicFile.path));
     Object.freeze(this.musicList);
-    db.transaction('readwrite', [db.table('dir'), db.table('music')], async () => {
-      await db.table('dir').clear();
-      await db.table('dir').bulkPut(this.musicStorageItems.dirEntities);
-      await db.table('music').clear();
-      await db.table('music').bulkPut(this.musicList.filter(m => m.musicFile.parentId));
-    });
+    this.save();
     this.onReload();
   }
   
@@ -238,7 +237,7 @@ export default class MusicStorage extends BaseClass {
   public async clear() {
     try {
       await bus.$confirm(
-        '确定要清空默认播放列表吗?',
+        '确定要清空播放列表吗?',
         messages['music.warning'],
         {
           confirmButtonText: messages['music.confirm'],
@@ -289,6 +288,15 @@ export default class MusicStorage extends BaseClass {
     }
   }
   
+  public save() {
+    return db.transaction('readwrite', [db.table('dir'), db.table('music')], async () => {
+      await db.table('dir').clear();
+      await db.table('dir').bulkPut(this.musicStorageItems.dirEntities);
+      await db.table('music').clear();
+      await db.table('music').bulkPut(this.musicList.filter(m => m.musicFile.parentId));
+    });
+  }
+
   public async generateMusicProps(music: Music) {
     if (!music || music.props) {
       return;

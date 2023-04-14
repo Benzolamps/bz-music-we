@@ -5,12 +5,12 @@
       :wrapper-closable="view.portable"
       :with-header="!view.portable"
       :direction="view.portable ? 'btt' : 'rtl'"
-      :size="view.portable ? '80%' : '480px'"
+      :size="view.portable ? '90%' : '480px'"
       :append-to-body="true"
       :modal-append-to-body="true"
       @close="$emit('update:show', false)"
   >
-    <div>
+    <div style="padding: 20px 0;">
       <el-button size="mini" round icon="el-icon-document" @click="chooseFile">导入文件</el-button>
       <el-button size="mini" round icon="el-icon-folder" @click="chooseFolder">导入文件夹</el-button>
       <el-button size="mini" round icon="el-icon-refresh" @click="musicStorage.refresh">刷新</el-button>
@@ -136,7 +136,7 @@ export default class PlaylistManage extends BaseComponent {
   private async removePlaylist(playlist: Playlist) {
     try {
       await this.$confirm(
-        this.messages['music.delete'](playlist.name),
+        `确定要删除播放列表${playlist.name}吗?`,
         this.messages['music.warning'],
         {
           confirmButtonText: this.messages['music.confirm'],

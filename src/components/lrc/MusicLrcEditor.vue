@@ -3,26 +3,26 @@
     <header class="music-lrc-editor-buttons">
       <music-carousel v-if="view.portable" style="line-height: 40px; width: calc(100% - 10px); margin-left: 10px;"/>
       <template>
-        <el-button v-if="!platform.mobile" round icon="el-icon-right" @click="insertTag">
+        <el-button v-if="!platform.mobile" round size="small" icon="el-icon-right" @click="insertTag">
           {{messages['lrc.editor.insert.tag']}}
           <span class="code-font" ref="currentTime">{{ lrcObj.appendTimeTag(0, '') }}</span>
         </el-button>
-        <el-button v-if="!platform.mobile" round icon="el-icon-back" @click="deleteTag">
+        <el-button v-if="!platform.mobile" round size="small" icon="el-icon-back" @click="deleteTag">
           {{messages['lrc.editor.delete.tag']}}
         </el-button>
-        <el-button round icon="el-icon-close" @click="clearTag">
+        <el-button round size="small" icon="el-icon-close" @click="clearTag">
           {{messages['lrc.editor.clear.tag']}}
         </el-button>
-        <el-button round icon="el-icon-sort" @click="sortTag">
+        <el-button round size="small" icon="el-icon-sort" @click="sortTag">
           {{messages['lrc.editor.sort.tag']}}
         </el-button>
-        <el-button round icon="el-icon-paperclip" @click="openMeta">
+        <el-button round size="small" icon="el-icon-paperclip" @click="openMeta">
           {{messages['lrc.editor.metadata']}}
         </el-button>
-        <el-button round icon="el-icon-document-checked" @click="save">
+        <el-button round size="small" icon="el-icon-document-checked" @click="save">
           {{messages['lrc.editor.save']}}
         </el-button>
-        <el-button round icon="el-icon-document-checked" @click="page = 'MusicPlayer'">
+        <el-button round size="small" icon="el-icon-document-checked" @click="quit">
           {{messages['lrc.editor.quit']}}
         </el-button>
       </template>
@@ -103,9 +103,10 @@
 </template>
 
 <script lang="ts">
+import lrc from "@/assets/fonts/lrc";
 import MusicCarousel from '@/components/info/MusicCarousel.vue';
 import MusicControl from '@/components/info/MusicControl.vue';
-import {readAsBlob} from '@/utils/file_handle';
+import {FileEntity, readAsBlob, resolveFile, writeHandle} from '@/utils/file_handle';
 import LrcObject from '@/utils/lrc_object';
 import TextEditor from '@/components/common/TextEditor.vue';
 import {KeyMapping, keyMappings} from '@/utils/common_utils';
@@ -262,9 +263,9 @@ export default class MusicLrcEditor extends BaseComponent {
 
   private async defaultMeta() {
     const meta: ReadonlyArray<[string, string]> = [
-      ['ti', this.music.title],
-      ['ar', ''],
-      ['al', ''],
+      ['ti', this.music.name],
+      ['ar', this.music.author],
+      ['al', this.music.album],
       ['by', '']
     ];
     this.lrcObj.metaString = meta.map(e => this.lrcObj.parseMetaTag(...e)).join('\n') + '\n';
@@ -278,13 +279,51 @@ export default class MusicLrcEditor extends BaseComponent {
 
   private async save() {
     await this.sortTag();
-    // const lrcText = this.lrcObj.toString().replaceAll(/\r?\n/g, '\r\n');
-    // this.music.lrcProvider = new File([lrcText], this.music.lrcFile.name, {type: this.music.lrcProvider.type});
-    // const link = document.createElement('a');
-    // link.href = URL.createObjectURL(this.music.lrcProvider);
-    // link.download = this.music.title + '.lrc';
-    // link.onload = link.onerror = () => URL.revokeObjectURL(link.href);
-    // link.click();
+    const lrcText = this.lrcObj.toString().replaceAll(/\r?\n/g, '\r\n').trim() + '\r\n';
+    const file = new File([lrcText], this.music.title + '.lrc', {type: 'text/lrc', lastModified: 0});
+    if (this.music.lrcFile?.handle || this.music.musicFile.parentId) {
+      let paths;
+      if (this.music.musicFile.parentId) {
+        paths = await this.music.musicFile.parentHandle.resolve(this.music.musicFile.handle);
+        paths[paths.length - 1] = file.name;
+      }
+      try {
+        await writeHandle(this.music.lrcFile?.handle, file, this.music.musicFile.parentHandle, paths);
+      } catch (e) {
+        console.dir(e);
+        this.$message({message: `保存失败: ${e}`, type: 'error'});
+      }
+    } else {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(file);
+      link.download = file.name;
+      link.onload = link.onerror = () => URL.revokeObjectURL(link.href);
+      link.click();
+    }
+    if (!this.music.lrcFile?.handle) {
+      this.music.lrcFile = await resolveFile(file);
+    }
+    await this.$message({message: '保存成功', type: 'success'});
+    await this.musicStorage.reload();
+  }
+
+  private async quit() {
+    try {
+      await this.$confirm(
+        '确定要退出吗?',
+        this.messages['music.warning'],
+        {
+          confirmButtonText: this.messages['music.confirm'],
+          cancelButtonText: this.messages['music.cancel'],
+          type: 'warning',
+          center: true,
+          closeOnClickModal: false
+        }
+      );
+      this.page = 'MusicPlayer';
+    } catch {
+      // cancelled
+    }
   }
 
   /* 读取歌词 */

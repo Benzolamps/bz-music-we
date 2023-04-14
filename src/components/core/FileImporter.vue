@@ -28,7 +28,7 @@
           element-loading-background="rgba(255, 255, 255, 0.7)"
           style="min-height: 100%;"
         >
-          <el-table-column width="70" type="index" prop="index" :index="index => index + 1 + pageSize * (currentPage - 1)"/>
+          <el-table-column v-if="!view.portable" width="70" type="index" prop="index" :index="index => index + 1 + pageSize * (currentPage - 1)"/>
           <el-table-column width="100">
             <template v-slot="scope">
               <el-tag v-if="getType(scope.row) === 'audio'" type="success">歌曲</el-tag>
@@ -37,7 +37,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="path"/>
-          <el-table-column width="250">
+          <el-table-column v-if="!view.portable" width="250">
             <template v-slot="scope">
               <span v-if="scope.row.type === 'directory'">{{ getDirectoryInfo(scope.row) }}</span>
               <span v-else>
@@ -63,8 +63,8 @@
         <el-checkbox v-model="playlist">是否将文件夹导入为播放列表</el-checkbox>
       </div>
       <div>
-        <el-button type="primary" @click="retrieveContext.resolve(playlist)" :disabled="!shownItems.length">开始导入</el-button>
-        <el-button type="warning" @click="retrieveContext.reject()">取消</el-button>
+        <el-button type="primary" size="mini" @click="retrieveContext.resolve(playlist)" :disabled="!shownItems.length">开始导入</el-button>
+        <el-button type="warning" size="mini" @click="retrieveContext.reject()">取消</el-button>
       </div>
     </div>
   </el-drawer>
