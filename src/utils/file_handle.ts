@@ -164,6 +164,7 @@ export interface FileEntity {
   timestamp: number;
   handle: FileSystemHandle;
   blob: Blob;
+  show?: boolean;
 }
 
 export function resolveFiles(files: Array<File>): Array<FileEntity> {
@@ -204,7 +205,7 @@ export async function resolveFileHandle(handle: FileSystemHandle, parent: FileEn
   } else {
     path = file.name;
   }
-
+  
   if (playlist) {
     id = JSON.stringify([parent.id, path]).hash();
   } else {
@@ -233,7 +234,8 @@ export function resolveDirectoryHandle(handle: FileSystemHandle): FileEntity {
     type: 'directory',
     size: 0,
     handle,
-    blob: null
+    blob: null,
+    show: true
   };
 }
 
@@ -257,14 +259,15 @@ export async function grantPermission(fileHandle: FileSystemHandle) {
   await promise;
   promise = (async () => {
     let granted = await fileHandle.queryPermission({mode: 'read'}) === 'granted';
+    if (!granted && platform.wallpaper) {
+      await bus.$alert('为了能播放上次选择的歌曲, 请设置CEF命令行为<br/>--enable-experimental-web-platform-features', {dangerouslyUseHTMLString: true});
+      throw new Error('Permission denied');
+    }
     while (!granted) {
-      if (platform.wallpaper) {
-        await bus.$alert('为了能播放上次选择的歌曲, 请设置CEF命令行为<br/>--enable-experimental-web-platform-features', {dangerouslyUseHTMLString: true});
-        throw new Error('Permission denied');
-      }
       if (!navigator.userActivation.isActive) {
         await bus.$alert(`请对“${fileHandle.name}”进行授权`).catch(() => 0);
       }
+      await bus.$sleep(100);
       granted = await fileHandle.requestPermission({mode: 'read'}) === 'granted';
       await bus.$sleep(500);
     }

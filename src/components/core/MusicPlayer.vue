@@ -13,14 +13,14 @@
         <div v-if="music.author">演唱：{{ music.author }}</div>
         <div v-if="music.album">专辑：{{ music.album }}</div>
         <div v-if="music.props" style="padding: 10px calc(50% - 200px);">
-          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.musicFile">{{ music.musicFile.type }}</el-tag>
-          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.fileSize">{{ music.fileSize | fileSize }}</el-tag>
-          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.duration">{{ music.duration | delta }}</el-tag>
-          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.props.audioBitrate">{{ music.props.audioBitrate }} kbps</el-tag>
-          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.props.audioSampleRate">{{ music.props.audioSampleRate }} Hz</el-tag>
-          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.props.bitsPerSample">{{ music.props.bitsPerSample }} bits</el-tag>
-          <el-tag effect="dark" type="info" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="music.props.audioChannels">{{ music.props.audioChannels > 1 ? 'STEREO' : 'MONO' }}</el-tag>
-          <el-tag effect="dark" type="warning" style="width: 120px; margin: 5px;" :disable-transitions="true" v-if="!music.lrcFile">无歌词</el-tag>
+          <el-tag v-if="music.musicFile" v-bind="tagProps">{{ music.musicFile.type }}</el-tag>
+          <el-tag v-if="music.fileSize" v-bind="tagProps">{{ music.fileSize | fileSize }}</el-tag>
+          <el-tag v-if="music.duration" v-bind="tagProps">{{ music.duration | delta }}</el-tag>
+          <el-tag v-if="music.props.audioBitrate" v-bind="tagProps">{{ music.props.audioBitrate }} kbps</el-tag>
+          <el-tag v-if="music.props.audioSampleRate" v-bind="tagProps">{{ music.props.audioSampleRate }} Hz</el-tag>
+          <el-tag v-if="music.props.bitsPerSample" v-bind="tagProps">{{ music.props.bitsPerSample }} bits</el-tag>
+          <el-tag v-if="music.props.audioChannels" v-bind="tagProps">{{ music.props.audioChannels > 1 ? 'STEREO' : 'MONO' }}</el-tag>
+          <el-tag v-if="!music.lrcFile" v-bind="tagProps" type="warning">无歌词</el-tag>
         </div>
       </div>
     </main>
@@ -53,6 +53,17 @@ export default class MusicPlayer extends BaseComponent {
   private readonly musicLrc: MusicLrc;
 
   private timeout = 0;
+  
+  private readonly tagProps = {
+    effect: 'dark',
+    type: 'info',
+    style: {
+      width: '120px',
+      margin: '5px'
+    },
+    size: 'small',
+    disableTransitions: true
+  };
 
   private get music() {
     return this.musicService.music;

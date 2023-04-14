@@ -28,16 +28,18 @@ Array.prototype.shuffle = function () {
 };
 
 Array.prototype.remove = function (element) {
-  const index = this.findIndex(e => e === element);
-  if (index >= 0) {
+  let index = 0;
+  while ((index = this.indexOf(element)) >= 0) {
     this.splice(index, 1);
   }
 };
 
 Array.prototype.removeIf = function (predicate) {
-  const index = this.findIndex(predicate);
-  if (index >= 0) {
-    this.splice(index, 1);
+  let i = this.length;
+  while (i--) {
+    if (predicate(this[i])) {
+      this.splice(i, 1);
+    }
   }
 };
 

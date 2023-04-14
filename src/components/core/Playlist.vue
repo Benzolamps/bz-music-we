@@ -61,12 +61,13 @@
             </el-input>
             <el-button v-if="!platform.wallpaper" size="small" type="success" circle plain icon="el-icon-search" title="搜素" @click="showSearch = true;"/>
             <el-button v-if="platform.hasFsApi" size="small" type="success" circle plain icon="el-icon-refresh" title="刷新" @click="musicStorage.refresh"/>
-            <el-button v-if="platform.hasFsApi" size="small" type="warning" circle plain icon="el-icon-menu" title="列表管理"/>
+            <el-button v-if="platform.hasFsApi" size="small" type="warning" circle plain icon="el-icon-menu" title="列表管理" @click="showPlaylistManage = true;"/>
             <el-button v-if="!platform.hasFsApi" size="small" type="warning" circle plain icon="el-icon-document" title="导入文件" @click="chooseFile"/>
             <el-button v-if="!platform.hasFsApi && !platform.mobile" size="small" type="warning" circle plain icon="el-icon-folder" title="导入文件夹" @click="chooseFolder"/>
             <el-button size="small" type="danger" circle plain icon="el-icon-delete" title="清空" @click="musicStorage.clear"/>
           </div>
         </div>
+        <playlist-manage :show.sync="showPlaylistManage"/>
       </footer>
     </div>
   </el-drawer>
@@ -74,12 +75,13 @@
 
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
+import PlaylistManage from '@/components/core/PlaylistManage.vue';
 import {Component, Prop, Ref, Watch} from 'vue-property-decorator';
 import {Music} from '@/components/service/music';
 import BScroll from '@/components/common/BScroll.vue';
 import {chooseFile, chooseFolder} from '@/utils/file_handle';
 
-@Component({components: {BScroll}})
+@Component({components: {PlaylistManage, BScroll}})
 export default class Playlist extends BaseComponent {
   /* 页大小 */
   private readonly pageSize = 50;
@@ -90,6 +92,8 @@ export default class Playlist extends BaseComponent {
 
   @Prop({default: false})
   private readonly show: boolean;
+
+  private readonly showPlaylistManage = false;
 
   @Ref('scroll')
   private readonly scroll: BScroll;
@@ -109,7 +113,6 @@ export default class Playlist extends BaseComponent {
   }
 
   public override mounted() {
-    this.musicStorage.onReload.add(() => this.onCurrentChange(this.currentPage));
     (async () => {
       let music: Music;
       while (this.musicStorage) {
@@ -138,7 +141,7 @@ export default class Playlist extends BaseComponent {
           closeOnClickModal: false
         }
       );
-      this.musicStorage.remove(music);
+      await this.musicStorage.remove(music);
       if (music.id === this.music.id) {
         this.musicService.stop();
       }
@@ -198,7 +201,7 @@ export default class Playlist extends BaseComponent {
     return this.locateMusic();
   }
 
-  @Watch('musicService.query')
+  @Watch('musicService.musicList', {deep: false})
   private watchQuery() {
     this.onCurrentChange(this.currentPage);
   }

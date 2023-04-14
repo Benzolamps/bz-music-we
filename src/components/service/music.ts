@@ -21,6 +21,13 @@ export interface Music {
   lrcFile: FileEntity;
 }
 
+export interface Playlist {
+  id: number;
+  name: string;
+  musicCount: number;
+  show: boolean;
+}
+
 export function emptyMusic(title = messages['music.no_music']) {
   return {title} as Music;
 }

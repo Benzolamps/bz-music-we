@@ -1,7 +1,7 @@
 ﻿import messages from '@/assets/locale/messages';
 import {bus} from '@/components/common/common';
 import readMetadata from '@/components/service/blazor';
-import {Music} from '@/components/service/music';
+import {Music, Playlist} from '@/components/service/music';
 import {audios, lrcs} from '@/assets/media';
 import BaseClass from '@/utils/base_class';
 import {getBinaryData, getFileBaseName} from '@/utils/common_utils';
@@ -75,9 +75,11 @@ class MusicStorageItems {
   }
 
   public remove(file: FileEntity) {
-    this.audioEntities.remove(file);
-    this.lrcEntities.remove(file);
-    this.dirEntities.remove(file);
+    console.log(file, this);
+    this.audioEntities.removeIf(f => f.id === file.id || f.parentId === file.id);
+    this.lrcEntities.removeIf(f => f.id === file.id || f.parentId === file.id);
+    this.dirEntities.removeIf(f => f.id === file.id || f.parentId === file.id);
+    console.log(file, this);
   }
   
   public clear() {
@@ -129,6 +131,31 @@ export default class MusicStorage extends BaseClass {
   public musicList = new Array<Music>();
   private readonly musicStorageItems = new MusicStorageItems();
   
+  public onReload = () => {};
+
+  public get playlists(): Array<Playlist> {
+    return this.musicStorageItems.dirEntities
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(d => ({
+        id: d.id,
+        name: d.name,
+        musicCount: this.musicList.filter(m => m.musicFile.parentId === d.id).length,
+        show: d.show
+      }));
+  }
+  
+  public removePlaylist(playlist: Playlist) {
+    const fileEntity = this.musicStorageItems.dirEntities.find(e => e.id === playlist.id);
+    this.musicStorageItems.remove(fileEntity);
+    this.reload();
+  }
+
+  public setPlaylistShow(playlist: Playlist) {
+    const fileEntity = this.musicStorageItems.dirEntities.find(e => e.id === playlist.id);
+    fileEntity.show = playlist.show;
+    this.onReload();
+  }
+
   public readonly retrieveContext = {
     defaultPlaylist: new MusicStorageItems(),
     dirPlaylists: new Map<FileEntity, MusicStorageItems>(),
@@ -137,11 +164,8 @@ export default class MusicStorage extends BaseClass {
     state: 'finish' as 'pending' | 'ready' | 'processing' | 'finish'
   };
 
-  public readonly onReload = new Set<(...args: Array<unknown>) => void>();
-  
   public async init() {
     this.musicList = await db.table('music').toArray();
-    
     if (this.musicList.length > 0) {
       const audioEntities: Array<FileEntity> = this.musicList.map(m => m.musicFile);
       const lrcEntities: Array<FileEntity> = this.musicList.map(m => m.lrcFile).filter(e => e);
@@ -149,7 +173,7 @@ export default class MusicStorage extends BaseClass {
       await this.musicStorageItems.init(audioEntities, lrcEntities, dirEntities);
       this.musicList.sort((a, b) => a.musicFile.path.localeCompare(b.musicFile.path));
       Object.freeze(this.musicList);
-      this.onReload.forEach(h => h());
+      this.onReload();
     } else {
       const files = new Array<File>();
       for (const lrc of lrcs) {
@@ -185,13 +209,13 @@ export default class MusicStorage extends BaseClass {
     this.musicList = this.musicStorageItems.toMusicList(this.musicList);
     this.musicList.sort((a, b) => a.musicFile.path.localeCompare(b.musicFile.path));
     Object.freeze(this.musicList);
-    this.onReload.forEach(h => h());
-    db.transaction('readwrite', [db.table('dir'), db.table('music')], async t => {
+    db.transaction('readwrite', [db.table('dir'), db.table('music')], async () => {
       await db.table('dir').clear();
       await db.table('dir').bulkPut(this.musicStorageItems.dirEntities);
       await db.table('music').clear();
       await db.table('music').bulkPut(this.musicList.filter(m => m.musicFile.parentId));
     });
+    this.onReload();
   }
   
   public async refresh() {
@@ -204,7 +228,7 @@ export default class MusicStorage extends BaseClass {
   public async remove(music: Music) {
     const audio = this.musicStorageItems.audioEntities.find(e => e.id === music.id);
     this.musicStorageItems.remove(audio);
-    if (music.lrcFile && !this.musicList.some(m => m !== music && m.lrcFile.id === music.lrcFile.id)) {
+    if (music.lrcFile && !this.musicList.some(m => m !== music && m.lrcFile?.id === music.lrcFile.id)) {
       const lrc = this.musicStorageItems.lrcEntities.find(e => e.id === music.lrcFile.id);
       this.musicStorageItems.remove(lrc);
     }

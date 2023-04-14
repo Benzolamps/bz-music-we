@@ -57,7 +57,7 @@ export default class MusicService extends MusicComponent {
     super();
     super.init();
     this.mode = modes[store.mode as ModeKeys] ?? modes.sequence;
-    this.vue.musicStorage.onReload.add(this.initMusic);
+    this.vue.musicStorage.onReload = this.initMusic;
     this.mapEvents();
   }
 
@@ -103,7 +103,14 @@ export default class MusicService extends MusicComponent {
   }
 
   private async initMusic() {
-    this.musicList = this.vue.musicStorage.musicList.filter(m => !this.query || this.query.split(/[\s\u3000 ]+/g).every(q => m.title.includes(q)));
+    const playlists = this.vue.musicStorage.playlists;
+    this.musicList = this.vue.musicStorage.musicList
+      .filter(m => {
+        const playlist = playlists.find(p => p.id === m.musicFile.parentId);
+        let cond = !playlist || playlist.show;
+        cond &&= !this.query || this.query.split(/[\s\u3000]+/g).every(q => m.title.includes(q));
+        return cond;
+      });
     this.shuffleMusicList();
 
     const musicId = this.music.id || store.musicId;
