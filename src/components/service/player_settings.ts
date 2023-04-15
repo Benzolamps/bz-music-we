@@ -27,6 +27,7 @@ export default class PlayerSettings {
     starPresets: new Set<string>(),
     onlyShowStarPresets: false,
     random: false,
+    changeWithMusic: false,
     interval: 30,
     showFps: false,
     overlay: true,

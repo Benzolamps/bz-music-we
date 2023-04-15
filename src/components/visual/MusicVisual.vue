@@ -168,6 +168,8 @@ export default class MusicVisual extends BaseComponent {
 
   private handlePip() {
     if (!this.platform.pip) {
+      this.visualStates.video = false;
+      this.visualStates.canvas = true;
       return;
     }
     if (this.visualStates.pip) {

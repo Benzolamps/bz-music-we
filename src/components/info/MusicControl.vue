@@ -64,7 +64,7 @@
         >{{ musicService.pitch }}x</span>
 
         <!-- 可视化 -->
-        <svg-icon v-popover:popoverAperture icon-name="music_aperture"/>
+        <svg-icon v-show="!view.portable" v-popover:popoverAperture icon-name="music_aperture"/>
       </div>
     </div>
 

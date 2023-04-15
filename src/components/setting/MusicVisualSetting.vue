@@ -38,8 +38,10 @@
       </el-button>
     </el-form-item>
     <el-form-item :label="messages['visual.preset.interval']">
+      <el-checkbox v-model="visualStyles.changeWithMusic">切歌时切换</el-checkbox>
       <el-slider
         v-model="visualStyles.interval"
+        :disabled="visualStyles.changeWithMusic"
         :min="0" :max="300"
         :show-tooltip="false"
         input-size="mini"
@@ -61,9 +63,11 @@
     <el-divider/>
     <el-form-item>
       <div class="checkbox-group">
-        <div v-for="action in visualActions" :key="action.name">
-          <el-checkbox v-if="action.enabled" v-model="action.value">{{action.name}}</el-checkbox>
-        </div>
+        <template v-for="action in visualActions">
+          <div v-if="action.enabled" :key="action.name">
+            <el-checkbox v-model="action.value">{{action.name}}</el-checkbox>
+          </div>
+        </template>
       </div>
     </el-form-item>
     <el-form-item>

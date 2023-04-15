@@ -75,11 +75,9 @@ class MusicStorageItems {
   }
 
   public remove(file: FileEntity) {
-    console.log(file, this);
     this.audioEntities.removeIf(f => f.id === file.id || f.parentId === file.id);
     this.lrcEntities.removeIf(f => f.id === file.id || f.parentId === file.id);
     this.dirEntities.removeIf(f => f.id === file.id || f.parentId === file.id);
-    console.log(file, this);
   }
   
   public clear() {

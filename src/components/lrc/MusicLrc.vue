@@ -41,7 +41,7 @@ export default class MusicLrc extends BaseComponent {
 
   @Ref('scroll')
   private readonly scroll: BScroll;
-
+  
   public override mounted() {
     this.refreshScroll();
     window.addEventListener('resize', this.adjustHeight, {signal: this.abortSignal});
@@ -141,6 +141,25 @@ export default class MusicLrc extends BaseComponent {
     const lrcContainer = this.$refs.lrcContainer as HTMLUListElement;
     lrcContainer.style.setProperty('--lrc-progress-past', this.lrcContext.progress * 100 + '%');
     lrcContainer.style.setProperty('--lrc-progress-future', this.lrcContext.progress * 200 + '%');
+    const elements = Array.from<HTMLLIElement>(lrcContainer.querySelectorAll('.music-lrc-item-current'));
+    for (const element of elements) {
+      const elementWidth = element.clientWidth;
+      const containerWidth = lrcContainer.clientWidth;
+      if (elementWidth > containerWidth) {
+        let progress = this.lrcContext.progress;
+        if (progress < .2) {
+          progress = 0;
+        }
+        else if (progress > .8) {
+          progress = 1;
+        }
+        else {
+          progress = (progress - .2) / .6;
+        }
+        const offset = progress * (elementWidth - containerWidth);
+        element.style.left = (elementWidth - containerWidth) / 2 - offset + 'px';
+      }
+    }
   }
 
   @Watch('musicService.duration')
@@ -177,20 +196,20 @@ export default class MusicLrc extends BaseComponent {
     pointer-events: none !important;
 
     li {
-      padding: 0 10px;
-
       &, &::before {
         pointer-events: auto;
         width: fit-content;
-        max-width: calc(100% - 20px);
         white-space: nowrap;
-        text-overflow: ellipsis;
         overflow: hidden;
       }
 
       &.lrc-font {
         font-family: 'LrcFont', 'PingFang SC', 'Arial', 'sans-serif' !important;
       }
+    }
+
+    .music-lrc-item-normal {
+      left: 0 !important;
     }
 
     .music-lrc-item-current {

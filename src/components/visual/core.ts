@@ -49,9 +49,11 @@ export default class MusicVisualCore extends BaseClass {
     });
     musicVisual.$watch('visualStyles.onlyShowStarPresets', this.loadPresetList);
     musicVisual.$watch('visualStyles.interval', this.reloadTimeout);
+    musicVisual.$watch('visualStyles.changeWithMusic', this.reloadTimeout);
     musicVisual.$watch('visualStyles.lrcMode', this.drawLrcCaption);
     musicVisual.$watch('visualStates.ftt', this.handleFtt);
     musicVisual.$watch('lrcContext.currentLrcArray', this.drawLrcCaption);
+    musicVisual.$watch('music.id', () => musicVisual.visualStyles.changeWithMusic && this.loadNearPreset('next'));
 
     this.handleFtt();
 
@@ -180,7 +182,7 @@ export default class MusicVisualCore extends BaseClass {
 
   public reloadTimeout() {
     window.clearTimeout(this.timeout);
-    if (bus.visualStyles.interval > 0) {
+    if (!bus.visualStyles.changeWithMusic && bus.visualStyles.interval > 0) {
       this.timeout = window.setTimeout(
         () => this.loadNearPreset('next'),
         1000 * bus.visualStyles.interval
@@ -353,10 +355,28 @@ export default class MusicVisualCore extends BaseClass {
       } else {
         context2d.fillStyle = bus.lrcStyles.defaultColor;
       }
-      context2d.strokeText(lrcTag.content, (width - textWidth) / 2, startY);
-      context2d.fillText(lrcTag.content, (width - textWidth) / 2, startY);
+      let x = (width - textWidth) / 2;
+      if (x < 10 && lrcs.includes(lrcTag)) {
+        let progress = bus.lrcContext.progress;
+        if (progress < .2) {
+          progress = 0;
+        }
+        else if (progress > .8) {
+          progress = 1;
+        }
+        else {
+          progress = (progress - .2) / .6;
+        }
+        x = 2 * (x - 10) * progress + 10;
+      }
+      context2d.strokeText(lrcTag.content, x, startY);
+      context2d.fillText(lrcTag.content, x, startY);
       startY += fontSize + margin;
     }
+
+    context2d.fillStyle = bus.lrcStyles.strokeColor;
+    context2d.fillRect(0, 0, 10, height);
+    context2d.fillRect(width - 10, 0, 10, height);
   }
 
   public close() {
