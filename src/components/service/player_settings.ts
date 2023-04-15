@@ -4,8 +4,10 @@ import {bus} from '@/components/common/common';
 import lrcFonts from '@/assets/fonts/lrc/index';
 import messages from '@/assets/locale/messages';
 import pfsc from '@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf';
-import {getBinaryData, getFileBaseName} from '@/utils/common_utils';
+import {getBinaryData, getFileBaseName, keyMappings} from '@/utils/common_utils';
 import platform from '@/utils/platform';
+
+type LrcMode = 'scroll' | 'caption' | 'mix';
 
 export default class PlayerSettings {
   public static readonly fontList: Array<{name: string, blob: Blob}> = [];
@@ -24,19 +26,29 @@ export default class PlayerSettings {
     preset: '',
     starPresets: new Set<string>(),
     onlyShowStarPresets: false,
-    useFtt: true,
     random: false,
     interval: 30,
     showFps: false,
-    lrcMode: 'caption' as 'scroll' | 'caption' | 'mix',
-    state: {
-      show: platform.wallpaper,
-      pip: false,
-      canvas: false,
-      video: false
-    }
+    overlay: true,
+    lrcMode: 'caption' as LrcMode
+  };
+  
+  public static readonly defaultVisualStates = {
+    show: platform.wallpaper,
+    pip: false,
+    canvas: false,
+    video: false,
+    fullscreen: false,
+    ftt: true
   };
 
+  public static readonly defaultVisualActions = new Array<{
+    name: string;
+    tag?: string;
+    enabled: boolean;
+    value: boolean;
+  }>();
+  
   public static getLrcStyles() {
     let result;
     if (window.name === 'MusicLrcDesktop') {
@@ -67,13 +79,91 @@ export default class PlayerSettings {
     if (store.visualStyles instanceof Object) {
       const visualStyles = store.visualStyles as typeof this.defaultVisualStyles;
       visualStyles.starPresets = new Set(visualStyles.starPresets ?? []);
-      const {useFtt, state} = this.defaultVisualStyles;
-      return {...visualStyles, useFtt, state} as typeof this.defaultVisualStyles;
+      return visualStyles as typeof this.defaultVisualStyles;
     } else {
       const visualStyles = JSON.parse(JSON.stringify(this.defaultVisualStyles));
       visualStyles.starPresets = new Set();
       return visualStyles;
     }
+  }
+  
+  public static getVisualActions(): typeof this.defaultVisualActions {
+    return [
+      {
+        name: '全屏模式',
+        tag: '全屏',
+        enabled: !platform.mobile && !platform.wallpaper,
+        get value() {
+          return bus.visualStates.fullscreen;
+        },
+        set value(v) {
+          PlayerSettings.requestFullscreen();
+        }
+      },
+      {
+        name: '画中画模式',
+        tag: '画中画',
+        enabled: platform.pip,
+        get value() {
+          return bus.visualStates.pip;
+        },
+        set value(v) {
+          bus.visualStates.pip = v;
+        }
+      },
+      {
+        name: '滚动歌词',
+        tag: '滚动歌词',
+        enabled: true,
+        get value() {
+          return bus.visualStyles.lrcMode !== 'caption';
+        },
+        set value(v) {
+          PlayerSettings.changeLrcMode('scroll');
+        }
+      },
+      {
+        name: '3D歌词',
+        tag: '3D歌词',
+        enabled: true,
+        get value() {
+          return bus.visualStyles.lrcMode !== 'scroll';
+        },
+        set value(v) {
+          PlayerSettings.changeLrcMode('caption');
+        }
+      },
+      {
+        name: '显示FPS',
+        enabled: true,
+        get value() {
+          return bus.visualStyles.showFps;
+        },
+        set value(v) {
+          bus.visualStyles.showFps = v;
+        }
+      },
+      {
+        name: '显示信息',
+        enabled: !platform.wallpaper,
+        get value() {
+          return bus.visualStyles.overlay;
+        },
+        set value(v) {
+          bus.visualStyles.overlay = v;
+        }
+      },
+      {
+        name: '使用FTT',
+        enabled: true,
+        get value() {
+          return bus.visualStates.ftt;
+        },
+        set value(v) {
+          bus.visualStates.ftt = v;
+        }
+      }
+    ];
   }
 
   public static async load() {
@@ -122,6 +212,13 @@ export default class PlayerSettings {
         bus.lrcStyles.font = oldValue;
       }
     }
+    
+    document.addEventListener('fullscreenchange', () => {
+      bus.visualStates.fullscreen = !!document.fullscreenElement;
+    });
+    
+    keyMappings.add({altKey: false, ctrlKey: false, shiftKey: false, type: 'keyup', code: 'F11', handler: this.requestFullscreen});
+    keyMappings.add({altKey: false, ctrlKey: false, shiftKey: false, type: 'keydown', code: 'F11', handler: () => 0});
   }
 
   public static loadCustomFont(file: File) {
@@ -158,5 +255,25 @@ export default class PlayerSettings {
     }
     // vue无法监听Set集合的变更的解决方案
     bus.visualStyles.starPresets = new Set<string>(Array.from(bus.visualStyles.starPresets));
+  }
+  
+  public static requestFullscreen() {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.body.requestFullscreen();
+    }
+  }
+  
+  public static changeLrcMode(mode: typeof this.defaultVisualStyles.lrcMode) {
+    const map = new Map<string, LrcMode>([
+      ['caption->caption', 'scroll'],
+      ['scroll->caption', 'mix'],
+      ['mix->caption', 'scroll'],
+      ['caption->scroll', 'mix'],
+      ['scroll->scroll', 'caption'],
+      ['mix->scroll', 'caption']
+    ]);
+    bus.visualStyles.lrcMode = map.get(`${bus.visualStyles.lrcMode}->${mode}`) ?? mode;
   }
 }

@@ -156,7 +156,7 @@ export default class MusicLrc extends BaseComponent {
   }
 
   @Watch('lrcContext.shownLrc.length')
-  @Watch('visualStyles.state.show')
+  @Watch('visualStates.show')
   @Watch('lrcContext.currentLrcTime')
   private watchShownLrc() {
     return this.refreshScroll();

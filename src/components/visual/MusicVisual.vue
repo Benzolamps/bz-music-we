@@ -1,8 +1,28 @@
 ﻿<template>
   <div class="music-visual">
-    <canvas ref="canvas" :class="{hidden: !visualStyles.state.canvas, 'no-interactive': visualStyles.lrcMode === 'scroll'}"/>
-    <div ref="shade" :class="visualStyles.state.video || 'hidden'"/>
-    <video ref="video" muted controls playsinline autoplay :class="visualStyles.state.video || 'hidden'"/>
+    <canvas ref="canvas" :class="{hidden: !visualStates.canvas, 'no-interactive': visualStyles.lrcMode === 'scroll'}"/>
+    <div ref="shade" class="shade" :class="visualStates.video || 'hidden'"/>
+    <video ref="video" muted controls playsinline autoplay :class="visualStates.video || 'hidden'"/>
+    <div class="overlay" :class="{hidden: !(enableOverlay && (alwaysShowOverlay || tempShowOverlay))}">
+      <el-card>
+        <ul>
+          <li class="info">{{music.name}}</li>
+          <li v-if="music.author" class="info">演唱：{{music.author}}</li>
+          <li v-if="music.album" class="info">专辑：{{music.album}}</li>
+          <li>{{attrSeparator}}</li>
+          <li v-if="music.musicFile">{{music.musicFile.type}}</li>
+          <li v-if="music.fileSize">{{music.fileSize | fileSize}}</li>
+          <li v-if="music.props.audioBitrate">{{music.props.audioBitrate}} kbps</li>
+          <li v-if="music.props.audioSampleRate">{{music.props.audioSampleRate}} Hz</li>
+          <li v-if="music.props.bitsPerSample">{{music.props.bitsPerSample}} bits</li>
+          <li v-if="music.props.audioChannels">{{ music.props.audioChannels > 1 ? 'STEREO' : 'MONO' }}</li>
+          <li>{{attrSeparator}}</li>
+          <li class="info">{{lrcContext.currentLrcArray[0] && lrcContext.currentLrcArray[0].content || attrSeparator}}</li>
+          <li class="time code-font" ref="time">{{0 | delta}}/{{0 | delta}}</li>
+          <li>Milk Drop Preset: {{visualStyles.preset}}</li>
+        </ul>
+      </el-card>
+    </div>
   </div>
 </template>
 
@@ -11,7 +31,7 @@ import BaseComponent from '@/components/common/BaseComponent';
 import {Component, Ref, Watch} from 'vue-property-decorator';
 import MusicVisualCore from '@/components/visual/core';
 import PlayerSettings from '@/components/service/player_settings';
-import {KeyMapping, keyMappings} from '@/utils/common_utils';
+import {formatDelta, KeyMapping, keyMappings} from '@/utils/common_utils';
 import Hammer from 'hammerjs';
 
 @Component
@@ -25,10 +45,27 @@ export default class MusicVisual extends BaseComponent {
   @Ref('shade')
   private readonly shade: HTMLDivElement;
 
+  @Ref('time')
+  private readonly time: HTMLHeadingElement;
+
   private hammer = new Hammer.Manager(document.createElement('div'), {});
 
   private pipWindow: {width: number, height: number};
+  
+  private alwaysShowOverlay = false;
+  
+  private tempShowOverlay = true;
+  
+  private timeout = 0;
 
+  private get music() {
+    return this.musicService.music;
+  }
+
+  private get enableOverlay() {
+    return this.visualStyles.overlay && this.visualStates.canvas && this.visualStyles.lrcMode !== 'scroll';
+  }
+  
   public override mounted() {
     const signal = this.abortSignal;
     this.video.muted = true;
@@ -36,20 +73,20 @@ export default class MusicVisual extends BaseComponent {
     this.video.playsInline = true;
     this.shade.addEventListener('click', () => {
       if (!document.pictureInPictureElement) {
-        this.visualStyles.state.video = false;
-        this.visualStyles.state.canvas = true;
-        this.visualStyles.state.pip = false;
+        this.visualStates.video = false;
+        this.visualStates.canvas = true;
+        this.visualStates.pip = false;
       }
     }, {signal});
     this.video.addEventListener('enterpictureinpicture', (e: any) => {
-      this.visualStyles.state.video = false;
-      this.visualStyles.state.canvas = false;
+      this.visualStates.video = false;
+      this.visualStates.canvas = false;
       this.pipWindow = e.pictureInPictureWindow;
     }, {signal});
     this.video.addEventListener('leavepictureinpicture', () => {
-      this.visualStyles.state.video = false;
-      this.visualStyles.state.canvas = true;
-      this.visualStyles.state.pip = false;
+      this.visualStates.video = false;
+      this.visualStates.canvas = true;
+      this.visualStates.pip = false;
     }, {signal});
 
     this.musicVisualCore = new MusicVisualCore(this, this.canvas, this.getDesireCanvasSize);
@@ -58,24 +95,32 @@ export default class MusicVisual extends BaseComponent {
     const starHandler = () => PlayerSettings.starPreset(this.visualStyles.preset);
     const prevHandler = () => this.musicVisualCore.prevPreset();
     const nextHandler = () => this.musicVisualCore.nextPreset();
-
+    
+    const keys = {ctrlKey: false, altKey: false, shiftKey: false};
     const mappings: Array<KeyMapping> = [
-      {type: 'keydown', code: 'Numpad5', ctrlKey: true},
-      {type: 'keydown', code: 'Numpad4', ctrlKey: true},
-      {type: 'keydown', code: 'Numpad6', ctrlKey: true},
-      {type: 'keyup', code: 'Numpad5', ctrlKey: true, handler: starHandler},
-      {type: 'keyup', code: 'Numpad4', ctrlKey: true, handler: prevHandler},
-      {type: 'keyup', code: 'Numpad6', ctrlKey: true, handler: nextHandler}
+      {type: 'keydown', code: 'Numpad5', ...keys},
+      {type: 'keydown', code: 'Numpad4', ...keys},
+      {type: 'keydown', code: 'Numpad6', ...keys},
+      {type: 'keydown', code: 'F8', ...keys},
+      {type: 'keydown', code: 'F10', ...keys},
+      {type: 'keyup', code: 'Numpad5', ...keys, handler: starHandler},
+      {type: 'keyup', code: 'Numpad4', ...keys, handler: prevHandler},
+      {type: 'keyup', code: 'Numpad6', ...keys, handler: nextHandler},
+      {type: 'keyup', code: 'F8', ...keys, handler: this.handleAlwaysOverlay},
+      {type: 'keyup', code: 'F10', ...keys, handler: () => this.visualStates.pip = !this.visualStates.pip}
     ];
     mappings.forEach(e => keyMappings.add(e));
     this.$once('hook:beforeDestroy', () => mappings.forEach(e => keyMappings.delete(e)));
-
+    
     this.hammer = new Hammer.Manager(this.canvas);
     const press = new Hammer.Press();
     this.hammer.add(press);
+    const tap = new Hammer.Tap();
+    this.hammer.add(tap);
     const swipe = new Hammer.Swipe({direction: Hammer.DIRECTION_ALL});
     this.hammer.add(swipe);
     this.hammer.on('press', starHandler);
+    this.hammer.on('tap', this.handleAlwaysOverlay);
     this.hammer.on('swipe', e => {
       const direction = e.offsetDirection;
       if (direction === Hammer.DIRECTION_DOWN || direction === Hammer.DIRECTION_RIGHT) {
@@ -84,6 +129,22 @@ export default class MusicVisual extends BaseComponent {
         nextHandler();
       }
     });
+    
+    this.handleTempOverlay();
+  }
+
+  private handleTempOverlay() {
+    window.clearTimeout(this.timeout);
+    this.tempShowOverlay = true;
+    this.timeout = window.setTimeout(() => this.tempShowOverlay = false, 5000);
+  }
+
+  private handleAlwaysOverlay() {
+    if (this.tempShowOverlay || this.alwaysShowOverlay) {
+      this.tempShowOverlay = this.alwaysShowOverlay = false;
+    } else {
+      this.alwaysShowOverlay = true;
+    }
   }
 
   public override beforeDestroy() {
@@ -94,7 +155,7 @@ export default class MusicVisual extends BaseComponent {
   }
 
   private getDesireCanvasSize(): [number, number] {
-    if (this.visualStyles.state.canvas) {
+    if (this.visualStates.canvas) {
       return [this.canvas.clientWidth * window.devicePixelRatio, this.canvas.clientHeight * window.devicePixelRatio];
     } else if (document.pictureInPictureElement) {
       return [this.pipWindow.width * window.devicePixelRatio, this.pipWindow.height * window.devicePixelRatio];
@@ -106,14 +167,17 @@ export default class MusicVisual extends BaseComponent {
   /* region pip */
 
   private handlePip() {
-    if (this.visualStyles.state.pip) {
-      this.visualStyles.state.video = true;
-      this.visualStyles.state.canvas = false;
+    if (!this.platform.pip) {
+      return;
+    }
+    if (this.visualStates.pip) {
+      this.visualStates.video = true;
+      this.visualStates.canvas = false;
       this.video.srcObject = this.canvas.captureStream();
       this.video.play().then(() => this.video.requestPictureInPicture());
     } else {
-      this.visualStyles.state.video = false;
-      this.visualStyles.state.canvas = true;
+      this.visualStates.video = false;
+      this.visualStates.canvas = true;
       if (this.video.srcObject instanceof MediaStream) {
         this.video.srcObject.getTracks().forEach(t => t.stop());
       }
@@ -124,7 +188,26 @@ export default class MusicVisual extends BaseComponent {
     }
   }
 
-  @Watch('visualStyles.state.pip')
+  /* 更新时间 */
+  private updateTime() {
+    this.time.innerText = formatDelta(this.musicService.currentTime) + '/' + formatDelta(this.musicService.duration);
+  }
+
+  @Watch('musicService.duration')
+  @Watch('musicService.currentTime')
+  private watchCurrentTime() {
+    this.animationRunner.once(this.updateTime);
+  }
+
+  @Watch('visualStyles.preset')
+  @Watch('music.id')
+  @Watch('enableOverlay')
+  private watchMusic() {
+    this.alwaysShowOverlay = false;
+    this.handleTempOverlay();
+  }
+
+  @Watch('visualStates.pip')
   private watchPip() {
     this.handlePip();
   }
@@ -144,7 +227,7 @@ export default class MusicVisual extends BaseComponent {
     position: absolute;
   }
 
-  div {
+  .shade {
     background-color: transparent;
     width: 100%;
     height: 100%;
@@ -175,12 +258,50 @@ export default class MusicVisual extends BaseComponent {
     pointer-events: none;
   }
 
-  div.hidden {
+  .shade.hidden {
     display: none;
   }
 
   video.hidden {
     display: none;
+  }
+  
+  .overlay {
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    transition: opacity 1s ease-in-out;
+    
+    .el-card {
+      background-color: #333A;
+      color: #EEE;
+      width: min(calc(100vw - 35px), 750px);
+      border: none;
+      box-shadow: 0 2px 12px 0 #333;
+      
+      * {
+        font-family: 'LrcFont', 'PingFang SC', 'Arial', 'sans-serif';
+      }
+      
+      .info {
+        font-size: 20px;
+        font-weight: 700;
+      }
+      
+      .time {
+        font-size: 25px;
+        line-height: 75px;
+        font-weight: 400;
+      }
+    }
+  }
+
+  .overlay.hidden {
     pointer-events: none;
     opacity: 0;
   }

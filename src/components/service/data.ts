@@ -1,5 +1,4 @@
-﻿import lrc from "@/assets/fonts/lrc";
-import messages from '@/assets/locale/messages';
+﻿import messages from '@/assets/locale/messages';
 import {bus} from '@/components/common/common';
 import readMetadata from '@/components/service/blazor';
 import {Music, Playlist} from '@/components/service/music';

@@ -1,7 +1,7 @@
 <template>
   <article class="music-container" :style="{'--show-info': showInfo ? 1 : 0}">
     <header>
-      <music-visual v-if="visualStyles.state.show"/>
+      <music-visual v-if="visualStates.show"/>
     </header>
     <main class="music-main">
       <!-- 歌词 -->
@@ -52,8 +52,6 @@ export default class MusicPlayer extends BaseComponent {
   @Ref('musicLrc')
   private readonly musicLrc: MusicLrc;
 
-  private timeout = 0;
-  
   private readonly tagProps = {
     effect: 'dark',
     type: 'info',
@@ -70,11 +68,11 @@ export default class MusicPlayer extends BaseComponent {
   }
 
   private get showLrc() {
-    return !this.visualStyles.state.show || this.visualStyles.lrcMode !== 'caption' || this.visualStyles.state.pip;
+    return !this.visualStates.show || this.visualStyles.lrcMode !== 'caption' || this.visualStates.pip;
   }
 
   private get showInfo() {
-    return !this.visualStyles.state.show || this.visualStyles.state.pip;
+    return !this.visualStates.show || this.visualStates.pip;
   }
 
   public override mounted() {
@@ -90,9 +88,10 @@ export default class MusicPlayer extends BaseComponent {
         below += this.wallpaperProperties.taskbar_length;
       }
       if (clientY >= window.innerHeight - below) {
-        window.clearTimeout(this.timeout);
         this.showMusicControl = true;
-        this.timeout = window.setTimeout(() => this.showMusicControl = false, 3000);
+      } else {
+        const elements = Array.from(document.querySelectorAll('.el-popper, .el-drawer'));
+        this.showMusicControl = !(elements.length === 0 || elements.every(e => e.clientWidth === 0 || e.clientHeight === 0));
       }
     };
     const signal = this.abortSignal;

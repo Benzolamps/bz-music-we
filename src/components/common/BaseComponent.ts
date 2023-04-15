@@ -28,6 +28,9 @@ class BaseComponentStaticData {
   public lrcContext: LrcContext = null;
   public lrcStyles = PlayerSettings.defaultLrcStyles;
   public visualStyles = PlayerSettings.defaultVisualStyles;
+  public visualStates = PlayerSettings.defaultVisualStates;
+  public visualActions = PlayerSettings.defaultVisualActions;
+
   public readonly animationRunner = new AnimationRunner();
   public readonly audioContext = new AudioContext();
   public readonly inputAttrs = {

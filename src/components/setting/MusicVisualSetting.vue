@@ -16,18 +16,24 @@
     </el-form-item>
     <el-divider/>
     <el-form-item :label="messages['visual.preset']">
-      <div style="margin: 10px;">
-        <el-checkbox v-model="visualStyles.onlyShowStarPresets">
-          {{messages['visual.preset.only_show_stars']}}
-          <i class="el-icon-star-on"/>
-        </el-checkbox>
-        <el-checkbox v-model="visualStyles.random">{{messages['visual.preset.random']}}</el-checkbox>
+      <div class="checkbox-group">
+        <div>
+          <el-checkbox v-model="visualStyles.onlyShowStarPresets">
+            {{ messages['visual.preset.only_show_stars'] }}
+            <i class="el-icon-star-on"/>
+          </el-checkbox>
+        </div>
+        <div>
+          <el-checkbox v-model="visualStyles.random">
+            {{ messages['visual.preset.random'] }}
+          </el-checkbox>
+        </div>
       </div>
       <el-button @click="showPresetList = true">{{messages['visual.preset.config']}}</el-button>
-      <el-button v-if="visualStyles.state.show" type="success" @click="musicVisualCore.prevPreset">
+      <el-button v-if="visualStates.show" type="success" @click="musicVisualCore.prevPreset">
         {{messages['visual.preset.prev']}}
       </el-button>
-      <el-button v-if="visualStyles.state.show" type="warning" @click="musicVisualCore.nextPreset">
+      <el-button v-if="visualStates.show" type="warning" @click="musicVisualCore.nextPreset">
         {{messages['visual.preset.next']}}
       </el-button>
     </el-form-item>
@@ -53,24 +59,14 @@
       />
     </el-form-item>
     <el-divider/>
-    <el-form-item :label="messages['visual.lrc_mode']">
-      <el-select v-model="visualStyles.lrcMode" v-bind="inputAttrs" style="width: 100%">
-        <el-option key="scroll" value="scroll" :label="messages['visual.lrc_mode.scroll']"/>
-        <el-option key="caption" value="caption" :label="messages['visual.lrc_mode.caption']"/>
-        <el-option key="mix" value="mix" :label="messages['visual.lrc_mode.mix']"/>
-      </el-select>
-      <div style="margin: 10px;">
-        <el-checkbox v-model="visualStyles.state.pip">{{messages['visual.pip']}}</el-checkbox>
-        <el-checkbox v-model="visualStyles.showFps">{{messages['visual.fps']}}</el-checkbox>
-        <el-checkbox v-if="!platform.wallpaper" v-model="visualStyles.useFtt">{{messages['visual.ftt']}}</el-checkbox>
+    <el-form-item>
+      <div class="checkbox-group">
+        <div v-for="action in visualActions" :key="action.name">
+          <el-checkbox v-if="action.enabled" v-model="action.value">{{action.name}}</el-checkbox>
+        </div>
       </div>
     </el-form-item>
     <el-form-item>
-      <el-button
-        v-if="!platform.wallpaper"
-        :type="visualStyles.state.show ? 'success' : 'warning'"
-        @click="visualStyles.state.show = !visualStyles.state.show"
-      >{{visualStyles.state.show ? messages['visual.stop'] : messages['visual.start']}}</el-button>
       <el-button type="warning" @click="resetSettings">{{messages['music.reset_default']}}</el-button>
     </el-form-item>
     <el-drawer
@@ -130,7 +126,13 @@ import BScroll from '@/components/common/BScroll.vue';
 import presetList from '@/assets/presets/index';
 import PlayerSettings from '@/components/service/player_settings';
 
-@Component({components: {BScroll}})
+@Component({
+  components: {BScroll},
+  methods: {
+    requestFullscreen: PlayerSettings.requestFullscreen,
+    changeLrcMode: PlayerSettings.changeLrcMode
+  }
+})
 export default class MusicVisualSetting extends BaseComponent {
   private presetList: ReadonlyArray<MilkDropPresetDesc> = [];
   private readonly basePresetList: ReadonlyArray<MilkDropPresetDesc> = presetList;
@@ -235,6 +237,15 @@ export default class MusicVisualSetting extends BaseComponent {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  
+  .checkbox-group {
+    margin: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    > * {
+      min-width: 50%;
+    }
+  }
 }
 
 .preset-list {

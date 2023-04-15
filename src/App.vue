@@ -70,6 +70,7 @@ export default class App extends BaseComponent {
     this.lrcContext = Vue.observable(new LrcContext());
     this.lrcStyles = Vue.observable(PlayerSettings.getLrcStyles());
     this.visualStyles = Vue.observable(PlayerSettings.getVisualStyles());
+    this.visualActions = Vue.observable(PlayerSettings.getVisualActions());
     await PlayerSettings.load();
     await this.musicStorage.init();
   }

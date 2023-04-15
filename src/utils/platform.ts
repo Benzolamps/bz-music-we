@@ -13,6 +13,7 @@ export interface Platform extends Readonly<Partial<Record<PlatformKeys, boolean>
   readonly wallpaper?: boolean;
   readonly standalone?: boolean;
   readonly static?: boolean;
+  readonly pip?: boolean;
   readonly hasFsApi?: boolean;
 }
 
@@ -24,6 +25,7 @@ export const platforms = (() => {
     wallpaper: Object.keys(window).some(k => k.match(/^wallpaper/)),
     standalone: window.matchMedia('(display-mode: standalone)').matches,
     static: location.protocol === 'file:',
+    pip: 'requestPictureInPicture' in HTMLVideoElement.prototype,
     hasFsApi: window.isSecureContext
       && 'FileSystemHandle' in window
       && 'showOpenFilePicker' in window

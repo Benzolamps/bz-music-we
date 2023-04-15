@@ -49,11 +49,11 @@ export default class MusicVisualCore extends BaseClass {
     });
     musicVisual.$watch('visualStyles.onlyShowStarPresets', this.loadPresetList);
     musicVisual.$watch('visualStyles.interval', this.reloadTimeout);
-    musicVisual.$watch('visualStyles.useFtt', this.handleUseFtt);
     musicVisual.$watch('visualStyles.lrcMode', this.drawLrcCaption);
+    musicVisual.$watch('visualStates.ftt', this.handleFtt);
     musicVisual.$watch('lrcContext.currentLrcArray', this.drawLrcCaption);
 
-    this.handleUseFtt();
+    this.handleFtt();
 
     bus.animationRunner.on(this.drawEachFrame);
     bus.animationRunner.once(this.drawLrcCaption);
@@ -188,8 +188,8 @@ export default class MusicVisualCore extends BaseClass {
     }
   }
 
-  private handleUseFtt() {
-    if (bus.visualStyles.useFtt) {
+  private handleFtt() {
+    if (bus.visualStates.ftt) {
       this.mediaSource = bus.audioContext.createMediaElementSource(bus.musicService.audio);
       this.mediaSource.connect(bus.audioContext.destination);
       this.visualizer.connectAudio(this.mediaSource);
@@ -328,7 +328,7 @@ export default class MusicVisualCore extends BaseClass {
       context2d.fillRect(0, 0, width, height);
     }
 
-    if (!bus.visualStyles.state.pip) {
+    if (!bus.visualStates.pip) {
       return;
     }
 
@@ -361,8 +361,8 @@ export default class MusicVisualCore extends BaseClass {
 
   public close() {
     bus.animationRunner.off(this.drawEachFrame);
-    bus.visualStyles.state.video = false;
-    bus.visualStyles.state.canvas = false;
+    bus.visualStates.video = false;
+    bus.visualStates.canvas = false;
     if (this.mediaSource) {
       this.visualizer.disconnectAudio(this.mediaSource);
       this.mediaSource.disconnect();

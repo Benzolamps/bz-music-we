@@ -62,12 +62,16 @@
           v-popover:popoverPitch
           style="line-height: 50px; padding: 0; font-size: 14px;"
         >{{ musicService.pitch }}x</span>
+
+        <!-- 可视化 -->
+        <svg-icon v-popover:popoverAperture icon-name="music_aperture"/>
       </div>
     </div>
 
     <el-popover ref="popoverMode" v-bind="popoverOptions"><music-mode/></el-popover>
     <el-popover ref="popoverVolume" v-bind="popoverOptions"><music-volume/></el-popover>
     <el-popover ref="popoverPitch" v-bind="popoverOptions"><music-pitch/></el-popover>
+    <el-popover ref="popoverAperture" v-bind="popoverOptions"><music-aperture/></el-popover>
 
     <!-- 更多弹窗 -->
     <el-drawer
@@ -98,6 +102,7 @@
             <music-mode/>
             <music-volume/>
             <music-pitch/>
+            <music-aperture/>
           </div>
         </template>
         <template v-else-if="tabName === 'lrc'">
@@ -119,6 +124,7 @@
 import BaseComponent from '@/components/common/BaseComponent';
 import Playlist from '@/components/core/Playlist.vue';
 import {MusicMode, MusicVolume, MusicPitch} from '@/components/info/controls';
+import MusicAperture from '@/components/info/MusicAperture.vue';
 import MusicCarousel from '@/components/info/MusicCarousel.vue';
 import MusicLrcEditor from '@/components/lrc/MusicLrcEditor.vue';
 import MusicLrcSetting from '@/components/setting/MusicLrcSetting.vue';
@@ -136,7 +142,8 @@ import {Component, Watch} from 'vue-property-decorator';
     MusicCarousel,
     MusicMode,
     MusicVolume,
-    MusicPitch
+    MusicPitch,
+    MusicAperture
   }
 })
 export default class MusicControl extends BaseComponent {
@@ -164,7 +171,7 @@ export default class MusicControl extends BaseComponent {
       if (this.platform.wallpaper) {
         return tips[2];
       } else {
-        if (this.visualStyles.state.show) {
+        if (this.visualStates.show) {
           return tips.slice(0, 3).flatMap(t => t);
         } else {
           return tips[0];

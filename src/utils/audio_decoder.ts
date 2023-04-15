@@ -2,7 +2,7 @@
 import platform from '@/utils/platform';
 
 export default async function createAudioUrl(src: Blob, reverse: boolean) {
-  if (!(platform.ios && src.type === 'audio.flac' || reverse)) {
+  if (!(platform.ios && src.type.endsWith('flac') || reverse)) {
     return URL.createObjectURL(src);
   }
   const audioBuffer = await bus.audioContext.decodeAudioData(await src.arrayBuffer());

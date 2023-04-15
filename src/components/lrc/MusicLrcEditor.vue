@@ -103,10 +103,9 @@
 </template>
 
 <script lang="ts">
-import lrc from "@/assets/fonts/lrc";
 import MusicCarousel from '@/components/info/MusicCarousel.vue';
 import MusicControl from '@/components/info/MusicControl.vue';
-import {FileEntity, readAsBlob, resolveFile, writeHandle} from '@/utils/file_handle';
+import {readAsBlob, resolveFile, writeHandle} from '@/utils/file_handle';
 import LrcObject from '@/utils/lrc_object';
 import TextEditor from '@/components/common/TextEditor.vue';
 import {KeyMapping, keyMappings} from '@/utils/common_utils';
