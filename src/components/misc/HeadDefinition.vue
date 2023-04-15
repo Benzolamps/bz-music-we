@@ -18,7 +18,7 @@
     <meta name="msapplication-TileImage" :content="favicon"/>
     <link rel="icon" type="image/png" :href="favicon"/>
     <link rel="apple-touch-icon" :href="favicon"/>
-    <link rel="manifest" :href="manifestUrl"/>
+    <link v-if="!platform.static" rel="manifest" :href="manifestUrl"/>
   </div>
 </template>
 
@@ -58,7 +58,9 @@ export default class HeadDefinition extends BaseComponent {
     for (const element of children) {
       document.head.appendChild(element);
     }
-    navigator.serviceWorker?.register(new URL('sw.js', location.origin));
+    if (!this.platform.static) {
+      navigator.serviceWorker?.register(new URL('sw.js', location.origin));
+    }
     this.$el.remove();
     this.$destroy();
   }

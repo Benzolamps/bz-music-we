@@ -2,8 +2,16 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"/>
-<title><%= htmlWebpackPlugin.options.title %></title>
-<% if (process.env.VUE_APP_BUILD_TARGET === 'network') { %>
+<!-- region inject -->
+<%
+const title = htmlWebpackPlugin.options.title;
+const network = process.env.VUE_APP_BUILD_TARGET === 'network';
+const wallpaper = process.env.NODE_ENV === 'development' || process.env.VUE_APP_BUILD_TARGET === 'wallpaper';
+%>
+    
+<title><%= title %></title>
+
+<% if (network) { %>
 <base href="https://bzmusic.oss-cn-qingdao.aliyuncs.com/">
 <script>
   const _fetch = window.fetch;
@@ -14,7 +22,7 @@
 </script>
 <% } %>
 
-<% if (process.env.NODE_ENV === 'development' || process.env.VUE_APP_BUILD_TARGET === 'wallpaper') { %>
+<% if (wallpaper) { %>
 <script>
   window.wallpaperProperties = {
     fps: 0,
@@ -37,6 +45,7 @@
   };
 </script>
 <% } %>
+<!-- endregion -->
 </head>
 <body>
 <div id="app"></div>

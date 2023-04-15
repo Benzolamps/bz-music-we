@@ -1,8 +1,4 @@
-'use strict';
-
 const {join} = require('path');
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
-
 function resolve(...dir) {
   return join(process.cwd(), ...dir);
 }
@@ -83,7 +79,8 @@ module.exports = defineConfig({
         }
       }
     });
-    
+
+    const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
     config.plugin('node-polyfill-plugin').use(NodePolyfillPlugin);
   }
 });
