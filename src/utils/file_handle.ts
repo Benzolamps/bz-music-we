@@ -1,5 +1,6 @@
 ﻿/* region DataTransfer */
 
+import messages from '@/assets/locale/messages';
 import {bus} from '@/components/common/common';
 import platform from '@/utils/platform';
 import mime from 'mime-types';
@@ -89,7 +90,7 @@ export async function chooseFile(category: 'audio' | 'font') {
     let types: ShowOpenFilePickerOptions['types'];
     if (category === 'audio') {
       types = [{
-        description: '音频/歌词文件',
+        description: messages['music.import.file_type'],
         accept: {
           'audio/*': [],
           '*/*': '.lrc'
@@ -97,7 +98,7 @@ export async function chooseFile(category: 'audio' | 'font') {
       }];
     } else {
       types = [{
-        description: '字体文件',
+        description: messages['lrc.font.file_type'],
         accept: {
           'font/*': ['.ttf', '.otf', '.woff', '.woff2']
         }
@@ -281,7 +282,7 @@ export async function grantPermission(fileHandle: FileSystemHandle) {
   promise = (async () => {
     let granted = await fileHandle.queryPermission({mode: 'read'}) === 'granted';
     if (!granted && platform.wallpaper) {
-      await bus.$alert('为了能播放上次选择的歌曲, 请设置CEF命令行为<br/>--enable-experimental-web-platform-features', {
+      await bus.$alert(messages['cef.command'], {
         type: 'warning',
         dangerouslyUseHTMLString: true
       });
@@ -289,7 +290,7 @@ export async function grantPermission(fileHandle: FileSystemHandle) {
     }
     while (!granted) {
       if (!navigator.userActivation.isActive) {
-        await bus.$alert(`请对“${fileHandle.name}”进行授权`, {type: 'warning'}).catch(() => 0);
+        await bus.$alert(messages['music.grant_permission'](fileHandle.name), {type: 'warning'}).catch(() => 0);
       }
       await bus.$sleep(100);
       granted = await fileHandle.requestPermission({mode: 'read'}) === 'granted';

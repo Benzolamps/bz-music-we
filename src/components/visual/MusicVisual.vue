@@ -7,8 +7,8 @@
       <el-card>
         <ul>
           <li class="info">{{music.name}}</li>
-          <li v-if="music.author" class="info">演唱：{{music.author}}</li>
-          <li v-if="music.album" class="info">专辑：{{music.album}}</li>
+          <li v-if="music.author" class="info">{{messages['music.author']}}：{{music.author}}</li>
+          <li v-if="music.album" class="info">{{messages['music.album']}}：{{music.album}}</li>
           <li>{{attrSeparator}}</li>
           <li v-if="music.musicFile">{{music.musicFile.type}}</li>
           <li v-if="music.fileSize">{{music.fileSize | fileSize}}</li>
@@ -212,6 +212,15 @@ export default class MusicVisual extends BaseComponent {
   @Watch('visualStates.pip')
   private watchPip() {
     this.handlePip();
+  }
+  
+  @Watch('musicService.isPlaying')
+  private watchPlaying() {
+    if (this.musicService.isPlaying) {
+      this.video.play();
+    } else {
+      this.video.pause();
+    }
   }
 
   /* endregion */

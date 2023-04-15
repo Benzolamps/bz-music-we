@@ -1,5 +1,5 @@
 ﻿<template>
-  <div class="toast-container" :style="loading || progress || {pointerEvents: 'none'}">
+  <div class="toast-container" :style=" {pointerEvents: loading || progress ? 'auto' : 'none', zIndex}">
     <div :style="loading || {opacity: 0}" class="circles">
       <div class="circle1"/>
       <div class="circle2"/>
@@ -12,6 +12,8 @@
 <script lang="ts">
 import BaseComponent from '@/components/common/BaseComponent';
 import {Component} from 'vue-property-decorator';
+
+const {PopupManager} = require('element-ui/lib/utils/popup');
 
 /**
  * Toast弹窗
@@ -32,6 +34,8 @@ export default class Toast extends BaseComponent {
 
   /** 延时关闭 */
   private timeout = 0;
+  
+  private zIndex = 0;
 
   /** 工具类型 */
   private declare readonly utilType: Toast['show'] & {
@@ -52,6 +56,7 @@ export default class Toast extends BaseComponent {
    */
   private show(msg: string) {
     window.clearTimeout(this.timeout);
+    this.zIndex = PopupManager.nextZIndex();
     this.toast = true;
     this.content = msg;
     this.timeout = window.setTimeout(() => this.toast = false, 3000);
@@ -59,11 +64,13 @@ export default class Toast extends BaseComponent {
 
   private showLoading() {
     if (!this.progress) {
+      this.zIndex = PopupManager.nextZIndex();
       this.loading = true;
     }
   }
 
   private showProgress(percent: number) {
+    this.zIndex = PopupManager.nextZIndex();
     this.progress = true;
     this.loading = false;
     this.percent = percent;
@@ -81,7 +88,6 @@ export default class Toast extends BaseComponent {
 
 <style lang="scss">
 .toast-container {
-  z-index: 10;
   width: 100%;
   height: 100%;
   position: absolute;

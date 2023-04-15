@@ -91,7 +91,7 @@ export default class PlayerSettings {
   public static getVisualActions(): typeof this.defaultVisualActions {
     return [
       {
-        name: '全屏模式',
+        name: messages['visual.fullscreen'],
         tag: '全屏',
         enabled: !platform.mobile && !platform.wallpaper,
         get value() {
@@ -102,7 +102,7 @@ export default class PlayerSettings {
         }
       },
       {
-        name: '画中画模式',
+        name: messages['visual.pip'],
         tag: '画中画',
         enabled: platform.pip,
         get value() {
@@ -113,7 +113,7 @@ export default class PlayerSettings {
         }
       },
       {
-        name: '滚动歌词',
+        name: messages['visual.lrc_mode.scroll'],
         tag: '滚动歌词',
         enabled: true,
         get value() {
@@ -124,7 +124,7 @@ export default class PlayerSettings {
         }
       },
       {
-        name: '3D歌词',
+        name: messages['visual.lrc_mode.caption'],
         tag: '3D歌词',
         enabled: true,
         get value() {
@@ -135,7 +135,7 @@ export default class PlayerSettings {
         }
       },
       {
-        name: '显示FPS',
+        name: messages['visual.fps'],
         enabled: true,
         get value() {
           return bus.visualStyles.showFps;
@@ -145,7 +145,7 @@ export default class PlayerSettings {
         }
       },
       {
-        name: '显示信息',
+        name: messages['visual.overlay'],
         enabled: !platform.wallpaper,
         get value() {
           return bus.visualStyles.overlay;
@@ -155,7 +155,7 @@ export default class PlayerSettings {
         }
       },
       {
-        name: '使用FTT',
+        name: messages['visual.ftt'],
         enabled: true,
         get value() {
           return bus.visualStates.ftt;

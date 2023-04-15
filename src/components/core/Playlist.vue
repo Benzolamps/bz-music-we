@@ -52,19 +52,19 @@
         />
         <div>
           <div v-if="!platform.mobile && platform.hasFsApi && musicList.length <= 50">
-            <el-button size="mini" round @click="chooseFile">导入文件</el-button>
-            <el-button size="mini" round @click="chooseFolder">导入文件夹</el-button>
+            <el-button size="mini" round @click="chooseFile">{{messages['music.import.files']}}</el-button>
+            <el-button size="mini" round @click="chooseFolder">{{messages['music.import.folder']}}</el-button>
           </div>
           <div style="margin-top: 10px; position: relative; overflow: hidden;">
             <el-input size="small" v-show="showSearch" v-model="musicService.query" style="position: absolute; z-index: 1; left: 5%; width: 90%;">
               <el-button slot="append" icon="el-icon-close" @click="showSearch = false; musicService.query = '';"/>
             </el-input>
-            <el-button v-if="!platform.wallpaper" size="small" type="success" circle plain icon="el-icon-search" title="搜素" @click="showSearch = true;"/>
-            <el-button v-if="platform.hasFsApi" size="small" type="success" circle plain icon="el-icon-refresh" title="刷新" @click="musicStorage.refresh"/>
-            <el-button v-if="platform.hasFsApi" size="small" type="warning" circle plain icon="el-icon-menu" title="列表管理" @click="showPlaylistManage = true;"/>
-            <el-button v-if="!platform.hasFsApi" size="small" type="warning" circle plain icon="el-icon-document" title="导入文件" @click="chooseFile"/>
-            <el-button v-if="!platform.hasFsApi && !platform.mobile" size="small" type="warning" circle plain icon="el-icon-folder" title="导入文件夹" @click="chooseFolder"/>
-            <el-button size="small" type="danger" circle plain icon="el-icon-delete" title="清空" @click="musicStorage.clear"/>
+            <el-button v-if="!platform.wallpaper" size="small" type="success" circle plain icon="el-icon-search" :title="messages['music.search']" @click="showSearch = true;"/>
+            <el-button v-if="platform.hasFsApi" size="small" type="success" circle plain icon="el-icon-refresh" :title="messages['music.refresh']" @click="musicStorage.refresh"/>
+            <el-button v-if="platform.hasFsApi" size="small" type="warning" circle plain icon="el-icon-menu" :title="messages['music.playlist_manage']" @click="showPlaylistManage = true;"/>
+            <el-button v-if="!platform.hasFsApi" size="small" type="warning" circle plain icon="el-icon-document" :title="messages['music.import.files']" @click="chooseFile"/>
+            <el-button v-if="!platform.hasFsApi && !platform.mobile" size="small" type="warning" circle plain icon="el-icon-folder" :title="messages['music.import.folder']" @click="chooseFolder"/>
+            <el-button size="small" type="danger" circle plain icon="el-icon-delete" :title="messages['music.clear']" @click="musicStorage.clear"/>
           </div>
         </div>
         <playlist-manage :show.sync="showPlaylistManage"/>

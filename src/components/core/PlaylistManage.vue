@@ -11,9 +11,9 @@
       @close="$emit('update:show', false)"
   >
     <div style="padding: 20px 0;">
-      <el-button size="mini" round icon="el-icon-document" @click="chooseFile">导入文件</el-button>
-      <el-button size="mini" round icon="el-icon-folder" @click="chooseFolder">导入文件夹</el-button>
-      <el-button size="mini" round icon="el-icon-refresh" @click="musicStorage.refresh">刷新</el-button>
+      <el-button size="mini" round icon="el-icon-document" @click="chooseFile">{{ messages['music.import.files'] }}</el-button>
+      <el-button size="mini" round icon="el-icon-folder" @click="chooseFolder">{{ messages['music.import.files'] }}</el-button>
+      <el-button size="mini" round icon="el-icon-refresh" @click="musicStorage.refresh">{{ messages['music.refresh'] }}</el-button>
       <b-scroll ref="scroll">
         <el-table
           :data="playlistPage"
@@ -32,11 +32,12 @@
           <el-table-column width="50" align="center" prop="show">
             <template v-slot="scope">
               <el-switch
-                  :value="scope.row.show"
-                  active-color="#13ce66"
-                  inactive-color="#909399"
-                  :active-value="true"
-                  :inactive-value="false"/>
+                :value="scope.row.show"
+                active-color="#13ce66"
+                inactive-color="#909399"
+                :active-value="true"
+                :inactive-value="false"
+              />
             </template>
           </el-table-column>
           <el-table-column width="50" align="center" prop="delete">
@@ -136,7 +137,7 @@ export default class PlaylistManage extends BaseComponent {
   private async removePlaylist(playlist: Playlist) {
     try {
       await this.$confirm(
-        `确定要删除播放列表${playlist.name}吗?`,
+        this.messages['music.playlist.delete'](playlist.name),
         this.messages['music.warning'],
         {
           confirmButtonText: this.messages['music.confirm'],

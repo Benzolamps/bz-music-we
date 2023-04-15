@@ -13,10 +13,10 @@
   >
     <div class="retrieve-container">
       <el-tabs class="retrieve-tabs" v-model="type" type="card" v-if="shownItems.length">
-        <el-tab-pane :label="`全部 (${shownInfo.total})`" name="total"/>
-        <el-tab-pane :label="`歌曲 (${shownInfo.audio})`" name="audio"/>
-        <el-tab-pane :label="`歌词 (${shownInfo.lrc})`" name="lrc"/>
-        <el-tab-pane v-if="retrieveContext.dirPlaylists.size > 0" :label="`播放列表 (${shownInfo.directory})`" name="directory"/>
+        <el-tab-pane :label="`${messages['music.import.total']} (${shownInfo.total})`" name="total"/>
+        <el-tab-pane :label="`${messages['music.import.audio']} (${shownInfo.audio})`" name="audio"/>
+        <el-tab-pane :label="`${messages['music.import.lrc']} (${shownInfo.lrc})`" name="lrc"/>
+        <el-tab-pane v-if="retrieveContext.dirPlaylists.size > 0" :label="`${messages['music.import.playlist']} (${shownInfo.directory})`" name="directory"/>
       </el-tabs>
       <b-scroll ref="scroll" style="flex: 1; overflow: hidden; margin-bottom: 10px;">
         <el-table :data="shownItemPage"
@@ -31,19 +31,19 @@
           <el-table-column v-if="!view.portable" width="70" type="index" prop="index" :index="index => index + 1 + pageSize * (currentPage - 1)"/>
           <el-table-column width="100">
             <template v-slot="scope">
-              <el-tag v-if="getType(scope.row) === 'audio'" type="success">歌曲</el-tag>
-              <el-tag v-else-if="getType(scope.row) === 'lrc'" type="warning">歌词</el-tag>
-              <el-tag v-else-if="getType(scope.row) === 'directory'" type="">播放列表</el-tag>
+              <el-tag v-if="getType(scope.row) === 'audio'" size="small" type="success">{{messages['music.import.audio']}}</el-tag>
+              <el-tag v-else-if="getType(scope.row) === 'lrc'" size="small" type="warning">{{messages['music.import.lrc']}}</el-tag>
+              <el-tag v-else-if="getType(scope.row) === 'directory'" size="small" type="">{{messages['music.import.playlist']}}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="path"/>
-          <el-table-column v-if="!view.portable" width="250">
+          <el-table-column v-if="!view.portable" width="300">
             <template v-slot="scope">
-              <span v-if="scope.row.type === 'directory'">{{ getDirectoryInfo(scope.row) }}</span>
-              <span v-else>
+              <template v-if="scope.row.type === 'directory'">{{ getDirectoryInfo(scope.row) }}</template>
+              <template v-else>
                 {{ scope.row.size | fileSize }}
-                <el-tag type="warning" style="float: right;" :disable-transitions="true">当前会话有效</el-tag>
-              </span>
+                <el-tag type="warning" style="float: right;" size="small" :disable-transitions="true">{{messages['music.import.current_session']}}</el-tag>
+              </template>
             </template>
           </el-table-column>
         </el-table>
@@ -60,11 +60,11 @@
         style="margin-bottom: 10px;"
       />
       <div style="padding-bottom: 10px;" v-show="retrieveContext.dirPlaylists.size > 0">
-        <el-checkbox v-model="playlist">是否将文件夹导入为播放列表</el-checkbox>
+        <el-checkbox v-model="playlist">{{messages['music.import.folder_to_playlist']}}</el-checkbox>
       </div>
       <div>
-        <el-button type="primary" size="mini" @click="retrieveContext.resolve(playlist)" :disabled="!shownItems.length">开始导入</el-button>
-        <el-button type="warning" size="mini" @click="retrieveContext.reject()">取消</el-button>
+        <el-button type="primary" size="mini" @click="retrieveContext.resolve(playlist)" :disabled="!shownItems.length">{{messages['music.import.start']}}</el-button>
+        <el-button type="warning" size="mini" @click="retrieveContext.reject()">{{messages['music.cancel']}}</el-button>
       </div>
     </div>
   </el-drawer>
@@ -98,15 +98,15 @@ export default class FileImporter extends BaseComponent {
   
   private get emptyText() {
     if (this.retrieveContext.state === 'pending') {
-      return '正在检索文件';
+      return this.messages['music.import.retrieving'];
     }
     if (this.retrieveContext.state === 'processing') {
-      return '正在导入文件';
+      return this.messages['music.import.importing'];
     }
     if (this.shownItems.length === 0) {
-      return '没有符合条件的文件';
+      return this.messages['music.import.no_proper_files'];
     }
-    return '暂无数据';
+    return '';
   }
 
   private get shownItems() {
@@ -148,7 +148,7 @@ export default class FileImporter extends BaseComponent {
   private getDirectoryInfo(dir: FileEntity) {
     const playlist = this.retrieveContext.dirPlaylists.get(dir);
     const size = [playlist.audioEntities, playlist.lrcEntities].flat().map(e => e.size).reduce((a, b) => a + b, 0);
-    return formatFileSize(size) + ` (${playlist.audioEntities.length}歌曲, ${playlist.lrcEntities.length}歌词)`;
+    return formatFileSize(size) + ` (${this.messages['music.import.audio_lrc_count'](playlist.audioEntities.length, playlist.lrcEntities.length)})`;
   }
 
   private getAtPage(index: number) {

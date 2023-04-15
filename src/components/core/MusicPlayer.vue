@@ -10,8 +10,8 @@
       <!-- 歌曲信息 -->
       <div v-show="showInfo" class="music-info" style="color: #FFF">
         <div>{{ music.name || music.title }}</div>
-        <div v-if="music.author">演唱：{{ music.author }}</div>
-        <div v-if="music.album">专辑：{{ music.album }}</div>
+        <div v-if="music.author">{{ messages['music.author'] }}：{{ music.author }}</div>
+        <div v-if="music.album">{{ messages['music.album'] }}：{{ music.album }}</div>
         <div v-if="music.props" style="padding: 10px calc(50% - 200px);">
           <el-tag v-if="music.musicFile" v-bind="tagProps">{{ music.musicFile.type }}</el-tag>
           <el-tag v-if="music.fileSize" v-bind="tagProps">{{ music.fileSize | fileSize }}</el-tag>
@@ -20,7 +20,7 @@
           <el-tag v-if="music.props.audioSampleRate" v-bind="tagProps">{{ music.props.audioSampleRate }} Hz</el-tag>
           <el-tag v-if="music.props.bitsPerSample" v-bind="tagProps">{{ music.props.bitsPerSample }} bits</el-tag>
           <el-tag v-if="music.props.audioChannels" v-bind="tagProps">{{ music.props.audioChannels > 1 ? 'STEREO' : 'MONO' }}</el-tag>
-          <el-tag v-if="!music.lrcFile" v-bind="tagProps" type="warning">无歌词</el-tag>
+          <el-tag v-if="!music.lrcFile" v-bind="tagProps" type="warning">{{messages['music.no_lrc']}}</el-tag>
         </div>
       </div>
     </main>

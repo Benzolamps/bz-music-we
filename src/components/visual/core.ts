@@ -373,10 +373,6 @@ export default class MusicVisualCore extends BaseClass {
       context2d.fillText(lrcTag.content, x, startY);
       startY += fontSize + margin;
     }
-
-    context2d.fillStyle = bus.lrcStyles.strokeColor;
-    context2d.fillRect(0, 0, 10, height);
-    context2d.fillRect(width - 10, 0, 10, height);
   }
 
   public close() {

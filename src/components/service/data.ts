@@ -234,7 +234,7 @@ export default class MusicStorage extends BaseClass {
   public async clear() {
     try {
       await bus.$confirm(
-        '确定要清空播放列表吗?',
+        messages['music.clear.confirm'],
         messages['music.warning'],
         {
           confirmButtonText: messages['music.confirm'],

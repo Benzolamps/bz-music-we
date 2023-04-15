@@ -10,19 +10,20 @@ export interface Message extends Readonly<unknown> {
   'music.no_music': string;
   'music.no_lrc': string;
   'music.no_lrc_1': string;
-  'music.add_files': string;
-  'music.add_folder': string;
+  'music.author': string;
+  'music.album': string;
   'music.warning': string;
   'music.delete': (content: string) => string;
   'music.confirm': string;
   'music.cancel': string;
-  'music.no_proper_files': string;
-  'music.about_to_import': (audioCount: number, lrcCount: number) => string;
-  'music.keep': string;
-  'music.do_not_keep': string;
-  'music.cancel_import': string;
-  'music.import_finish': (audioCount: number, lrcCount: number) => string;
+  'music.search': string;
+  'music.refresh': string;
+  'music.clear': string;
+  'music.clear.confirm': string;
+  'music.playlist.delete': (content: string) => string;
+  'music.playlist_manage': string;
   'music.cannot_play': (title: string, error: unknown) => string;
+  'music.grant_permission': (name: string) => string;
   'music.pitch': string;
   'music.mute': string;
   'music.unmute': string;
@@ -31,6 +32,20 @@ export interface Message extends Readonly<unknown> {
   'music.mode.single': string;
   'music.mode.random': string;
   'music.reset_default': string;
+  'music.import.files': string;
+  'music.import.folder': string;
+  'music.import.start': string;
+  'music.import.total': string;
+  'music.import.audio': string;
+  'music.import.lrc': string;
+  'music.import.playlist': string;
+  'music.import.retrieving': string;
+  'music.import.importing': string;
+  'music.import.folder_to_playlist': string;
+  'music.import.current_session': string;
+  'music.import.file_type': string;
+  'music.import.no_proper_files': string;
+  'music.import.audio_lrc_count': (audioCount: number, lrcCount: number) => string;
   'music.tips': [
     [MusicTip, MusicTip, MusicTip],
     [MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip],
@@ -39,6 +54,7 @@ export interface Message extends Readonly<unknown> {
   ];
   'lrc.settings': string;
   'lrc.font': string;
+  'lrc.font.file_type': string;
   'lrc.apply_font_success': string;
   'lrc.apply_font_failed': string;
   'lrc.font.custom': string;
@@ -55,6 +71,7 @@ export interface Message extends Readonly<unknown> {
   'lrc.editor.save': string;
   'lrc.editor.quit': string;
   'lrc.editor.follow': (follow: boolean) => string;
+  'visual': string;
   'visual.settings': string;
   'visual.start': string;
   'visual.stop': string;
@@ -72,10 +89,13 @@ export interface Message extends Readonly<unknown> {
   'visual.lrc_mode': string;
   'visual.lrc_mode.scroll': string;
   'visual.lrc_mode.caption': string;
-  'visual.lrc_mode.mix': string;
+  'visual.fullscreen': string;
   'visual.pip': string;
   'visual.fps': string;
   'visual.ftt': string;
+  'visual.overlay': string;
+  'visual.change_with_music': string;
+  'cef.command': string;
 }
 
 type LanguageRecord = Readonly<Record<LanguageKeys, Message>>;
@@ -87,19 +107,20 @@ const languages: LanguageRecord = {
     'music.no_music': '<No music>',
     'music.no_lrc': 'No lyrics',
     'music.no_lrc_1': '<No lyrics>',
-    'music.add_files': 'Add files',
-    'music.add_folder': 'Add folder',
+    'music.author': 'Artist',
+    'music.album': 'Album',
     'music.warning': 'Warning',
-    'music.delete': content => `Confirm to delete ${content}?`,
+    'music.delete': content => `Confirm to delete "${content}"?`,
     'music.confirm': 'Confirm',
     'music.cancel': 'Cancel',
-    'music.no_proper_files': 'There are no proper files.',
-    'music.about_to_import': (audioCount, lrcCount) => `About to import ${audioCount} audio files and ${lrcCount} lyrics files, do you want to keep the existing files in the list?`,
-    'music.keep': 'Keep',
-    'music.do_not_keep': 'Do not keep',
-    'music.cancel_import': 'Cancel import.',
-    'music.import_finish': (audioCount, lrcCount) => `${audioCount} audio files and ${lrcCount} lyrics files have been imported.`,
-    'music.cannot_play': (title, error) => `${title} cannot be played: ${error}`,
+    'music.search': 'Search',
+    'music.refresh': 'Refresh',
+    'music.clear': 'Clear',
+    'music.clear.confirm': 'Confirm to clear playlist?',
+    'music.playlist.delete': content => `Confirm to delete playlist "${content}"?`,
+    'music.playlist_manage': 'Playlist Manage',
+    'music.cannot_play': (title, error) => `"${title}" cannot be played: ${error}`,
+    'music.grant_permission': name => `Please grant permission accessing "${name}".`,
     'music.pitch': 'Speed',
     'music.mute': 'Muted.',
     'music.unmute': 'Unmuted.',
@@ -108,6 +129,20 @@ const languages: LanguageRecord = {
     'music.mode.single': 'Single loop',
     'music.mode.random': 'Shuffle',
     'music.reset_default': 'Restore default settings',
+    'music.import.files': 'Import files',
+    'music.import.folder': 'Import folder',
+    'music.import.start': 'Start importing',
+    'music.import.total': 'Total',
+    'music.import.audio': 'Audio',
+    'music.import.lrc': 'Lyrics',
+    'music.import.playlist': 'Playlist',
+    'music.import.retrieving': 'Retrieving files...',
+    'music.import.importing': 'Importing files...',
+    'music.import.folder_to_playlist': 'Import folder as playlist',
+    'music.import.current_session': 'Available in current session',
+    'music.import.file_type': 'Audio/Lyrics File',
+    'music.import.no_proper_files': 'There are no proper files.',
+    'music.import.audio_lrc_count': (audioCount, lrcCount) => `${audioCount} Audios, ${lrcCount} Lyrics`,
     'music.tips': [
       [
         ['<-', 'Prev track'],
@@ -119,7 +154,7 @@ const languages: LanguageRecord = {
         ['NumPad6', 'Next preset'],
         ['NumPad5', 'Star/Unstar current preset'],
         ['F8', 'Show overlay info'],
-        ['F10', 'Picture-in-picture mode'],
+        ['F10', '[Picture in Picture] mode'],
         ['F11', 'Fullscreen mode']
       ],
       [
@@ -143,6 +178,7 @@ const languages: LanguageRecord = {
     ],
     'lrc.settings': 'Lyrics settings',
     'lrc.font': 'Font',
+    'lrc.font.file_type': 'Font File',
     'lrc.apply_font_success': 'Font applied',
     'lrc.apply_font_failed': 'Font apply failed',
     'lrc.font.custom': 'Custom',
@@ -159,6 +195,7 @@ const languages: LanguageRecord = {
     'lrc.editor.save': 'Save',
     'lrc.editor.quit': 'Quit',
     'lrc.editor.follow': follow => `Follow mode ${follow ? 'activated' : 'deactivated'}.`,
+    'visual': 'Visualization',
     'visual.settings': 'Visualization settings',
     'visual.start': 'Start',
     'visual.stop': 'Stop',
@@ -174,12 +211,15 @@ const languages: LanguageRecord = {
     'visual.preset.interval': 'Switch interval',
     'visual.preset.switch': 'Switch to',
     'visual.lrc_mode': 'Lyrics view mode',
-    'visual.lrc_mode.scroll': 'Scroll',
-    'visual.lrc_mode.caption': 'Caption',
-    'visual.lrc_mode.mix': 'Mix',
+    'visual.lrc_mode.scroll': 'Scrolling Lyrics',
+    'visual.lrc_mode.caption': '3D Lyrics',
+    'visual.fullscreen': 'Fullscreen mode',
     'visual.pip': '[Picture in Picture] mode',
     'visual.fps': 'Show FPS',
-    'visual.ftt': 'Use FTT'
+    'visual.ftt': 'Use FTT',
+    'visual.overlay': 'Show overlay info',
+    'visual.change_with_music': 'Switch with music change',
+    'cef.command': 'To play music you selected last time, set the CEF command line <br/>--enable-experimental-web-platform-features'
   },
   zh: {
     'colon': '：',
@@ -187,19 +227,20 @@ const languages: LanguageRecord = {
     'music.no_music': '<暂无歌曲>',
     'music.no_lrc': '无歌词',
     'music.no_lrc_1': '<暂无歌词>',
-    'music.add_files': '添加文件',
-    'music.add_folder': '添加文件夹',
+    'music.author': '演唱',
+    'music.album': '专辑',
     'music.warning': '系统提醒',
-    'music.delete': content => `确定要删除${content}？`,
+    'music.delete': content => `确定要删除【${content}】？`,
     'music.confirm': '确定',
     'music.cancel': '取消',
-    'music.no_proper_files': '没有符合条件的文件',
-    'music.about_to_import': (audioCount, lrcCount) => `即将导入${audioCount}个音频文件和${lrcCount}个歌词文件，是否保留列表中已有的文件？`,
-    'music.keep': '保留',
-    'music.do_not_keep': '不保留',
-    'music.cancel_import': '取消导入',
-    'music.import_finish': (audioCount, lrcCount) => `导入${audioCount}个音频文件和${lrcCount}个歌词文件完成`,
-    'music.cannot_play': (title, error) => `无法播放${title}：${error}`,
+    'music.search': '搜索',
+    'music.refresh': '刷新',
+    'music.clear': '清空',
+    'music.clear.confirm': '确定要清空播放列表吗？',
+    'music.playlist.delete': content => `确定要删除播放列表【${content}】？`,
+    'music.playlist_manage': '列表管理',
+    'music.cannot_play': (title, error) => `无法播放【${title}】：${error}`,
+    'music.grant_permission': name => `请对【${name}】进行授权`,
     'music.pitch': '倍速',
     'music.mute': '静音',
     'music.unmute': '取消静音',
@@ -208,6 +249,20 @@ const languages: LanguageRecord = {
     'music.mode.single': '单曲循环',
     'music.mode.random': '随机播放',
     'music.reset_default': '恢复默认设置',
+    'music.import.files': '导入文件',
+    'music.import.folder': '导入文件夹',
+    'music.import.start': '开始导入',
+    'music.import.total': '全部',
+    'music.import.audio': '歌曲',
+    'music.import.lrc': '歌词',
+    'music.import.playlist': '播放列表',
+    'music.import.retrieving': '正在检索文件',
+    'music.import.importing': '正在导入文件',
+    'music.import.folder_to_playlist': '将文件夹导入为播放列表',
+    'music.import.current_session': '当前会话有效',
+    'music.import.file_type': '音频/字体文件',
+    'music.import.no_proper_files': '没有符合条件的文件',
+    'music.import.audio_lrc_count': (audioCount, lrcCount) => `${audioCount} 歌曲, ${lrcCount} 歌词`,
     'music.tips': [
       [
         ['<-', '上一曲'],
@@ -243,6 +298,7 @@ const languages: LanguageRecord = {
     ],
     'lrc.settings': '歌词设置',
     'lrc.font': '字体',
+    'lrc.font.file_type': '字体文件',
     'lrc.apply_font_success': '字体应用成功',
     'lrc.apply_font_failed': '字体应用失败',
     'lrc.font.custom': '自定义',
@@ -259,6 +315,7 @@ const languages: LanguageRecord = {
     'lrc.editor.save': '保存',
     'lrc.editor.quit': '退出',
     'lrc.editor.follow': follow => `播放跟随已${follow ? '打开' : '关闭'}`,
+    'visual': '可视化',
     'visual.settings': '可视化设置',
     'visual.start': '开启',
     'visual.stop': '关闭',
@@ -276,10 +333,13 @@ const languages: LanguageRecord = {
     'visual.lrc_mode': '歌词展示方式',
     'visual.lrc_mode.scroll': '滚动歌词',
     'visual.lrc_mode.caption': '3D歌词',
-    'visual.lrc_mode.mix': '组合',
+    'visual.fullscreen': '全屏模式',
     'visual.pip': '画中画模式',
     'visual.fps': '显示FPS',
-    'visual.ftt': '使用FTT'
+    'visual.ftt': '使用FTT',
+    'visual.overlay': '显示信息',
+    'visual.change_with_music': '切歌时切换',
+    'cef.command': '为了能播放上次选择的歌曲, 请设置CEF命令行为<br/>--enable-experimental-web-platform-features'
   }
 };
 

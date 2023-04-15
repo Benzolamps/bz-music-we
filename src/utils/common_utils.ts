@@ -64,7 +64,7 @@ export function getFileBaseName(fileName: string) {
 export interface KeyMapping {
   code?: string | RegExp;
   type?: keyof DocumentEventMap | string;
-  triggerInEditor?: boolean,
+  triggerInEditor?: boolean;
   target?: EventTarget;
   ctrlKey?: boolean;
   shiftKey?: boolean;

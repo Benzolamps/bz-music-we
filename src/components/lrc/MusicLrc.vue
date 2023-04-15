@@ -199,7 +199,6 @@ export default class MusicLrc extends BaseComponent {
       &, &::before {
         pointer-events: auto;
         width: fit-content;
-        white-space: nowrap;
         overflow: hidden;
       }
 

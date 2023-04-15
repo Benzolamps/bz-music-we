@@ -38,7 +38,7 @@
       </el-button>
     </el-form-item>
     <el-form-item :label="messages['visual.preset.interval']">
-      <el-checkbox v-model="visualStyles.changeWithMusic">切歌时切换</el-checkbox>
+      <el-checkbox v-model="visualStyles.changeWithMusic">{{messages['visual.change_with_music']}}</el-checkbox>
       <el-slider
         v-model="visualStyles.interval"
         :disabled="visualStyles.changeWithMusic"
