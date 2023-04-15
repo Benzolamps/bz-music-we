@@ -244,7 +244,7 @@ export default class MusicVisual extends BaseComponent {
     left: 25vw;
     top: calc(50vh - 12.5vw);
     position: absolute;
-    z-index: 2;
+    z-index: 9999;
   }
 
   canvas.hidden {

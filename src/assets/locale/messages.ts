@@ -33,7 +33,7 @@ export interface Message extends Readonly<unknown> {
   'music.reset_default': string;
   'music.tips': [
     [MusicTip, MusicTip, MusicTip],
-    [MusicTip, MusicTip, MusicTip],
+    [MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip],
     [MusicTip, MusicTip, MusicTip],
     [MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip, MusicTip]
   ];
@@ -110,14 +110,17 @@ const languages: LanguageRecord = {
     'music.reset_default': 'Restore default settings',
     'music.tips': [
       [
-        ['Ctrl + <-', 'Prev track'],
-        ['Ctrl + ->', 'Next track'],
-        ['Ctrl + Space', 'Play/Pause']
+        ['<-', 'Prev track'],
+        ['->', 'Next track'],
+        ['Space', 'Play/Pause']
       ],
       [
-        ['Ctrl + NumPad4', 'Prev preset'],
-        ['Ctrl + NumPad6', 'Next preset'],
-        ['Ctrl + NumPad5', 'Star/Unstar current preset']
+        ['NumPad4', 'Prev preset'],
+        ['NumPad6', 'Next preset'],
+        ['NumPad5', 'Star/Unstar current preset'],
+        ['F8', 'Show overlay info'],
+        ['F10', 'Picture-in-picture mode'],
+        ['F11', 'Fullscreen mode']
       ],
       [
         ['Swipe Down/Right', 'Prev preset'],
@@ -207,14 +210,17 @@ const languages: LanguageRecord = {
     'music.reset_default': '恢复默认设置',
     'music.tips': [
       [
-        ['Ctrl + <-', '上一曲'],
-        ['Ctrl + ->', '下一曲'],
-        ['Ctrl + 空格', '播放/暂停']
+        ['<-', '上一曲'],
+        ['->', '下一曲'],
+        ['空格', '播放/暂停']
       ],
       [
-        ['Ctrl + 数字键4', '上一个预设'],
-        ['Ctrl + 数字键6', '下一个预设'],
-        ['Ctrl + 数字键5', '收藏/取消收藏当前预设']
+        ['数字键4', '上一个预设'],
+        ['数字键6', '下一个预设'],
+        ['数字键5', '收藏/取消收藏当前预设'],
+        ['F8', '显示信息'],
+        ['F10', '画中画模式'],
+        ['F11', '全屏模式']
       ],
       [
         ['右滑/下滑', '上一个预设'],

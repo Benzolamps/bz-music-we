@@ -64,6 +64,7 @@ export function getFileBaseName(fileName: string) {
 export interface KeyMapping {
   code?: string | RegExp;
   type?: keyof DocumentEventMap | string;
+  triggerInEditor?: boolean,
   target?: EventTarget;
   ctrlKey?: boolean;
   shiftKey?: boolean;
@@ -95,6 +96,8 @@ export function registerEvents() {
 
   const keyArgs: [(ev: KeyboardEvent) => void, AddEventListenerOptions] = [
     event => {
+      const activeElement = document.activeElement as HTMLElement;
+      const focusInput = activeElement.tagName === 'INPUT' || activeElement.isContentEditable;
       let result = false;
       for (const value of keyMappings) {
         if ((value.code === event.code || value.code instanceof RegExp && value.code.test(event.code))
@@ -103,6 +106,7 @@ export function registerEvents() {
           && !!value.ctrlKey === event.ctrlKey
           && !!value.shiftKey === event.shiftKey
           && !!value.altKey === event.altKey
+          && (value.triggerInEditor || !focusInput)
         ) {
           result = true;
           value.handler?.();

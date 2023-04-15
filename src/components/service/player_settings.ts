@@ -217,8 +217,8 @@ export default class PlayerSettings {
       bus.visualStates.fullscreen = !!document.fullscreenElement;
     });
     
-    keyMappings.add({altKey: false, ctrlKey: false, shiftKey: false, type: 'keyup', code: 'F11', handler: this.requestFullscreen});
-    keyMappings.add({altKey: false, ctrlKey: false, shiftKey: false, type: 'keydown', code: 'F11', handler: () => 0});
+    keyMappings.add({type: 'keyup', code: 'F11', handler: this.requestFullscreen});
+    keyMappings.add({type: 'keydown', code: 'F11', handler: () => 0});
   }
 
   public static loadCustomFont(file: File) {

@@ -91,12 +91,12 @@ export default class MusicService extends MusicComponent {
     });
 
     const mappings: Array<KeyMapping> = [
-      {type: 'keydown', code: 'ArrowLeft', ctrlKey: true, handler: () => 0},
-      {type: 'keydown', code: 'ArrowRight', ctrlKey: true, handler: () => 0},
-      {type: 'keydown', code: 'Space', ctrlKey: true, handler: () => 0},
-      {type: 'keyup', code: 'ArrowLeft', ctrlKey: true, handler: this.prevMusic},
-      {type: 'keyup', code: 'ArrowRight', ctrlKey: true, handler: this.nextMusic},
-      {type: 'keyup', code: 'Space', ctrlKey: true, handler: this.playOrPause}
+      {type: 'keydown', code: 'ArrowLeft', handler: () => 0},
+      {type: 'keydown', code: 'ArrowRight', handler: () => 0},
+      {type: 'keydown', code: 'Space', handler: () => 0},
+      {type: 'keyup', code: 'ArrowLeft', handler: this.prevMusic},
+      {type: 'keyup', code: 'ArrowRight', handler: this.nextMusic},
+      {type: 'keyup', code: 'Space', handler: this.playOrPause}
     ];
     mappings.forEach(e => keyMappings.add(e));
     this.vue.$once('hook:beforeDestroy', () => mappings.forEach(e => keyMappings.delete(e)));

@@ -2,7 +2,7 @@
   <div class="popover-content">
     <span class="popover-text">可视化</span>
     <div style="width: calc(100% - 75px);">
-      <el-switch v-model="visualStates.show"/>
+      <el-switch style="float: left;" v-model="visualStates.show"/>
       <el-dropdown style="float: right;" trigger="click" size="large" @command="cmd => cmd()">
         <span class="popover-text active" style="cursor: pointer;">
           {{visualActions.filter(a => a.value && a.tag).map(a => a.tag).join(attrSeparator)}}

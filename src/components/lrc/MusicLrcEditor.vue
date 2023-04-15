@@ -167,7 +167,10 @@ export default class MusicLrcEditor extends BaseComponent {
       {type: 'keyup', code: 'Numpad0', handler: this.musicService.playOrPause},
       {type: 'keydown', code: 'KeyS', ctrlKey: true, handler: this.save}
     ];
-    mappings.forEach(e => keyMappings.add(e));
+    mappings.forEach(e => {
+      e.triggerInEditor = true;
+      return keyMappings.add(e);
+    });
     this.$once('hook:beforeDestroy', () => mappings.forEach(e => keyMappings.delete(e)));
   }
 
