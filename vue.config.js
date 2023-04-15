@@ -2,7 +2,6 @@
 
 const {join} = require('path');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 function resolve(...dir) {
   return join(process.cwd(), ...dir);
@@ -21,7 +20,8 @@ module.exports = defineConfig({
   pages: {
     index: {
       title: require('./package.json').description,
-      entry: 'src/main.ts'
+      entry: 'src/main.ts',
+      template: 'src/index.ejs'
     }
   },
   chainWebpack(config) {
@@ -83,7 +83,7 @@ module.exports = defineConfig({
         }
       }
     });
-
+    
     config.plugin('node-polyfill-plugin').use(NodePolyfillPlugin);
   }
 });

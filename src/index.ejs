@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<title><%= htmlWebpackPlugin.options.title %></title>
+<% if (process.env.VUE_APP_BUILD_TARGET === 'network') { %>
+<base href="https://bzmusic.oss-cn-qingdao.aliyuncs.com/">
+<script>
+  const _fetch = window.fetch;
+  window.fetch = function (url, options) {
+    url = new URL(url, document.baseURI);
+    return _fetch.call(null, url, options);
+  }
+</script>
+<% } %>
+
+<% if (process.env.NODE_ENV === 'development' || process.env.VUE_APP_BUILD_TARGET === 'wallpaper') { %>
+<script>
+  window.wallpaperProperties = {
+    fps: 0,
+    language: '',
+    taskbar_position: 'bottom',
+    taskbar_length: 0
+  };
+
+  window.wallpaperPropertyListener = {
+    applyGeneralProperties(props) {
+      for (const key in props) {
+        window.wallpaperProperties[key] = props[key];
+      }
+    },
+    applyUserProperties(props) {
+      for (const key in props) {
+        window.wallpaperProperties[key] = props[key].value;
+      }
+    }
+  };
+</script>
+<% } %>
+</head>
+<body>
+<div id="app"></div>
+<!-- built files will be auto injected -->
+</body>
+</html>
