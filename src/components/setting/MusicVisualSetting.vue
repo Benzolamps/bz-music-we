@@ -65,7 +65,7 @@
       <div class="checkbox-group">
         <template v-for="action in visualActions">
           <div v-if="action.enabled" :key="action.name">
-            <el-checkbox v-model="action.value">{{action.name}}</el-checkbox>
+            <el-checkbox v-model="action.value">{{messages[action.name]}}</el-checkbox>
           </div>
         </template>
       </div>

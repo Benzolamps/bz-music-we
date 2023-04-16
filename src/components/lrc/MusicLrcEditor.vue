@@ -90,7 +90,7 @@
         :modal-append-to-body="true"
       >
         <div style="width: 100%; height: 100%; padding: 20px; display: flex; flex-direction: column;">
-          <el-button round icon="el-icon-bottom" @click="defaultMeta">默认</el-button>
+          <el-button round icon="el-icon-bottom" @click="defaultMeta">{{messages['lrc.editor.default']}}</el-button>
           <div class="el-card is-always-shadow" style="flex: 1; padding: 10px; margin-top: 10px;">
             <div style="height: 100%; overflow: auto;">
               <text-editor ref="textEditorMeta" v-model="lrcObj.metaString" lang="lrc" :class="view.portable || 'large-font'"/>
@@ -282,7 +282,8 @@ export default class MusicLrcEditor extends BaseComponent {
   private async save() {
     await this.sortTag();
     const lrcText = this.lrcObj.toString().replaceAll(/\r?\n/g, '\r\n').trim() + '\r\n';
-    const file = new File([lrcText], this.music.title + '.lrc', {type: 'text/lrc', lastModified: 0});
+    const fileName = this.music.musicFile.name.replace(/\.[^.]*$/, '.lrc');
+    const file = new File([lrcText], fileName, {type: 'text/lrc', lastModified: 0});
     if (this.music.lrcFile?.handle || this.music.musicFile.parentId) {
       let paths;
       if (this.music.musicFile.parentId) {
@@ -293,7 +294,7 @@ export default class MusicLrcEditor extends BaseComponent {
         await writeHandle(this.music.lrcFile?.handle, file, this.music.musicFile.parentHandle, paths);
       } catch (e) {
         console.dir(e);
-        this.$message({message: `保存失败: ${e}`, type: 'error'});
+        this.$message({message: this.messages['lrc.editor.save.fail'] + this.messages.colon + e, type: 'error'});
       }
     } else {
       const link = document.createElement('a');
@@ -305,14 +306,14 @@ export default class MusicLrcEditor extends BaseComponent {
     if (!this.music.lrcFile?.handle) {
       this.music.lrcFile = await resolveFile(file);
     }
-    await this.$message({message: '保存成功', type: 'success'});
+    await this.$message({message: this.messages['lrc.editor.save.success'], type: 'success'});
     await this.musicStorage.reload();
   }
 
   private async quit() {
     try {
       await this.$confirm(
-        '确定要退出吗?',
+        this.messages['lrc.editor.quit.confirm'],
         this.messages['music.warning'],
         {
           confirmButtonText: this.messages['music.confirm'],

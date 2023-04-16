@@ -58,7 +58,12 @@ export default class LrcContext extends BaseClass {
     this.shownLrc = [];
     let time = 0;
     if (this.music?.lrcFile) {
-      this.shownLrc = this.lrcObj.lrcArray;
+      for (let i = 0; i < this.lrcObj.lrcArray.length; i++) {
+        const lrc = this.lrcObj.lrcArray[i];
+        this.shownLrc.push(lrc);
+        time = lrc.time;
+      }
+      time += 2;
     } else {
       if (this.music?.id) {
         this.shownLrc.push({time, content: `${this.music.title}`});

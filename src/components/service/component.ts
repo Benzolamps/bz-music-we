@@ -4,9 +4,11 @@ import {Music} from '@/components/service/music';
 import defaultSrc from '@/assets/media/empty.wav';
 import createAudioUrl from '@/utils/audio_decoder';
 import BaseClass from '@/utils/base_class';
+import {getBinaryData} from '@/utils/common_utils';
 import {readAsBlob} from '@/utils/file_handle';
 
 export default class MusicComponent extends BaseClass {
+  private faviconUrl: string;
   /* 音乐 */
   private playingMusic: Music;
   private urls: Array<string> = [];
@@ -87,6 +89,7 @@ export default class MusicComponent extends BaseClass {
   };
 
   protected init() {
+    getBinaryData('favicon.png').then(data => this.faviconUrl = URL.createObjectURL(data));
     this.vue = new BaseComponent({data: this});
     this.createAudioElement();
     this.getCurrentTime();
@@ -274,7 +277,7 @@ export default class MusicComponent extends BaseClass {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: this.playingMusic.title,
-        artwork: [{src: new URL('favicon.png', document.baseURI).toString(), sizes: '128x128', type: 'image/png'}]
+        artwork: [{src: this.faviconUrl, sizes: '128x128', type: 'image/png'}]
       });
       navigator.mediaSession.setActionHandler('previoustrack', () => this.vue.$emit('prevMusic'));
       navigator.mediaSession.setActionHandler('nexttrack', () => this.vue.$emit('nextMusic'));

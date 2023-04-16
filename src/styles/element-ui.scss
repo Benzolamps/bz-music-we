@@ -25,30 +25,13 @@
 }
 
 .el-drawer__wrapper {
+  padding:
+    calc(10px + var(--taskbar-top))
+    calc(10px + var(--taskbar-right))
+    calc(10px + var(--taskbar-bottom))
+    calc(10px + var(--taskbar-left));
   .el-drawer {
-    &.ltr {
-      border-radius: 0 10px 10px 0;
-      height: unset;
-      left: var(--taskbar-left);
-      top: var(--taskbar-top);
-      bottom: var(--taskbar-bottom);
-    }
-
-    &.rtl {
-      border-radius: 10px 0 0 10px;
-      height: unset;
-      right: var(--taskbar-right);
-      top: var(--taskbar-top);
-      bottom: var(--taskbar-bottom);
-    }
-
-    &.btt {
-      border-radius: 10px 10px 0 0;
-    }
-
-    &.ttb {
-      border-radius: 0 0 10px 10px;
-    }
+    border-radius: 10px;
   }
 }
 

@@ -12,7 +12,7 @@
           <template v-for="action in visualActions">
             <el-dropdown-item v-if="action.enabled" :key="action.name" :command="() => action.value = !action.value">
               <i class="el-icon-check" :style="action.value || {visibility: 'hidden'}"/>
-              {{action.name}}
+              {{messages[action.name]}}
             </el-dropdown-item>
           </template>
           <el-dropdown-item :command="() => visualStyles.random = !visualStyles.random">

@@ -97,7 +97,7 @@ export function registerEvents() {
   const keyArgs: [(ev: KeyboardEvent) => void, AddEventListenerOptions] = [
     event => {
       const activeElement = document.activeElement as HTMLElement;
-      const focusInput = activeElement.tagName === 'INPUT' || activeElement.isContentEditable;
+      const focusInput = activeElement?.tagName === 'INPUT' || activeElement.isContentEditable;
       let result = false;
       for (const value of keyMappings) {
         if ((value.code === event.code || value.code instanceof RegExp && value.code.test(event.code))

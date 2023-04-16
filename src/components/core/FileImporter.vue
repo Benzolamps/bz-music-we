@@ -167,7 +167,8 @@ export default class FileImporter extends BaseComponent {
 
 <style lang="scss">
 .retrieve-drawer {
-  padding: 0 calc(50% - 500px);
+  padding-left: calc(50% - 500px);
+  padding-right: calc(50% - 500px);
   .retrieve-container {
     height: 100%;
     display: flex;

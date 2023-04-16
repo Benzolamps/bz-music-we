@@ -4,7 +4,7 @@
     <div ref="shade" class="shade" :class="visualStates.video || 'hidden'"/>
     <video ref="video" muted controls playsinline autoplay :class="visualStates.video || 'hidden'"/>
     <div class="overlay" :class="{hidden: !(enableOverlay && (alwaysShowOverlay || tempShowOverlay))}">
-      <el-card>
+      <el-card v-if="music.props">
         <ul>
           <li class="info">{{music.name}}</li>
           <li v-if="music.author" class="info">{{messages['music.author']}}：{{music.author}}</li>
@@ -176,7 +176,12 @@ export default class MusicVisual extends BaseComponent {
       this.visualStates.video = true;
       this.visualStates.canvas = false;
       this.video.srcObject = this.canvas.captureStream();
-      this.video.play().then(() => this.video.requestPictureInPicture());
+      this.video.play().then(() => {
+        if (!this.musicService.isPlaying) {
+          this.video.pause();
+        }
+        this.video.requestPictureInPicture();
+      });
     } else {
       this.visualStates.video = false;
       this.visualStates.canvas = true;
@@ -216,10 +221,12 @@ export default class MusicVisual extends BaseComponent {
   
   @Watch('musicService.isPlaying')
   private watchPlaying() {
-    if (this.musicService.isPlaying) {
-      this.video.play();
-    } else {
-      this.video.pause();
+    if (this.visualStates.video) {
+      if (this.musicService.isPlaying) {
+        this.video.play();
+      } else {
+        this.video.pause();
+      }
     }
   }
 

@@ -22,7 +22,7 @@ export interface Platform extends Readonly<Partial<Record<PlatformKeys, boolean>
  */
 export const platforms = (() => {
   const client_standalone: Omit<Platform, 'key' | 'name' | 'mobile'> = {
-    wallpaper: Object.keys(window).some(k => k.match(/^wallpaper/)),
+    wallpaper: Object.keys(window).some(k => k.startsWith('wallpaper')),
     standalone: window.matchMedia('(display-mode: standalone)').matches,
     static: location.protocol === 'file:',
     pip: 'requestPictureInPicture' in HTMLVideoElement.prototype,

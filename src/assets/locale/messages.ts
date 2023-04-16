@@ -68,8 +68,12 @@ export interface Message extends Readonly<unknown> {
   'lrc.editor.clear.tag': string;
   'lrc.editor.sort.tag': string;
   'lrc.editor.metadata': string;
+  'lrc.editor.default': string;
   'lrc.editor.save': string;
+  'lrc.editor.save.success': string;
+  'lrc.editor.save.fail': string;
   'lrc.editor.quit': string;
+  'lrc.editor.quit.confirm': string;
   'lrc.editor.follow': (follow: boolean) => string;
   'visual': string;
   'visual.settings': string;
@@ -96,6 +100,7 @@ export interface Message extends Readonly<unknown> {
   'visual.overlay': string;
   'visual.change_with_music': string;
   'cef.command': string;
+  'file.assets': string;
 }
 
 type LanguageRecord = Readonly<Record<LanguageKeys, Message>>;
@@ -192,8 +197,12 @@ const languages: LanguageRecord = {
     'lrc.editor.clear.tag': 'Clear tag',
     'lrc.editor.sort.tag': 'Sort tag',
     'lrc.editor.metadata': 'Set metadata',
+    'lrc.editor.default': 'Default',
     'lrc.editor.save': 'Save',
+    'lrc.editor.save.success': 'Save successfully',
+    'lrc.editor.save.fail': 'Save failed: ',
     'lrc.editor.quit': 'Quit',
+    'lrc.editor.quit.confirm': 'Confirm to quit?',
     'lrc.editor.follow': follow => `Follow mode ${follow ? 'activated' : 'deactivated'}.`,
     'visual': 'Visualization',
     'visual.settings': 'Visualization settings',
@@ -219,7 +228,8 @@ const languages: LanguageRecord = {
     'visual.ftt': 'Use FTT',
     'visual.overlay': 'Show overlay info',
     'visual.change_with_music': 'Switch with music change',
-    'cef.command': 'To play music you selected last time, set the CEF command line <br/>--enable-experimental-web-platform-features'
+    'cef.command': 'To play music you selected last time, set the CEF command line <br/>--enable-experimental-web-platform-features',
+    'file.assets': 'Please elect the path where the index.html is located'
   },
   zh: {
     'colon': '：',
@@ -262,7 +272,7 @@ const languages: LanguageRecord = {
     'music.import.current_session': '当前会话有效',
     'music.import.file_type': '音频/字体文件',
     'music.import.no_proper_files': '没有符合条件的文件',
-    'music.import.audio_lrc_count': (audioCount, lrcCount) => `${audioCount} 歌曲, ${lrcCount} 歌词`,
+    'music.import.audio_lrc_count': (audioCount, lrcCount) => `${audioCount} 歌曲，${lrcCount} 歌词`,
     'music.tips': [
       [
         ['<-', '上一曲'],
@@ -312,8 +322,12 @@ const languages: LanguageRecord = {
     'lrc.editor.clear.tag': '清空标签',
     'lrc.editor.sort.tag': '重新排列',
     'lrc.editor.metadata': '设置元数据',
+    'lrc.editor.default': '默认',
     'lrc.editor.save': '保存',
+    'lrc.editor.save.success': '保存成功',
+    'lrc.editor.save.fail': '保存失败',
     'lrc.editor.quit': '退出',
+    'lrc.editor.quit.confirm': '确定要退出吗？',
     'lrc.editor.follow': follow => `播放跟随已${follow ? '打开' : '关闭'}`,
     'visual': '可视化',
     'visual.settings': '可视化设置',
@@ -339,7 +353,8 @@ const languages: LanguageRecord = {
     'visual.ftt': '使用FTT',
     'visual.overlay': '显示信息',
     'visual.change_with_music': '切歌时切换',
-    'cef.command': '为了能播放上次选择的歌曲, 请设置CEF命令行为<br/>--enable-experimental-web-platform-features'
+    'cef.command': '为了能播放上次选择的歌曲, 请设置CEF命令行为<br/>--enable-experimental-web-platform-features',
+    'file.assets': '请选择index.html所在的路径'
   }
 };
 

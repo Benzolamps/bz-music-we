@@ -12,7 +12,6 @@
 <script lang="ts">
 import {LanguageKeys} from '@/assets/locale/messages';
 import MusicLrcEditor from '@/components/lrc/MusicLrcEditor.vue';
-import FileSystemTip from '@/components/misc/FileSystemTip.vue';
 import HeadDefinition from '@/components/misc/HeadDefinition.vue';
 import {initBlazor} from '@/components/service/blazor';
 import {loadFileAssets} from '@/components/service/file_assets';

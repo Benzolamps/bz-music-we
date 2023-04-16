@@ -11,9 +11,11 @@
       @close="$emit('update:show', false)"
   >
     <div style="padding: 20px 0;">
-      <el-button size="mini" round icon="el-icon-document" @click="chooseFile">{{ messages['music.import.files'] }}</el-button>
-      <el-button size="mini" round icon="el-icon-folder" @click="chooseFolder">{{ messages['music.import.files'] }}</el-button>
-      <el-button size="mini" round icon="el-icon-refresh" @click="musicStorage.refresh">{{ messages['music.refresh'] }}</el-button>
+      <div style="margin-bottom: 10px">
+        <el-button size="mini" round icon="el-icon-document" @click="chooseFile">{{ messages['music.import.files'] }}</el-button>
+        <el-button size="mini" round icon="el-icon-folder" @click="chooseFolder">{{ messages['music.import.folder'] }}</el-button>
+        <el-button size="mini" round icon="el-icon-refresh" @click="musicStorage.refresh">{{ messages['music.refresh'] }}</el-button>
+      </div>
       <b-scroll ref="scroll">
         <el-table
           :data="playlistPage"

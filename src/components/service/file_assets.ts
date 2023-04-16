@@ -1,4 +1,5 @@
-﻿import {bus} from '@/components/common/common';
+﻿import messages from '@/assets/locale/messages';
+import {bus} from '@/components/common/common';
 import db from '@/utils/db';
 import {chooseFolder, FileEntity, readAsBlob, readDirectoryHandle, resolveDirectoryHandle, resolveFileHandles, resolveFiles} from '@/utils/file_handle';
 import platform from '@/utils/platform';
@@ -18,7 +19,7 @@ export async function loadFileAssets() {
   }
   
   while (!files.length) {
-    await bus.$alert('请选择index.html所在的路径');
+    await bus.$alert(messages['file.assets']);
     try {
       const res = await chooseFolder();
       if (res.some(f => f instanceof File)) {

@@ -2,6 +2,7 @@
 
 import messages from '@/assets/locale/messages';
 import {bus} from '@/components/common/common';
+import {randomHash} from '@/utils/common_utils';
 import platform from '@/utils/platform';
 import mime from 'mime-types';
 
@@ -213,7 +214,7 @@ export async function resolveFileHandle(handle: FileSystemHandle, parent: FileEn
   if (playlist) {
     id = JSON.stringify([parent.id, path]).hash();
   } else {
-    id = JSON.stringify([Date.now(), Math.random()]).hash();
+    id = randomHash();
   }
   return {
     id,
@@ -231,7 +232,7 @@ export async function resolveFileHandle(handle: FileSystemHandle, parent: FileEn
 
 export function resolveDirectoryHandle(handle: FileSystemHandle): FileEntity {
   return {
-    id: JSON.stringify([Date.now(), Math.random()]).hash(),
+    id: randomHash(),
     name: handle.name,
     path: handle.name,
     timestamp: Date.now(),

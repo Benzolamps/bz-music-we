@@ -2,8 +2,17 @@
   "file": "index.html",
   "general": {
     "properties": {
-      "taskbar_position": {
+      "clipboard":
+      {
         "index": 0,
+        "order": 100,
+        "text": "ui_clipboard",
+        "type": "textinput",
+        "value": ""
+      },
+      "taskbar_position": {
+        "index": 1,
+        "order": 101,
         "options": [
           {
             "label": "ui_taskbar_position_bottom",
@@ -22,17 +31,16 @@
             "value": "right"
           }
         ],
-        "order": 100,
         "text": "ui_taskbar_position",
         "type": "combo",
         "value": "bottom"
       },
       "taskbar_length": {
         "fraction": false,
-        "index": 1,
+        "index": 2,
+        "order": 102,
         "max": 200,
         "min": 0,
-        "order": 101,
         "text": "ui_taskbar_length",
         "type": "slider",
         "value": 48
@@ -40,6 +48,7 @@
     },
     "localization": {
       "en-us": {
+        "ui_clipboard": "Clipboard",
         "ui_taskbar_position": "Taskbar position",
         "ui_taskbar_position_bottom": "Bottom",
         "ui_taskbar_position_top": "Top",
@@ -48,20 +57,13 @@
         "ui_taskbar_length": "Taskbar length"
       },
       "zh-chs": {
+        "ui_clipboard": "剪切板",
         "ui_taskbar_position": "任务栏位置",
         "ui_taskbar_position_bottom": "底部",
         "ui_taskbar_position_top": "顶部",
         "ui_taskbar_position_left": "靠左",
         "ui_taskbar_position_right": "靠右",
         "ui_taskbar_length": "任务栏长度"
-      },
-      "zh-cht": {
-        "ui_taskbar_position": "任務欄位置",
-        "ui_taskbar_position_bottom": "底部",
-        "ui_taskbar_position_top": "頂部",
-        "ui_taskbar_position_left": "靠左",
-        "ui_taskbar_position_right": "靠右",
-        "ui_taskbar_length": "任務欄長度"
       }
     }
   },

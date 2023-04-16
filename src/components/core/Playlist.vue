@@ -59,7 +59,7 @@
             <el-input size="small" v-show="showSearch" v-model="musicService.query" style="position: absolute; z-index: 1; left: 5%; width: 90%;">
               <el-button slot="append" icon="el-icon-close" @click="showSearch = false; musicService.query = '';"/>
             </el-input>
-            <el-button v-if="!platform.wallpaper" size="small" type="success" circle plain icon="el-icon-search" :title="messages['music.search']" @click="showSearch = true;"/>
+            <el-button size="small" type="success" circle plain icon="el-icon-search" :title="messages['music.search']" @click="showSearch = true;"/>
             <el-button v-if="platform.hasFsApi" size="small" type="success" circle plain icon="el-icon-refresh" :title="messages['music.refresh']" @click="musicStorage.refresh"/>
             <el-button v-if="platform.hasFsApi" size="small" type="warning" circle plain icon="el-icon-menu" :title="messages['music.playlist_manage']" @click="showPlaylistManage = true;"/>
             <el-button v-if="!platform.hasFsApi" size="small" type="warning" circle plain icon="el-icon-document" :title="messages['music.import.files']" @click="chooseFile"/>
@@ -110,22 +110,6 @@ export default class Playlist extends BaseComponent {
 
   private get music() {
     return this.musicService.music;
-  }
-
-  public override mounted() {
-    (async () => {
-      let music: Music;
-      while (this.musicStorage) {
-        const newMusic = this.music.id && !this.music.props ? this.music : this.musicPage.find(m => !m.props);
-        if (music && !newMusic) {
-          await this.$nextTick();
-          this.scroll?.refresh();
-        }
-        music = newMusic;
-        music && await this.musicStorage.generateMusicProps(music);
-        await this.$sleep(0);
-      }
-    })();
   }
 
   private async removeMusic(music: Music) {
@@ -198,6 +182,9 @@ export default class Playlist extends BaseComponent {
 
   @Watch('music.id')
   private watchMusic() {
+    if (!this.music.props) {
+      this.musicStorage.generateMusicProps(this.music);
+    }
     return this.locateMusic();
   }
 
