@@ -298,9 +298,8 @@ export default class MusicLrcEditor extends BaseComponent {
       }
     } else {
       const link = document.createElement('a');
-      link.href = URL.createObjectURL(file);
+      link.href = 'data:text/lrc;charset=UTF-8,' + encodeURIComponent(lrcText);
       link.download = file.name;
-      link.onload = link.onerror = () => URL.revokeObjectURL(link.href);
       link.click();
     }
     if (!this.music.lrcFile?.handle) {

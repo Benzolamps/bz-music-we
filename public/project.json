@@ -71,10 +71,8 @@
   "type": "web",
   "version": 0,
   "contentrating": "Everyone",
-  "description": "带有可视化效果的音乐播放器\r\n1. 展示动态歌词 (LRC UTF-8)\r\n2. 可导入本地音乐 (MP3 WAV FLAC OGG)\r\n3. 提供上千种可视化特效预设（Milk Drop）\r\n",
   "preview": "preview.gif",
-  "tags": ["Unspecified"],
+  "tags": ["Music"],
   "visibility": "public",
-  "workshopid": "2941147253",
-  "workshopurl": "steam://url/CommunityFilePage/2941147253"
+  "workshopid": "2941147253"
 }

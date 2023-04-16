@@ -48,9 +48,7 @@ export default class HeadDefinition extends BaseComponent {
         }
       ]
     };
-
-    const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-    return URL.createObjectURL(blob);
+    return 'data:application/json,' + encodeURIComponent(JSON.stringify(manifest));
   }
 
   public override mounted() {

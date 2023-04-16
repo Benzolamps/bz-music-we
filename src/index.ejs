@@ -3,64 +3,10 @@
 <head>
 <meta charset="utf-8"/>
 <title><%= htmlWebpackPlugin.options.title %></title>
-<% inject() %>
-<!-- endregion -->
+<%= require('./inject.ts').default %>
 </head>
 <body>
 <div id="app"></div>
 <!-- built files will be auto injected -->
 </body>
 </html>
-
-<% /* region inject */
-
-function inject() {
-  const {NODE_ENV: env, VUE_APP_BUILD_TARGET: target} = process.env;
-  const network = target === 'network';
-  const wallpaper = env === 'development' || target === 'wallpaper';
-  if (network) {
-    injectNetwork();
-  } else if (wallpaper) {
-    injectWallpaper();
-  }
-}
-
-function injectNetwork() { %>
-<base href="https://bzmusic.oss-cn-qingdao.aliyuncs.com/">
-<script>
-const _fetch = window.fetch;
-window.fetch = function (url, options) {
-  url = new URL(url, document.baseURI);
-  return _fetch.call(null, url, options);
-}
-</script>
-<% }
-
-function injectWallpaper() { %>
-<script>
-if (Object.keys(window).some(k => k.startsWith('wallpaper'))) {
-  window.wallpaperProperties = {
-    fps: 0,
-    language: '',
-    clipboard: '',
-    taskbar_position: 'bottom',
-    taskbar_length: 0
-  };
-
-  window.wallpaperPropertyListener = {
-    applyGeneralProperties(props) {
-      for (const key in props) {
-        window.wallpaperProperties[key] = props[key];
-      }
-    },
-    applyUserProperties(props) {
-      for (const key in props) {
-        window.wallpaperProperties[key] = props[key].value;
-      }
-    }
-  };
-}
-</script>
-<% }
-
-/* endregion */ %>

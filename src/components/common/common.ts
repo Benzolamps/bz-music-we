@@ -7,11 +7,9 @@ import SvgIcon from '@/components/common/SvgIcon.vue';
 import {formatDelta, formatFileSize} from '@/utils/common_utils';
 import Element from 'element-ui';
 import Vue from 'vue';
-import VueClipBoard from 'vue-clipboard2';
 
 Vue.config.productionTip = false;
 Vue.use(Element, {size: 'large'});
-Vue.use(VueClipBoard);
 Vue.component('SvgIcon', SvgIcon);
 Vue.filter('fileSize', formatFileSize);
 Vue.filter('delta', formatDelta);
