@@ -1,0 +1,8 @@
+﻿<base href="https://bzmusic.oss-cn-qingdao.aliyuncs.com/">
+<script>
+const _fetch = window.fetch;
+window.fetch = function (url, options) {
+  url = new URL(url, document.baseURI);
+  return _fetch.call(null, url, options);
+}
+</script>

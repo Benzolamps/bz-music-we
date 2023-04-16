@@ -17,7 +17,7 @@ module.exports = defineConfig({
     index: {
       title: require('./package.json').description,
       entry: 'src/main.ts',
-      template: 'src/index.ejs'
+      template: 'src/templates/index.ejs'
     }
   },
   chainWebpack(config) {
@@ -39,7 +39,7 @@ module.exports = defineConfig({
 
     config.module
       .rule('lrc')
-      .test(/\.lrc$/)
+      .test(/\.(lrc)|(html)$/)
       .use('raw-loader')
       .loader('raw-loader')
       .end();
