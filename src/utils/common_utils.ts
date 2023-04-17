@@ -1,8 +1,6 @@
 ﻿import pfsc from '@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf';
 import jbm from '@/assets/fonts/JetBrainsMono-Regular.ttf';
 import {bus} from '@/components/common/common';
-import fileAssets, {clearFileAssets} from '@/components/service/file_assets';
-import {readAsBlob} from '@/utils/file_handle';
 
 export const attrSeparator = '\u3000';
 
@@ -160,23 +158,9 @@ export function parseDelta(delta: string) {
 }
 
 export function getTextData(url: string) {
-  if (fileAssets.length > 0) {
-    const file = fileAssets.find(f => f.path === url);
-    if (!file) {
-      clearFileAssets().then(location.reload);
-    }
-    return readAsBlob(file).then(res => res.text());
-  }
   return fetch(url).then(res => res.text());
 }
 
 export function getBinaryData(url: string) {
-  if (fileAssets.length > 0) {
-    const file = fileAssets.find(f => f.path === url);
-    if (!file) {
-      clearFileAssets().then(location.reload);
-    }
-    return readAsBlob(file);
-  }
   return fetch(url).then(res => res.blob());
 }

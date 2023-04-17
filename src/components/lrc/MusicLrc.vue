@@ -146,17 +146,7 @@ export default class MusicLrc extends BaseComponent {
       const elementWidth = element.clientWidth;
       const containerWidth = lrcContainer.clientWidth;
       if (elementWidth > containerWidth) {
-        let progress = this.lrcContext.progress;
-        if (progress < .2) {
-          progress = 0;
-        }
-        else if (progress > .8) {
-          progress = 1;
-        }
-        else {
-          progress = (progress - .2) / .6;
-        }
-        const offset = progress * (elementWidth - containerWidth);
+        const offset = this.lrcContext.progressForOverflow * (elementWidth - containerWidth);
         element.style.left = (elementWidth - containerWidth) / 2 - offset + 'px';
       }
     }
@@ -196,6 +186,8 @@ export default class MusicLrc extends BaseComponent {
     pointer-events: none !important;
 
     li {
+      padding: 0 0.1em;
+
       &, &::before {
         pointer-events: auto;
         width: fit-content;

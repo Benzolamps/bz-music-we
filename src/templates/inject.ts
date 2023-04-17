@@ -1,4 +1,4 @@
-﻿import networkCode from '@/templates/network.html';
+import networkCode from '@/templates/network.html';
 import wallpaperCode from '@/templates/wallpaper.html';
 
 const {NODE_ENV: env, VUE_APP_BUILD_TARGET: target} = process.env;

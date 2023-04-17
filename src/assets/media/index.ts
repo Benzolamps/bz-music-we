@@ -9,5 +9,5 @@ export const audios: Array<{name: string, url: string}> = reqMp3.keys().map(k =>
 const reqLrc = require.context('@/assets/media/', true, /\.lrc$/);
 export const lrcs: Array<{name: string, text: string}> = reqLrc.keys().map(k => ({
   name: getFileBaseName(k),
-  text: reqLrc(k).default
+  text: reqLrc(k)
 }));

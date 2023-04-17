@@ -157,7 +157,7 @@ export default class MusicVisual extends BaseComponent {
   private getDesireCanvasSize(): [number, number] {
     if (this.visualStates.canvas) {
       return [this.canvas.clientWidth * window.devicePixelRatio, this.canvas.clientHeight * window.devicePixelRatio];
-    } else if (document.pictureInPictureElement) {
+    } else if (document.pictureInPictureElement && this.pipWindow) {
       return [this.pipWindow.width * window.devicePixelRatio, this.pipWindow.height * window.devicePixelRatio];
     } else {
       return [this.video.clientWidth * window.devicePixelRatio, this.video.clientHeight * window.devicePixelRatio];
@@ -166,7 +166,7 @@ export default class MusicVisual extends BaseComponent {
 
   /* region pip */
 
-  private handlePip() {
+  private async handlePip() {
     if (!this.platform.pip) {
       this.visualStates.video = false;
       this.visualStates.canvas = true;
@@ -176,12 +176,8 @@ export default class MusicVisual extends BaseComponent {
       this.visualStates.video = true;
       this.visualStates.canvas = false;
       this.video.srcObject = this.canvas.captureStream();
-      this.video.play().then(() => {
-        if (!this.musicService.isPlaying) {
-          this.video.pause();
-        }
-        this.video.requestPictureInPicture();
-      });
+      await this.video.play();
+      await this.video.requestPictureInPicture();
     } else {
       this.visualStates.video = false;
       this.visualStates.canvas = true;
@@ -190,7 +186,7 @@ export default class MusicVisual extends BaseComponent {
       }
       this.video.srcObject = null;
       if (document.pictureInPictureElement) {
-        document.exitPictureInPicture();
+        await document.exitPictureInPicture();
       }
     }
   }
@@ -221,7 +217,7 @@ export default class MusicVisual extends BaseComponent {
   
   @Watch('musicService.isPlaying')
   private watchPlaying() {
-    if (this.visualStates.video) {
+    if (this.visualStates.video || this.visualStates.pip) {
       if (this.musicService.isPlaying) {
         this.video.play();
       } else {

@@ -44,7 +44,6 @@
     "jszip": "^3.10.1",
     "mime-types": "^2.1.35",
     "node-polyfill-webpack-plugin": "^2.0.1",
-    "raw-loader": "^4.0.2",
     "sass": "^1.32.7",
     "sass-loader": "^12.0.0",
     "svg-sprite-loader": "^6.0.11",

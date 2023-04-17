@@ -14,7 +14,6 @@ import {LanguageKeys} from '@/assets/locale/messages';
 import MusicLrcEditor from '@/components/lrc/MusicLrcEditor.vue';
 import HeadDefinition from '@/components/misc/HeadDefinition.vue';
 import {initBlazor} from '@/components/service/blazor';
-import {loadFileAssets} from '@/components/service/file_assets';
 import {loadBasicFonts, registerEvents} from '@/utils/common_utils';
 import {Component, Watch} from 'vue-property-decorator';
 import Toast from '@/components/common/Toast.vue';
@@ -37,7 +36,6 @@ export default class App extends BaseComponent {
   }
 
   public override async mounted() {
-    await loadFileAssets();
     this.$toast.showLoading();
     await loadBasicFonts();
     

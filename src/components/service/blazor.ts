@@ -1,5 +1,6 @@
 ﻿import {Music} from '@/components/service/music';
 import {getBinaryData} from '@/utils/common_utils';
+import blazorZip from '@/assets/zip/bz-music-blazor.zip';
 import JSZip from 'jszip';
 import mime from 'mime-types';
 
@@ -24,7 +25,7 @@ export default async function readMetadata(file: File) {
 }
 
 export async function initBlazor() {
-  const zipBlob = await getBinaryData('bz-music-blazor.zip');
+  const zipBlob = await getBinaryData(blazorZip);
   const zip = await JSZip.loadAsync(zipBlob);
   const zipEntries = Object.entries(zip.files);
   const zipPromises = zipEntries.map(async ([key, value]) => [key, await value.async('blob')] as const);

@@ -18,10 +18,6 @@ declare module 'butterchurn' {
     setRendererSize(width: number, height: number, opts: {pixelRatio: number});
     connectAudio(audioNode: AudioNode);
     disconnectAudio(audioNode: AudioNode);
-    renderer: {
-      fps: number;
-      calcTimeAndFPS: () => void;
-    };
   }
 
   export default class {

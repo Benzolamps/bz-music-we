@@ -33,6 +33,39 @@ export default class LrcContext extends BaseClass {
     bus.$watch('musicService.duration', this.update);
   }
 
+  /**
+   * 0-0.2 保持 0
+   * 0.2-0.8 滚动 0-1
+   * 0.8-1 保持 1
+   */
+  public get progressForOverflow(): number {
+    if (this.progress < .2) {
+      return 0;
+    }
+    else if (this.progress > .8) {
+      return 1;
+    }
+    else {
+      return (this.progress - .2) / .6;
+    }
+  }
+
+  /**
+   * 0-.9 进入 0-1
+   * .9-.95 保持 1
+   * .95-1 退出 1-0
+   */
+  public get progressForCaption(): number {
+    const progress = bus.musicService.pitch < 0 ? 1 - this.progress : this.progress;
+    if (progress < .9) {
+      return progress / .9;
+    } else if (progress >= .9 && progress < .95) {
+      return 1;
+    } else {
+      return (1 - progress) / .05;
+    }
+  }
+
   private async update() {
     if (this.music !== bus.musicService.music) {
       this.shownLrc = [];

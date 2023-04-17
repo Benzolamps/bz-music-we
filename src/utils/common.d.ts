@@ -17,3 +17,7 @@ declare module '*.ttf' {
 declare module '*.zip' {
   export default '';
 }
+
+declare module '*.png' {
+  export default '';
+}

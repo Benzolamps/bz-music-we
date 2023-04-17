@@ -1,4 +1,5 @@
 ﻿import {bus} from '@/components/common/common';
+import {FpsHandle} from '@/components/visual/fps-handle';
 import BaseClass from '@/utils/base_class';
 import butterchurn, {MilkDropPresetDesc, Visualizer} from 'butterchurn';
 import blankPreset from 'butterchurn/blankPreset';
@@ -16,6 +17,7 @@ export default class MusicVisualCore extends BaseClass {
   private readonly basePresetList: ReadonlyArray<MilkDropPresetDesc> = presetList;
   private presetList: ReadonlyArray<MilkDropPresetDesc>;
   private randomPresetList: ReadonlyArray<MilkDropPresetDesc>;
+  private readonly fpsHandle = new FpsHandle();
 
   public constructor(musicVisual: MusicVisual, canvas: HTMLCanvasElement, getDesireCanvasSize: () => [number, number]) {
     super();
@@ -84,29 +86,9 @@ export default class MusicVisualCore extends BaseClass {
     }
   }
 
-  private last = performance.now() / 1000;
-  private fpsThreshold = 0;
-
-  private limitFps() {
-    // Figure out how much time has passed since the last animation
-    const now = performance.now() / 1000;
-    const dt = Math.min(now - this.last, 1);
-    this.last = now;
-
-    // If there is an FPS limit, abort updating the animation if we have reached the desired FPS
-    if (bus.wallpaperProperties.fps > 0) {
-      this.fpsThreshold += dt;
-      if (this.fpsThreshold < 1.0 / bus.wallpaperProperties.fps) {
-        return true;
-      }
-      this.fpsThreshold -= 1.0 / bus.wallpaperProperties.fps;
-    }
-    return false;
-  }
-
   /* region 绘制 */
   private drawEachFrame() {
-    if (this.limitFps()) {
+    if (!this.fpsHandle.update()) {
       return;
     }
 
@@ -125,9 +107,7 @@ export default class MusicVisualCore extends BaseClass {
     const context2d = this.canvas.getContext('2d');
     context2d.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    if (bus.visualStyles.lrcMode === 'scroll') {
-      this.visualizer.renderer.calcTimeAndFPS();
-    } else {
+    if (bus.visualStyles.lrcMode !== 'scroll') {
       this.visualizer.render();
     }
     if (bus.visualStyles.lrcMode !== 'caption') {
@@ -146,7 +126,7 @@ export default class MusicVisualCore extends BaseClass {
     context2d.font = `${fontSize}px ${fontFamily}`;
     context2d.fillStyle = bus.lrcStyles.pastColor;
 
-    const fps = this.visualizer.renderer.fps.toFixed(3);
+    const fps = this.fpsHandle.fps.toFixed(3);
     context2d.fillText('FPS: ' + fps, 5 * window.devicePixelRatio, 5 * window.devicePixelRatio);
   }
 
@@ -287,22 +267,7 @@ export default class MusicVisualCore extends BaseClass {
     this.visualizer.launchSongTitleAnim({
       buffer: context2d.getImageData(0, 0, width, height).data.buffer,
       get progress() {
-        /*
-         * 0-.9 进入 0-1
-         * .9-.95 保持 1
-         * .95-1 退出 1-0
-         */
-        let progress = bus.lrcContext.progress;
-        if (bus.musicService.pitch < 0) {
-          progress = 1 - progress;
-        }
-        if (progress < .9) {
-          return progress / .9;
-        } else if (progress >= .9 && progress < .95) {
-          return 1;
-        } else {
-          return (1 - progress) / .05;
-        }
+        return bus.lrcContext.progressForCaption;
       }
     });
 
@@ -310,32 +275,46 @@ export default class MusicVisualCore extends BaseClass {
   }
 
   private drawLrcScroll() {
+    const {width, height} = this.canvas;
+    const context2d = this.canvas.getContext('2d');
+    if (bus.visualStyles.lrcMode === 'scroll') {
+      context2d.strokeStyle = bus.lrcStyles.strokeColor;
+      context2d.fillStyle = bus.lrcStyles.strokeColor;
+      context2d.fillRect(0, 0, width, height);
+    }
+
+    if (bus.visualStates.pip) {
+      this.drawLrcScrollInner();
+      context2d.drawImage(this.canvasDraw, 0, 0);
+    }
+  }
+
+  private align = -1;
+
+  private drawLrcScrollInner() {
+    const fontSize = 20 * window.devicePixelRatio;
+    const margin = 10 * window.devicePixelRatio;
+    const width = this.canvas.width;
+    const height = this.canvas.height;
+    this.canvasDraw.width = width;
+    this.canvasDraw.height = height;
+    const context2d = this.canvasDraw.getContext('2d', {willReadFrequently: true});
+    context2d.textBaseline = 'top';
+    context2d.font = `${fontSize}px LrcFont`;
+    context2d.strokeStyle = bus.lrcStyles.strokeColor;
     const lrcs = bus.lrcContext.currentLrcArray;
-    let align;
+    let align: number;
     if (lrcs.length > 0) {
       const alignLrc = lrcs[Math.ceil(lrcs.length / 2) - 1];
       align = bus.lrcContext.shownLrc.indexOf(alignLrc);
     } else {
       align = -1;
     }
-    const fontSize = 20 * window.devicePixelRatio;
-    const margin = 10 * window.devicePixelRatio;
-    const {width, height} = this.canvas;
-    const context2d = this.canvas.getContext('2d');
-    context2d.textBaseline = 'top';
-    context2d.font = `${fontSize}px LrcFont`;
-    context2d.strokeStyle = bus.lrcStyles.strokeColor;
-    if (bus.visualStyles.lrcMode === 'scroll') {
-      context2d.fillStyle = bus.lrcStyles.strokeColor;
-      context2d.fillRect(0, 0, width, height);
-    }
-
-    if (!bus.visualStates.pip) {
-      return;
-    }
+    const damping = 0.9;
+    this.align = damping * this.align + (1.0 - damping) * align;
 
     let startY = height / 2 - fontSize / 2;
-    startY -= align * (fontSize + margin);
+    startY -= this.align * (fontSize + margin);
     for (const lrcTag of bus.lrcContext.shownLrc) {
       if (startY < margin / 2 || startY > height - fontSize - margin / 2) {
         startY += fontSize + margin;
@@ -356,25 +335,25 @@ export default class MusicVisualCore extends BaseClass {
         context2d.fillStyle = bus.lrcStyles.defaultColor;
       }
       let x = (width - textWidth) / 2;
-      if (x < 10 && lrcs.includes(lrcTag)) {
-        let progress = bus.lrcContext.progress;
-        if (progress < .2) {
-          progress = 0;
-        }
-        else if (progress > .8) {
-          progress = 1;
-        }
-        else {
-          progress = (progress - .2) / .6;
-        }
-        x = 2 * (x - 10) * progress + 10;
+      if (x < margin && lrcs.includes(lrcTag)) {
+        x = 2 * (x - margin) * bus.lrcContext.progressForOverflow + margin;
       }
       context2d.strokeText(lrcTag.content, x, startY);
       context2d.fillText(lrcTag.content, x, startY);
       startY += fontSize + margin;
     }
-  }
 
+    let number = Math.floor((height - margin) / (fontSize + margin));
+    number = number % 2 ? number : number - 1;
+    number = Math.max(1, number);
+    const maxHeight = number * (fontSize + margin);
+    const delta = (height - margin - maxHeight) / 2;
+    context2d.clearRect(0, 0, width, delta);
+    context2d.clearRect(0, height - delta, width, delta);
+    context2d.clearRect(0, 0, margin, height);
+    context2d.clearRect(width - margin, 0, margin, height);
+  }
+  
   public close() {
     bus.animationRunner.off(this.drawEachFrame);
     bus.visualStates.video = false;

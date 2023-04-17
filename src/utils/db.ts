@@ -6,8 +6,7 @@ const db = new Dexie('BzMusic');
 db.version(1).stores({
   settings: 'id',
   music: 'id',
-  dir: 'id',
-  files: 'id'
+  dir: 'id'
 });
 
 export default db;
