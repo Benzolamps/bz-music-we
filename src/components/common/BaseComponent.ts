@@ -1,4 +1,5 @@
 ﻿import '@/assets/icons';
+import wallpaperProperties from '@/components/common/wallpaper';
 import AnimationRunner from '@/utils/animation_runner';
 import Vue, {VNode} from 'vue';
 import MusicStorage from '@/components/service/data';
@@ -19,7 +20,7 @@ class BaseComponentStaticData {
   public language: LanguageKeys = null;
   public readonly attrSeparator = attrSeparator;
   public readonly messages = messages;
-  public readonly wallpaperProperties = window.wallpaperProperties ?? {} as WallpaperProperties;
+  public readonly wallpaperProperties = wallpaperProperties;
   public page: 'MusicPlayer' | 'MusicLrcEditor' = 'MusicPlayer';
   public $toast: Toast['utilType'] = null;
   public musicStorage: MusicStorage = null;

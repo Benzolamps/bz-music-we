@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8"/>
 <title><%= htmlWebpackPlugin.options.title %></title>
-<%= require('./inject.ts').default %>
+<% if (process.env.VUE_APP_REMOTE_URL) { %>
+<base href="<%= process.env.VUE_APP_REMOTE_URL %>"/>
+<% } %>
 </head>
 <body>
 <div id="app"></div>

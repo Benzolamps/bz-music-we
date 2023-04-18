@@ -33,6 +33,24 @@ export default class App extends BaseComponent {
   public override created() {
     registerEvents();
     this.registerWindowAttrs();
+    let time = 0;
+    const listener = async (event: Event & { prompt?: () => void }) => {
+      event.preventDefault();
+      // PWA安装窗口会因点击了别处而关闭，用户可能还未看到，如果500毫秒内弹窗关闭了，极有可能是误关，再次弹出
+      if (time > 0 && Date.now() - time > 500) {
+        window.removeEventListener('beforeinstallprompt', listener);
+        return;
+      }
+      if (time === 0) {
+        await this.$sleep(120000);
+      }
+      while (!navigator.userActivation.isActive) {
+        await this.$sleep(0);
+      }
+      time = Date.now();
+      event.prompt();
+    };
+    window.addEventListener('beforeinstallprompt', listener, {signal: this.abortSignal});
   }
 
   public override async mounted() {

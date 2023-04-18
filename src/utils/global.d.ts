@@ -59,11 +59,6 @@
   /* endregion */
   
   /* region 自定义 */
-  
-  interface Window {
-    wallpaperProperties: WallpaperProperties;
-    wallpaperPropertyListener: WallpaperPropertyListener;
-  }
 
   interface File {
     path: string;
@@ -77,19 +72,6 @@
   
   interface String {
     hash(): number;
-  }
-
-  interface WallpaperProperties {
-    fps: number;
-    language: string;
-    taskbar_position: 'bottom' | 'top' | 'left' | 'right';
-    taskbar_length: number;
-    clipboard: string;
-  }
-
-  interface WallpaperPropertyListener {
-    applyGeneralProperties(props: Record<string, string>): void;
-    applyUserProperties(props: Record<string, {value: string}>): void;
   }
   
   /* endregion */

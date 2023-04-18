@@ -158,7 +158,7 @@ export default class MusicComponent extends BaseClass {
 
   private async getCurrentTime() {
     while (this.vue) {
-      await this.vue.$sleep(1);
+      await this.vue.$sleep(0);
       if (!this.playingMusic) {
         continue;
       }

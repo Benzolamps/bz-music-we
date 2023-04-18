@@ -4,9 +4,10 @@ function resolve(...dir) {
   return join(process.cwd(), ...dir);
 }
 
-
 const {defineConfig} = require('@vue/cli-service');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+const {GenerateSW} = require('workbox-webpack-plugin');
+
 module.exports = defineConfig({
   transpileDependencies: true,
   productionSourceMap: false,
@@ -80,7 +81,24 @@ module.exports = defineConfig({
         }
       ]
     },
-    plugins: [new NodePolyfillPlugin()],
+    plugins: [
+      new NodePolyfillPlugin(),
+      new GenerateSW(Object.assign({
+        disableDevLogs: true,
+        inlineWorkboxRuntime: true,
+        maximumFileSizeToCacheInBytes: 100 * 1024 * 1024,
+        manifestTransforms: [
+          function (manifest) {
+            for (const entry of manifest) {
+              if (entry.url !== 'index.html') {
+                entry.url = process.env.VUE_APP_REMOTE_URL + entry.url;
+              }
+            }
+            return {manifest};
+          }
+        ].filter(() => process.env.VUE_APP_REMOTE_URL)
+      }))
+    ],
     optimization: {
       splitChunks: {
         chunks: 'all',
@@ -106,7 +124,7 @@ module.exports = defineConfig({
             name: 'butterchurn-presets',
             test: /presets/,
             chunks: 'initial',
-            priority: 1
+            priority: 2
           }
         }
       }

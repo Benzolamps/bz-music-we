@@ -59,7 +59,7 @@ export default class HeadDefinition extends BaseComponent {
       document.head.appendChild(element);
     }
     if (!this.platform.static) {
-      navigator.serviceWorker?.register(new URL('sw.js', location.origin));
+      navigator.serviceWorker?.register(new URL('service-worker.js', location.origin));
     }
     this.$el.remove();
     this.$destroy();

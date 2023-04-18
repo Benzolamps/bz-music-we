@@ -1,6 +1,7 @@
 ﻿import pfsc from '@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf';
 import jbm from '@/assets/fonts/JetBrainsMono-Regular.ttf';
 import {bus} from '@/components/common/common';
+import platform from "@/utils/platform";
 
 export const attrSeparator = '\u3000';
 
@@ -158,9 +159,11 @@ export function parseDelta(delta: string) {
 }
 
 export function getTextData(url: string) {
-  return fetch(url).then(res => res.text());
+  const fetchUrl = platform.static ? url : new URL(url, document.baseURI).toString();
+  return fetch(fetchUrl).then(res => res.text());
 }
 
 export function getBinaryData(url: string) {
-  return fetch(url).then(res => res.blob());
+  const fetchUrl = platform.static ? url : new URL(url, document.baseURI).toString();
+  return fetch(fetchUrl).then(res => res.blob());
 }
