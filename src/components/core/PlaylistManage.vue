@@ -56,14 +56,14 @@
       </b-scroll>
       <footer>
         <el-pagination
-            background
-            small
-            layout="prev,pager,next"
-            hide-on-single-page
-            :total="playlists.length"
-            :current-page="currentPage"
-            :page-size="pageSize"
-            @current-change="onCurrentChange"
+          background
+          small
+          layout="prev,pager,next"
+          hide-on-single-page
+          :total="playlists.length"
+          :current-page="currentPage"
+          :page-size="pageSize"
+          @current-change="onCurrentChange"
         />
       </footer>
     </div>
@@ -156,7 +156,3 @@ export default class PlaylistManage extends BaseComponent {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

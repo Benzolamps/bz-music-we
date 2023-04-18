@@ -21,7 +21,7 @@ export interface Platform extends Readonly<Partial<Record<PlatformKeys, boolean>
  * 平台列表
  */
 export const platforms = (() => {
-  const client_standalone: Omit<Platform, 'key' | 'name' | 'mobile'> = {
+  const clientInfo: Omit<Platform, 'key' | 'name' | 'mobile'> = {
     wallpaper: Object.keys(window).some(k => k.startsWith('wallpaper')),
     standalone: window.matchMedia('(display-mode: standalone)').matches,
     static: location.protocol === 'file:',
@@ -34,10 +34,10 @@ export const platforms = (() => {
   };
 
   const platforms: Record<PlatformKeys, Platform> = {
-    ios: {key: 'ios', name: 'iOS', mobile: true, ...client_standalone},
-    android: {key: 'android', name: 'Android', mobile: true, ...client_standalone},
-    windows: {key: 'windows', name: 'Windows', mobile: false, ...client_standalone},
-    unknown: {key: 'unknown', name: 'Unknown', mobile: false, ...client_standalone}
+    ios: {key: 'ios', name: 'iOS', mobile: true, ...clientInfo},
+    android: {key: 'android', name: 'Android', mobile: true, ...clientInfo},
+    windows: {key: 'windows', name: 'Windows', mobile: false, ...clientInfo},
+    unknown: {key: 'unknown', name: 'Unknown', mobile: false, ...clientInfo}
   };
 
   for (const key in platforms) {

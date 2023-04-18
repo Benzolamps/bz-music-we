@@ -58,20 +58,20 @@ module.exports = defineConfig({
             }
           ]
         },
-        process.env.VUE_APP_BUILD_TARGET === 'static' ? {
-          test: /\.(mp3|wav|ttf|zip|png)$/,
-          include: resolve('src/assets'),
-          type: 'asset',
-          parser: {
-            dataUrlCondition: {
-              maxSize: 100 * 1024 * 1024
-            }
-          }
-        } : {
+        {
           test: /\.(zip)$/,
           type: 'asset',
           generator: {
             filename: 'zip/[name].[hash:8][ext]'
+          }
+        },
+        {
+          test: /favicon\.png$/,
+          type: 'asset',
+          parser: {
+            dataUrlCondition: {
+              maxSize: 1024 * 1024
+            }
           }
         },
         {
@@ -90,9 +90,9 @@ module.exports = defineConfig({
             test: resolve('node_modules'),
             chunks: 'initial'
           },
-          assets: {
+          staticAssets: {
             name: 'static-assets',
-            test: /\.(mp3|wav|lrc|ttf|png|zip)$/,
+            test: resolve('src/assets'),
             chunks: 'initial',
             priority: 1
           },

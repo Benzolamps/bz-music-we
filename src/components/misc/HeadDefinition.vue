@@ -31,7 +31,7 @@ import favicon from '@/assets/img/favicon.png';
 @Component
 export default class HeadDefinition extends BaseComponent {
   private readonly themeColor = '#C6E2FF';
-  private readonly favicon = new URL(favicon, location.origin);
+  private readonly favicon = favicon;
 
   private get manifestUrl() {
     const manifest = {
@@ -44,7 +44,7 @@ export default class HeadDefinition extends BaseComponent {
       theme_color: this.themeColor,
       icons: [
         {
-          src: this.favicon,
+          src: favicon,
           sizes: '512x512',
           type: 'image/png'
         }
