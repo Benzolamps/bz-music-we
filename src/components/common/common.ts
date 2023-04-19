@@ -4,7 +4,9 @@ import '@/styles/index.scss';
 import App from '@/App.vue';
 import BaseComponent from '@/components/common/BaseComponent';
 import SvgIcon from '@/components/common/SvgIcon.vue';
+import WallpaperContainer from '@/components/misc/WallpaperContainer.vue';
 import {formatDelta, formatFileSize} from '@/utils/common_utils';
+import platform from '@/utils/platform';
 import Element from 'element-ui';
 import Vue from 'vue';
 
@@ -16,4 +18,11 @@ Vue.filter('delta', formatDelta);
 
 export const bus = new BaseComponent();
 
-export const app = new App().$mount('#app');
+let component;
+if (platform.wallpaper && window === window.top) {
+  component = new WallpaperContainer();
+} else {
+  component = new App();
+}
+
+export const app = component.$mount('#app');

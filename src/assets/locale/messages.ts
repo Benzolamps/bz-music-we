@@ -100,7 +100,6 @@ export interface Message extends Readonly<unknown> {
   'visual.overlay': string;
   'visual.change_with_music': string;
   'cef.command': string;
-  'file.assets': string;
 }
 
 type LanguageRecord = Readonly<Record<LanguageKeys, Message>>;
@@ -228,8 +227,7 @@ const languages: LanguageRecord = {
     'visual.ftt': 'Use FTT',
     'visual.overlay': 'Show overlay info',
     'visual.change_with_music': 'Switch with music change',
-    'cef.command': 'To play music you selected last time, set the CEF command line <br/>--enable-experimental-web-platform-features',
-    'file.assets': 'Please elect the path where the index.html is located'
+    'cef.command': 'To play music you selected last time, set the CEF command line <br/>--enable-experimental-web-platform-features'
   },
   zh: {
     'colon': '：',
@@ -353,8 +351,7 @@ const languages: LanguageRecord = {
     'visual.ftt': '使用FTT',
     'visual.overlay': '显示信息',
     'visual.change_with_music': '切歌时切换',
-    'cef.command': '为了能播放上次选择的歌曲, 请设置CEF命令行为<br/>--enable-experimental-web-platform-features',
-    'file.assets': '请选择index.html所在的路径'
+    'cef.command': '为了能播放上次选择的歌曲, 请设置CEF命令行为<br/>--enable-experimental-web-platform-features'
   }
 };
 

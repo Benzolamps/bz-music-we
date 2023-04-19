@@ -83,11 +83,7 @@ export default class MusicPlayer extends BaseComponent {
       } else if (event instanceof TouchEvent) {
         clientY = Array.from(event.touches).map(t => t.clientY).reduce((a, b) => Math.max(a, b), 0);
       }
-      let below = 100;
-      if (this.wallpaperProperties.taskbar_position === 'bottom') {
-        below += this.wallpaperProperties.taskbar_length;
-      }
-      if (clientY >= window.innerHeight - below) {
+      if (clientY >= window.innerHeight - 100) {
         this.showMusicControl = true;
       } else {
         const elements = Array.from(document.querySelectorAll('.el-popper, .el-drawer'));
@@ -101,8 +97,6 @@ export default class MusicPlayer extends BaseComponent {
   }
 
   @Watch('showInfo')
-  @Watch('wallpaperProperties.taskbar_position')
-  @Watch('wallpaperProperties.taskbar_length')
   private watchShowInfo() {
     this.musicLrc?.adjustHeight();
   }
@@ -120,7 +114,7 @@ export default class MusicPlayer extends BaseComponent {
     flex-direction: column-reverse;
     justify-content: space-between;
     height: 100%;
-    padding: calc(20px + var(--taskbar-top)) 20px calc(80px - (1 - var(--show-info)) * 50px + var(--taskbar-bottom));
+    padding: 20px 20px calc(80px - (1 - var(--show-info)) * 50px);
 
     box-sizing: border-box;
 

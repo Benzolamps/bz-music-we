@@ -25,11 +25,7 @@
 }
 
 .el-drawer__wrapper {
-  padding:
-    calc(10px + var(--taskbar-top))
-    calc(10px + var(--taskbar-right))
-    calc(10px + var(--taskbar-bottom))
-    calc(10px + var(--taskbar-left));
+  padding: 10px;
   .el-drawer {
     border-radius: 10px;
   }

@@ -17,7 +17,6 @@ class BaseComponentStaticData {
   public readonly window = window;
   public readonly platform = platform;
   public readonly view = view;
-  public language: LanguageKeys = null;
   public readonly attrSeparator = attrSeparator;
   public readonly messages = messages;
   public readonly wallpaperProperties = wallpaperProperties;
@@ -51,6 +50,16 @@ class BaseComponent extends Vue {
   static {
     const properties = Object.getOwnPropertyDescriptors(this.staticData);
     Object.defineProperties(this.prototype, properties);
+  }
+
+  public get language(): LanguageKeys {
+    const nativeLanguage = this.wallpaperProperties.language || navigator.language;
+    if (nativeLanguage.match(/(^en$)|(^en-)/)) {
+      return 'en';
+    } else if (nativeLanguage.match(/(^zh$)|(^zh-)/)) {
+      return 'zh';
+    }
+    return 'en';
   }
 
   private _abortSignal: AbortSignal = null;

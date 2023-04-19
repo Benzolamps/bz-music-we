@@ -1,4 +1,5 @@
-﻿import platform from '@/utils/platform';
+﻿import {bus} from "@/components/common/common";
+import platform from '@/utils/platform';
 
 interface WallpaperProperties {
   fps: number;
@@ -13,7 +14,10 @@ interface WallpaperPropertyListener {
   applyUserProperties(props: Record<string, {value: string}>): void;
 }
 
-const wallpaperProperties: WallpaperProperties = {
+const wallpaperPropertiesName = 'wallpaperProperties';
+const wallpaperPropertyListenerName = 'wallpaperPropertyListener';
+
+const wallpaperProperties: WallpaperProperties = window.top[wallpaperPropertiesName] ??= {
   fps: 0,
   language: '',
   clipboard: '',
@@ -21,7 +25,7 @@ const wallpaperProperties: WallpaperProperties = {
   taskbar_length: 0
 };
 
-if (platform.wallpaper) {
+if (window.top === window && platform.wallpaper) {
   const wallpaperPropertyListener: WallpaperPropertyListener = {
     applyGeneralProperties(props) {
       for (const key in props) {
@@ -35,7 +39,7 @@ if (platform.wallpaper) {
     }
   };
   
-  Object.defineProperty(window, 'wallpaperPropertyListener', {get: () => wallpaperPropertyListener});
+  window[wallpaperPropertyListenerName] = wallpaperPropertyListener;
   console.log('Wallpaper Engine初始化完毕', wallpaperProperties, wallpaperPropertyListener);
 }
 

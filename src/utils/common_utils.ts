@@ -1,7 +1,4 @@
-﻿import pfsc from '@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf';
-import jbm from '@/assets/fonts/JetBrainsMono-Regular.ttf';
-import {bus} from '@/components/common/common';
-import platform from "@/utils/platform";
+﻿import {bus} from '@/components/common/common';
 
 export const attrSeparator = '\u3000';
 
@@ -41,17 +38,6 @@ Array.prototype.removeIf = function (predicate) {
     }
   }
 };
-
-export async function loadBasicFonts() {
-  let blob = await getBinaryData(pfsc);
-  let fontFace = new FontFace('PingFang SC', await blob.arrayBuffer());
-  fontFace = await fontFace.load();
-  document.fonts.add(fontFace);
-  blob = await getBinaryData(jbm);
-  fontFace = new FontFace('JetBrains Mono', await blob.arrayBuffer());
-  fontFace = await fontFace.load();
-  document.fonts.add(fontFace);
-}
 
 export function getFileBaseName(fileName: string) {
   let result = fileName;
@@ -158,12 +144,14 @@ export function parseDelta(delta: string) {
   return delta.split(':').map(Number).reduce((a, b) => 60 * a + b, 0);
 }
 
+const remoteUrl = process.env.VUE_APP_REMOTE_URL;
+
 export function getTextData(url: string) {
-  const fetchUrl = platform.static ? url : new URL(url, document.baseURI).toString();
+  const fetchUrl = remoteUrl ? new URL(url, remoteUrl).toString() : url;
   return fetch(fetchUrl).then(res => res.text());
 }
 
 export function getBinaryData(url: string) {
-  const fetchUrl = platform.static ? url : new URL(url, document.baseURI).toString();
+  const fetchUrl = remoteUrl ? new URL(url, remoteUrl).toString() : url;
   return fetch(fetchUrl).then(res => res.blob());
 }

@@ -1,11 +1,10 @@
 <template>
   <div id="app">
     <head-definition/>
-    <div class="loading-background"/>
+    <div v-if="!platform.wallpaper" class="loading-background"/>
     <music-player v-if="page === 'MusicPlayer' && musicRegistered"/>
     <music-lrc-editor v-if="page === 'MusicLrcEditor' && musicRegistered"/>
     <toast/>
-    <h1 v-if="!webgl2Supported">{{ messages.preview }}</h1>
   </div>
 </template>
 
@@ -14,7 +13,7 @@ import {LanguageKeys} from '@/assets/locale/messages';
 import MusicLrcEditor from '@/components/lrc/MusicLrcEditor.vue';
 import HeadDefinition from '@/components/misc/HeadDefinition.vue';
 import {initBlazor} from '@/components/service/blazor';
-import {loadBasicFonts, registerEvents} from '@/utils/common_utils';
+import {registerEvents} from '@/utils/common_utils';
 import {Component, Watch} from 'vue-property-decorator';
 import Toast from '@/components/common/Toast.vue';
 import MusicStorage from '@/components/service/data';
@@ -25,10 +24,9 @@ import PlayerSettings from '@/components/service/player_settings';
 import LrcContext from '@/components/service/lrc_context';
 import MusicPlayer from '@/components/core/MusicPlayer.vue';
 
-@Component({components: {MusicLrcEditor, HeadDefinition, MusicPlayer, Toast}})
+@Component({components: {HeadDefinition, MusicLrcEditor, MusicPlayer, Toast}})
 export default class App extends BaseComponent {
   private musicRegistered = false;
-  private webgl2Supported = true;
 
   public override created() {
     registerEvents();
@@ -55,22 +53,11 @@ export default class App extends BaseComponent {
 
   public override async mounted() {
     this.$toast.showLoading();
-    await loadBasicFonts();
-    
-    const nativeLanguage = this.wallpaperProperties.language || navigator.language;
-    if (nativeLanguage.match(/(^en$)|(^en-)/)) {
-      this.language = 'en';
-    } else if (nativeLanguage.match(/(^zh$)|(^zh-)/)) {
-      this.language = 'zh';
-    }
+    await document.fonts.ready;
 
-    const canvas = document.createElement('canvas');
-    this.webgl2Supported = !!canvas.getContext('webgl2');
-    if (this.webgl2Supported) {
-      await initBlazor();
-      await this.registerMusic();
-      this.musicRegistered = true;
-    }
+    await initBlazor();
+    await this.registerMusic();
+    this.musicRegistered = true;
     await this.$sleep(100);
     this.$toast.close();
   }
@@ -91,20 +78,8 @@ export default class App extends BaseComponent {
   }
 
   private registerWindowAttrs() {
-    const taskbarPosition = this.wallpaperProperties.taskbar_position;
-    const taskbarLength = this.wallpaperProperties.taskbar_length;
-    document.body.style.setProperty('--taskbar-bottom', (taskbarPosition === 'bottom' ? taskbarLength : 0) + 'px');
-    document.body.style.setProperty('--taskbar-top', (taskbarPosition === 'top' ? taskbarLength : 0) + 'px');
-    document.body.style.setProperty('--taskbar-left', (taskbarPosition === 'left' ? taskbarLength : 0) + 'px');
-    document.body.style.setProperty('--taskbar-right', (taskbarPosition === 'right' ? taskbarLength : 0) + 'px');
     document.body.setAttribute(this.platform.key, 'true');
     this.platform.mobile && document.body.setAttribute('mobile', 'true');
-  }
-
-  @Watch('wallpaperProperties.taskbar_position')
-  @Watch('wallpaperProperties.taskbar_length')
-  private watchTaskbar() {
-    this.registerWindowAttrs();
   }
 
   @Watch('wallpaperProperties.clipboard')
@@ -123,15 +98,6 @@ export default class App extends BaseComponent {
     document.title = [musicTitle, title].filter(t => t).join(' - ');
   }
 
-  @Watch('wallpaperProperties.language')
-  private watchWallpaperLanguage(value: string) {
-    if (value.match(/(^en$)|(^en-)/)) {
-      this.language = 'en';
-    } else if (value.match(/(^zh$)|(^zh-)/)) {
-      this.language = 'zh';
-    }
-  }
-  
   @Watch('language')
   private watchLanguage(value: LanguageKeys) {
     const locale = require('element-ui/lib/locale/index.js');

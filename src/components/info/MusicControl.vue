@@ -157,7 +157,6 @@ export default class MusicControl extends BaseComponent {
   private showPlaylist = false;
 
   private readonly popoverOptions = {
-    placement: 'left',
     width: 400,
     trigger: 'click',
     appendToBody: false
@@ -240,9 +239,9 @@ export default class MusicControl extends BaseComponent {
     }
   }
 
-  @Watch('musicService.mode.name')
+  @Watch('musicService.mode.key')
   private watchMode(value: string, oldValue: string) {
-    oldValue && this.$toast(value);
+    oldValue && this.$toast(this.messages['music.mode.' + value]);
   }
 
   @Watch('musicService.pitch')
@@ -274,10 +273,10 @@ export default class MusicControl extends BaseComponent {
   --button-padding: min(12px, var(--button-size) * 0.24);
   position: absolute;
   bottom: 0;
-  left: var(--taskbar-left);
+  left: 0;
   padding: 0;
-  height: calc(80px + var(--taskbar-bottom));
-  width: calc(100% - var(--taskbar-right));
+  height: 80px;
+  width: 100%;
   background-color: #c6e2ffbb;
 
   .el-slider.progress {

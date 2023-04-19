@@ -1,5 +1,15 @@
 ﻿@import "@/styles/element-ui.scss";
 
+@font-face {
+  font-family: PingFang SC;
+  src: url(@/assets/fonts/PingFang-Jian-ChangGuiTi-2.ttf);
+}
+
+@font-face {
+  font-family: JetBrains Mono;
+  src: url(@/assets/fonts/JetBrainsMono-Regular.ttf);
+}
+
 body {
   width: 100%;
   height: 100%;
@@ -7,6 +17,7 @@ body {
   padding: 0;
   overflow: hidden;
   position: fixed;
+  border: none;
   top: 0;
   left: 0;
 

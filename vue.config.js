@@ -60,7 +60,7 @@ module.exports = defineConfig({
           ]
         },
         {
-          test: /\.(zip)$/,
+          test: /\.zip$/,
           type: 'asset',
           generator: {
             filename: 'zip/[name].[hash:8][ext]'
@@ -76,7 +76,7 @@ module.exports = defineConfig({
           }
         },
         {
-          test: /\.(lrc|html)$/,
+          test: /\.lrc$/,
           type: 'asset/source'
         }
       ]
@@ -87,6 +87,7 @@ module.exports = defineConfig({
         disableDevLogs: true,
         inlineWorkboxRuntime: true,
         maximumFileSizeToCacheInBytes: 100 * 1024 * 1024,
+        exclude: [/\.(js|css|html)/].filter(() => process.env.NODE_ENV === 'development'),
         manifestTransforms: [
           function (manifest) {
             for (const entry of manifest) {
