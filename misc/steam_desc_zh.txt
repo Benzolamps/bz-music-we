@@ -22,6 +22,6 @@
 * [url=https://github.com/jberg]jberg[/url] for creating [url=https://github.com/jberg/butterchurn]Butterchurn[/url]
 * [url=http://www.geisswerks.com/]Ryan Geiss[/url] for creating [url=http://www.geisswerks.com/about_milkdrop.html]MilkDrop[/url]
 
-## Links
+[h1]Links[/h1]
 * [url=https://github.com/Benzolamps/bz-music-we]GitHub[/url]
 * [url=https://gitee.com/Benzolamps/bz-music-we]Gitee[/url]

@@ -117,6 +117,7 @@ export default class MusicComponent extends BaseClass {
         this.audio.muted = old.muted;
         this.audio.playbackRate = old.playbackRate;
         this.audio.volume = old.volume;
+        this.audio.autoplay = old.autoplay;
         isPlaying || this.audio.pause();
       });
     }

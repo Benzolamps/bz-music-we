@@ -1,5 +1,4 @@
-﻿import {bus} from "@/components/common/common";
-import platform from '@/utils/platform';
+﻿import platform from '@/utils/platform';
 
 interface WallpaperProperties {
   fps: number;
