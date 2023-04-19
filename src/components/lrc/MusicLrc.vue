@@ -41,7 +41,7 @@ export default class MusicLrc extends BaseComponent {
 
   @Ref('scroll')
   private readonly scroll: BScroll;
-  
+
   public override mounted() {
     this.refreshScroll();
     window.addEventListener('resize', this.adjustHeight, {signal: this.abortSignal});
@@ -147,7 +147,7 @@ export default class MusicLrc extends BaseComponent {
       const containerWidth = lrcContainer.clientWidth;
       if (elementWidth > containerWidth) {
         const offset = this.lrcContext.progressForOverflow * (elementWidth - containerWidth);
-        element.style.left = (elementWidth - containerWidth) / 2 - offset + 'px';
+        element.style.transform = `translateX(${(elementWidth - containerWidth) / 2 - offset}px)`;
       }
     }
   }
@@ -191,6 +191,7 @@ export default class MusicLrc extends BaseComponent {
       &, &::before {
         pointer-events: auto;
         width: fit-content;
+        white-space: nowrap;
         overflow: hidden;
       }
 
@@ -200,7 +201,7 @@ export default class MusicLrc extends BaseComponent {
     }
 
     .music-lrc-item-normal {
-      left: 0 !important;
+      transform: none !important;
     }
 
     .music-lrc-item-current {

@@ -24,11 +24,8 @@
   margin: 0 2px;
 }
 
-.el-drawer__wrapper {
-  padding: 10px;
-  .el-drawer {
+.el-drawer__wrapper .el-drawer {
     border-radius: 10px;
-  }
 }
 
 .el-scrollbar {
@@ -46,6 +43,7 @@ body[mobile] .el-scrollbar__bar {
 }
 
 body:not([portable]) .el-drawer__wrapper {
+  padding: 10px;
   pointer-events: none;
 
   .el-drawer {
