@@ -289,7 +289,9 @@ export default class MusicVisualCore extends BaseClass {
     }
   }
 
-  private align = -1;
+  private align = 0;
+  private targetAlign = 0;
+  private time = 0;
 
   private drawLrcScrollInner() {
     const fontSize = 20 * window.devicePixelRatio;
@@ -308,10 +310,16 @@ export default class MusicVisualCore extends BaseClass {
       const alignLrc = lrcs[Math.ceil(lrcs.length / 2) - 1];
       align = bus.lrcContext.shownLrc.indexOf(alignLrc);
     } else {
-      align = -1;
+      align = 0;
     }
-    const damping = 0.9;
-    this.align = damping * this.align + (1.0 - damping) * align;
+
+    if (align !== this.targetAlign) {
+      this.targetAlign = align;
+      this.time = performance.now();
+    }
+
+    const damping = Math.min(1, (performance.now() - this.time) / 700);
+    this.align = damping * align + (1.0 - damping) * this.align;
 
     let startY = height / 2 - fontSize / 2;
     startY -= this.align * (fontSize + margin);

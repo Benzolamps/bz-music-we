@@ -276,7 +276,7 @@ export default class MusicComponent extends BaseClass {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: this.playingMusic.title,
-        artwork: [{src: favicon, sizes: '128x128', type: 'image/png'}]
+        artwork: [{src: favicon, sizes: '512x512', type: 'image/png'}]
       });
       navigator.mediaSession.setActionHandler('previoustrack', () => this.vue.$emit('prevMusic'));
       navigator.mediaSession.setActionHandler('nexttrack', () => this.vue.$emit('nextMusic'));
