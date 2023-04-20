@@ -1,5 +1,6 @@
 ﻿import {Music} from '@/components/service/music';
 import BaseClass from '@/utils/base_class';
+import {safeGetBlobText} from '@/utils/common_utils';
 import {readAsBlob} from '@/utils/file_handle';
 import LrcObject, {LrcTag} from '@/utils/lrc_object';
 import {bus} from '@/components/common/common';
@@ -72,7 +73,7 @@ export default class LrcContext extends BaseClass {
       this.currentLrcTime = this.nextLrcTime = -1;
       this.currentLrcArray = [];
       this.music = bus.musicService.music;
-      const lrcContent = await (await readAsBlob(this.music.lrcFile))?.text();
+      const lrcContent = await safeGetBlobText(await readAsBlob(this.music.lrcFile));
       this.lrcObj = new LrcObject(lrcContent);
       this.generateShownLrc();
     }

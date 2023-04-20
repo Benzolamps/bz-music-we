@@ -108,7 +108,7 @@ import MusicControl from '@/components/info/MusicControl.vue';
 import {readAsBlob, resolveFile, writeHandle} from '@/utils/file_handle';
 import LrcObject from '@/utils/lrc_object';
 import TextEditor from '@/components/common/TextEditor.vue';
-import {KeyMapping, keyMappings} from '@/utils/common_utils';
+import {KeyMapping, keyMappings, safeGetBlobText} from '@/utils/common_utils';
 import BaseComponent from '@/components/common/BaseComponent';
 import {Component, Ref, Watch} from 'vue-property-decorator';
 
@@ -330,7 +330,7 @@ export default class MusicLrcEditor extends BaseComponent {
 
   /* 读取歌词 */
   private async readLrc() {
-    const lrcContent = await (await readAsBlob(this.music.lrcFile)).text();
+    const lrcContent = await safeGetBlobText(await readAsBlob(this.music.lrcFile));
     this.lrcObj = new LrcObject(lrcContent);
     await this.$nextTick();
     this.textEditor.reset();

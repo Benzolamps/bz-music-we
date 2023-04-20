@@ -42,6 +42,7 @@ export interface Message extends Readonly<unknown> {
   'music.import.retrieving': string;
   'music.import.importing': string;
   'music.import.folder_to_playlist': string;
+  'music.import.fs_warning': string;
   'music.import.current_session': string;
   'music.import.file_type': string;
   'music.import.no_proper_files': string;
@@ -143,6 +144,7 @@ const languages: LanguageRecord = {
     'music.import.retrieving': 'Retrieving files...',
     'music.import.importing': 'Importing files...',
     'music.import.folder_to_playlist': 'Import folder as playlist',
+    'music.import.fs_warning': 'Your browser does not support the custom playlist, and the imported files are only valid for current session.',
     'music.import.current_session': 'Available in current session',
     'music.import.file_type': 'Audio/Lyrics File',
     'music.import.no_proper_files': 'There are no proper files.',
@@ -267,10 +269,11 @@ const languages: LanguageRecord = {
     'music.import.retrieving': '正在检索文件',
     'music.import.importing': '正在导入文件',
     'music.import.folder_to_playlist': '将文件夹导入为播放列表',
-    'music.import.current_session': '当前会话有效',
+    'music.import.fs_warning': '您的浏览器暂不支持自定义播放列表功能，导入的文件仅在本次会话有效',
+    'music.import.current_session': '本次会话有效',
     'music.import.file_type': '音频/字体文件',
     'music.import.no_proper_files': '没有符合条件的文件',
-    'music.import.audio_lrc_count': (audioCount, lrcCount) => `${audioCount} 歌曲，${lrcCount} 歌词`,
+    'music.import.audio_lrc_count': (audioCount, lrcCount) => `${audioCount}歌曲，${lrcCount}歌词`,
     'music.tips': [
       [
         ['<-', '上一曲'],

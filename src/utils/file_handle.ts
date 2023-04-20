@@ -130,15 +130,15 @@ export function chooseFolder() {
 }
 
 let rejectFn: () => void;
+const input = document.createElement('input');
 
 function chooseFileByInput(accept: string, multiple: boolean, webkitDirectory: boolean) {
   rejectFn?.();
-  const input = document.createElement('input');
   input.type = 'file';
   input.accept = platform.ios ? '' : accept;
   input.multiple = multiple;
   input.webkitdirectory = webkitDirectory;
-  input.dispatchEvent(new MouseEvent('click'));
+  input.click();
   return new Promise<Array<File>>((resolve, reject) => {
     input.addEventListener('change', () => {
       if (input.files.length) {

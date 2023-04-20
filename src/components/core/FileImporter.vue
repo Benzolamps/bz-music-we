@@ -12,6 +12,13 @@
     class="retrieve-drawer"
   >
     <div class="retrieve-container">
+      <el-alert
+        v-if="!platform.hasFsApi"
+        type="warning"
+        show-icon
+        :closable="false"
+        style="margin-bottom: 10px; align-items: unset;"
+      >{{messages['music.import.fs_warning']}}</el-alert>
       <el-tabs class="retrieve-tabs" v-model="type" type="card" v-if="shownItems.length">
         <el-tab-pane :label="`${messages['music.import.total']} (${shownInfo.total})`" name="total"/>
         <el-tab-pane :label="`${messages['music.import.audio']} (${shownInfo.audio})`" name="audio"/>
@@ -32,7 +39,7 @@
           <el-table-column width="100">
             <template v-slot="scope">
               <el-tag v-if="getType(scope.row) === 'audio'" size="small" type="success">{{messages['music.import.audio']}}</el-tag>
-              <el-tag v-else-if="getType(scope.row) === 'lrc'" size="small" type="warning">{{messages['music.import.lrc']}}</el-tag>
+              <el-tag v-else-if="getType(scope.row) === 'lrc'" size="small" type="">{{messages['music.import.lrc']}}</el-tag>
               <el-tag v-else-if="getType(scope.row) === 'directory'" size="small" type="">{{messages['music.import.playlist']}}</el-tag>
             </template>
           </el-table-column>
@@ -167,8 +174,8 @@ export default class FileImporter extends BaseComponent {
 
 <style lang="scss">
 .retrieve-drawer {
-  padding-left: calc(50% - 500px);
-  padding-right: calc(50% - 500px);
+  padding-left: calc(50% - 500px) !important;
+  padding-right: calc(50% - 500px) !important;
   .retrieve-container {
     height: 100%;
     display: flex;

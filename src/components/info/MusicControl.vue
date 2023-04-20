@@ -64,7 +64,7 @@
         >{{ musicService.pitch }}x</span>
 
         <!-- 可视化 -->
-        <svg-icon v-show="!view.portable" v-popover:popoverAperture icon-name="music_aperture"/>
+        <svg-icon v-show="!view.portable && page === 'MusicPlayer'" v-popover:popoverAperture icon-name="music_aperture"/>
       </div>
     </div>
 
@@ -102,7 +102,7 @@
             <music-mode/>
             <music-volume/>
             <music-pitch/>
-            <music-aperture/>
+            <music-aperture v-show="page === 'MusicPlayer'"/>
           </div>
         </template>
         <template v-else-if="tabName === 'lrc'">
