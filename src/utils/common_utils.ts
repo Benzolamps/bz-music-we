@@ -156,21 +156,20 @@ export function getBinaryData(url: string) {
   return fetch(fetchUrl).then(res => res.blob());
 }
 
-const REPLACEMENT_CHAR = '\uFFFD';
-
 export async function safeGetBlobText(blob: Blob) {
+  const replacementChar = '\uFFFD';
   if (!blob) {
     return '';
   }
   const textUtf8 = await blob.text();
-  const countUtf8 = textUtf8.split(REPLACEMENT_CHAR).length - 1;
+  const countUtf8 = textUtf8.split(replacementChar).length - 1;
   if (countUtf8 === 0) {
     return textUtf8;
   }
-  console.warn(`UTF-8 decode contains ${REPLACEMENT_CHAR}, try GBK`);
+  console.warn(`UTF-8 decode contains ${replacementChar}, try GBK`);
   const textDecoder = new TextDecoder('GBK');
   const textGbk = textDecoder.decode(await blob.arrayBuffer());
-  const countGbk = textGbk.split(REPLACEMENT_CHAR).length - 1;
-  countGbk > 0 && console.warn(`GBK decode contains ${REPLACEMENT_CHAR}`);
+  const countGbk = textGbk.split(replacementChar).length - 1;
+  countGbk > 0 && console.warn(`GBK decode contains ${replacementChar}`);
   return countGbk < countUtf8 ? textGbk : textUtf8;
 }

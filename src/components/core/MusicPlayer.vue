@@ -8,7 +8,7 @@
       <music-lrc ref="musicLrc" v-if="showLrc"/>
 
       <!-- 歌曲信息 -->
-      <div v-show="showInfo" class="music-info" style="color: #FFF">
+      <div v-show="showInfo" class="music-info" style="color: #FFF;">
         <div>{{ music.name || music.title }}</div>
         <div v-if="music.author">{{ messages['music.author'] }}：{{ music.author }}</div>
         <div v-if="music.album">{{ messages['music.album'] }}：{{ music.album }}</div>

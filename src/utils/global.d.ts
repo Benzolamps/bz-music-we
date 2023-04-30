@@ -63,13 +63,13 @@
   interface File {
     path: string;
   }
-  
+
   interface Array<T> {
     shuffle(): void;
     remove(element: T): void;
     removeIf(predicate: (element: T) => boolean): void;
   }
-  
+
   interface String {
     hash(): number;
   }

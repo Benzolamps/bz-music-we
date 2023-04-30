@@ -1,32 +1,32 @@
 ﻿<template>
   <el-form class="lrc-setting-container" size="mini" label-position="top" style="text-align: left;">
     <el-form-item :label="messages['lrc.font']">
-      <el-select v-model="lrcStyles.font" v-bind="inputAttrs" style="width: 80%">
+      <el-select v-model="lrcStyles.font" v-bind="inputAttrs" style="width: 80%;">
         <el-option v-for="font in fonts" :key="font.name" :value="font.name" :label="font.name"/>
       </el-select>
-      <el-button style="width: 20%" @click="chooseCustomFont">{{messages['lrc.font.custom']}}</el-button>
+      <el-button style="width: 20%;" @click="chooseCustomFont">{{messages['lrc.font.custom']}}</el-button>
     </el-form-item>
     <el-form-item :label="messages['lrc.color.default']">
-      <div style="display: flex">
-        <el-input v-model="lrcStyles.defaultColor" readonly style="flex: 1"/>
+      <div style="display: flex;">
+        <el-input v-model="lrcStyles.defaultColor" readonly style="flex: 1;"/>
         <el-color-picker v-model="lrcStyles.defaultColor"/>
       </div>
     </el-form-item>
     <el-form-item :label="messages['lrc.color.future']">
-      <div style="display: flex">
-        <el-input v-model="lrcStyles.futureColor" readonly style="flex: 1"/>
+      <div style="display: flex;">
+        <el-input v-model="lrcStyles.futureColor" readonly style="flex: 1;"/>
         <el-color-picker v-model="lrcStyles.futureColor"/>
       </div>
     </el-form-item>
     <el-form-item :label="messages['lrc.color.past']">
-      <div style="display: flex">
-        <el-input v-model="lrcStyles.pastColor" readonly style="flex: 1"/>
+      <div style="display: flex;">
+        <el-input v-model="lrcStyles.pastColor" readonly style="flex: 1;"/>
         <el-color-picker v-model="lrcStyles.pastColor"/>
       </div>
     </el-form-item>
     <el-form-item :label="messages['lrc.color.stroke']">
-      <div style="display: flex">
-        <el-input v-model="lrcStyles.strokeColor" readonly style="flex: 1"/>
+      <div style="display: flex;">
+        <el-input v-model="lrcStyles.strokeColor" readonly style="flex: 1;"/>
         <el-color-picker v-model="lrcStyles.strokeColor"/>
       </div>
     </el-form-item>

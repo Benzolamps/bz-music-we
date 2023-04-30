@@ -141,7 +141,7 @@ export default class Playlist extends BaseComponent {
   private chooseFolder() {
     return chooseFolder().then(this.musicStorage.add).catch(() => 0);
   }
-  
+
   private getAtPage(index: number) {
     return Math.floor((index + 1) / this.pageSize) + Math.sign((index + 1) % this.pageSize);
   }

@@ -66,9 +66,11 @@ class MusicStorageItems {
     async function insert(src: Array<FileEntity>, dest: Array<FileEntity>) {
       for (const file of src) {
         const exist = await getExist(dest, file);
-        if (!exist || exist.blob || exist.timestamp !== file.timestamp) {
-          dest.remove(exist);
+        if (!exist) {
           dest.push(file);
+        } else if (exist.blob || exist.timestamp !== file.timestamp) {
+          exist.blob = file.blob;
+          exist.timestamp = file.timestamp;
         }
       }
     }

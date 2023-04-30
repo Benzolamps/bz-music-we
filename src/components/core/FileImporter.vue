@@ -83,7 +83,7 @@ import BScroll from '@/components/common/BScroll.vue';
 import {getType} from '@/components/service/data';
 import {formatFileSize} from '@/utils/common_utils';
 import {FileEntity} from '@/utils/file_handle';
-import {Component, Ref, Watch} from 'vue-property-decorator';
+import {Component, Ref} from 'vue-property-decorator';
 
 @Component({components: {BScroll}, methods: {getType}})
 export default class FileImporter extends BaseComponent {

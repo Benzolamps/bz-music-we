@@ -27,7 +27,6 @@ import BaseComponent from '@/components/common/BaseComponent';
 import {Component} from 'vue-property-decorator';
 import favicon from '@/assets/img/favicon.png';
 
-
 @Component
 export default class HeadDefinition extends BaseComponent {
   private readonly themeColor = '#C6E2FF';

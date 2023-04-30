@@ -185,7 +185,9 @@ export default class MusicService extends MusicComponent {
     }
     await this.setMusic(music);
     this.music = music;
-    store.musicId = music.id;
+    if (music.id) {
+      store.musicId = music.id;
+    }
     this.nextMusicType = 'default';
     this.choseMusic = null;
   }

@@ -40,10 +40,10 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "butterchurn/**/*.js",
-    "*.js",
-    "node_modules/@types/web/index.d.ts",
+    "*.js"
   ],
   "exclude": [
+    "node_modules",
     "butterchurn/**/*.asc.ts"
   ]
 }

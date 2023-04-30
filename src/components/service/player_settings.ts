@@ -49,7 +49,7 @@ export default class PlayerSettings {
     enabled: boolean;
     value: boolean;
   }>();
-  
+
   public static getLrcStyles() {
     let result;
     if (window.name === 'MusicLrcDesktop') {

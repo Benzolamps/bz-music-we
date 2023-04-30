@@ -11,7 +11,7 @@ export default class MusicVisualCore extends BaseClass {
   private mediaSource: MediaElementAudioSourceNode;
   private readonly visualizer: Visualizer;
   private readonly canvas: HTMLCanvasElement;
-  private readonly canvasDraw: HTMLCanvasElement | OffscreenCanvas;
+  private readonly canvasDraw: HTMLCanvasElement;
   private readonly getDesireCanvasSize: () => [number, number];
   private timeout: number;
   private readonly basePresetList: ReadonlyArray<MilkDropPresetDesc> = presetList;
@@ -361,7 +361,7 @@ export default class MusicVisualCore extends BaseClass {
     context2d.clearRect(0, 0, margin, height);
     context2d.clearRect(width - margin, 0, margin, height);
   }
-  
+
   public close() {
     bus.animationRunner.off(this.drawEachFrame);
     bus.visualStates.video = false;
