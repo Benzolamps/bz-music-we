@@ -11,17 +11,11 @@
     />
 
     <!-- 时间 -->
-    <div class="music-control-time">
-      <span ref="currentTime" class="code-font">{{ 0 | delta }}</span>
-      <span ref="duration" class="code-font">{{ 0 | delta }}</span>
+    <div class="music-control-time code-font" ref="musicTime">
+      {{ 0 | delta }} {{ 0 | delta }}
     </div>
 
-    <el-badge
-      v-if="window.name !== 'MusicLrcDesktop'"
-      :value="musicService.musicList.length"
-      type="success"
-      class="music-count-badge"
-    />
+    <el-badge :value="musicService.musicList.length" type="success" class="music-count-badge"/>
 
     <!-- 按钮组 -->
     <div class="music-control-button-group">
@@ -231,10 +225,8 @@ export default class MusicControl extends BaseComponent {
   }
 
   private updateTime() {
-    const currentTimeElement = this.$refs.currentTime as HTMLElement;
-    const durationElement = this.$refs.duration as HTMLElement;
-    currentTimeElement.innerText = formatDelta(this.musicService.currentTime);
-    durationElement.innerText = formatDelta(this.musicService.duration);
+    const musicTimeElement = this.$refs.musicTime as HTMLElement;
+    musicTimeElement.innerText = formatDelta(this.musicService.currentTime) + ' ' + formatDelta(this.musicService.duration);
     if (!this.isSliding) {
       const slider = this.$refs.slider as ElSlider;
       let element: HTMLElement = slider.$el.querySelector('.el-slider__bar');
@@ -360,14 +352,16 @@ export default class MusicControl extends BaseComponent {
   }
 
   .music-control-time {
-    margin-top: -15px;
-    display: flex;
-    justify-content: space-between;
+    margin: -15px 0;
     padding: 0 5px;
-
-    span {
-      color: #606266;
-      font-size: 10px;
+    color: #606266;
+    font-size: 10px;
+    text-align: justify;
+    &:after {
+      content: '';
+      width: 100%;
+      height: 0;
+      display: inline-block;
     }
   }
 }
