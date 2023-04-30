@@ -76,6 +76,7 @@ export default class LrcContext extends BaseClass {
       const lrcContent = await safeGetBlobText(await readAsBlob(this.music.lrcFile));
       this.lrcObj = new LrcObject(lrcContent);
       this.generateShownLrc();
+      this.generateLrcTime();
     }
     if (bus.musicService.duration > 0) {
       if (this.duration !== bus.musicService.duration) {

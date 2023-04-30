@@ -43,10 +43,9 @@ export default class MusicLrc extends BaseComponent {
   private readonly scroll: BScroll;
 
   public override mounted() {
-    this.refreshScroll();
     window.addEventListener('resize', this.adjustHeight, {signal: this.abortSignal});
+    this.animationRunner.once(this.adjustHeight);
     this.animationRunner.once(this.updateTime);
-    this.$nextTick(this.adjustHeight);
   }
 
   public override beforeDestroy() {
@@ -68,10 +67,13 @@ export default class MusicLrc extends BaseComponent {
     const maxHeight = number * lineHeight;
     element.style.maxHeight = maxHeight + 'px';
     await this.$nextTick();
-    this.scroll?.refresh();
+    await this.refreshScroll(0);
   }
 
   private initScroll() {
+    if (this.lockScroll) {
+      return;
+    }
     this.scroll.scroll.on('scrollEnd', ({x, y}: {x: number, y: number}) => {
       const lineHeight = parseInt(window.getComputedStyle(this.$el).lineHeight);
       const newY = Math.round(y / lineHeight) * lineHeight;
@@ -120,12 +122,12 @@ export default class MusicLrc extends BaseComponent {
     return result;
   }
 
-  private async refreshScroll() {
+  private async refreshScroll(time = 500) {
     await this.$nextTick();
     this.scroll?.refresh();
     const element = this.getScrollToElement();
     if (element instanceof HTMLElement) {
-      this.scroll?.scrollToElement(element, this.lrcContext.currentLrcTime && 500);
+      this.scroll?.scrollToElement(element, time);
     }
   }
 
