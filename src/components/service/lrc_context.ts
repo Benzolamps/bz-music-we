@@ -131,12 +131,17 @@ export default class LrcContext extends BaseClass {
       );
       this.currentLrcArray = this.shownLrc.filter(lrc => lrc.time === this.currentLrcTime);
     }
-    if (this.currentTime < this.currentLrcTime) {
-      this.progress = 0;
-    } else if (this.currentTime > this.nextLrcTime) {
-      this.progress = 1;
+    
+    if (this.music.id) {
+      if (this.currentTime < this.currentLrcTime) {
+        this.progress = 0;
+      } else if (this.currentTime > this.nextLrcTime) {
+        this.progress = 1;
+      } else {
+        this.progress = (this.currentTime - this.currentLrcTime) / (this.nextLrcTime - this.currentLrcTime);
+      }
     } else {
-      this.progress = (this.currentTime - this.currentLrcTime) / (this.nextLrcTime - this.currentLrcTime);
+      this.progress = 0;
     }
   }
 }

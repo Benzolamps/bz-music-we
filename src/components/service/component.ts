@@ -147,14 +147,15 @@ export default class MusicComponent extends BaseClass {
         });
       }
       this.currentTime = 0;
-      this.playingMusic = music;
     } else {
       this.audio.src = defaultSrc;
       this.duration = 0;
       this.currentTime = 0;
-      this.playingMusic = null;
     }
-    (this.vue.platform.wallpaper || this.audio.autoplay) && this.play();
+    if (this.vue.platform.wallpaper || this.audio.autoplay) {
+      await this.play();
+    }
+    this.playingMusic = music?.id ? music : null;
   }
 
   private async getCurrentTime() {
@@ -179,7 +180,7 @@ export default class MusicComponent extends BaseClass {
 
   /* 播放 */
   public play() {
-    this.audio.play().catch(() => 0);
+    return this.audio.play().catch(() => 0);
   }
 
   /* 暂停 */
@@ -275,7 +276,9 @@ export default class MusicComponent extends BaseClass {
   private updateMediaSession() {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: this.playingMusic.title,
+        title: this.playingMusic.name,
+        artist: this.playingMusic.author,
+        album: this.playingMusic.album,
         artwork: [{src: favicon, sizes: '512x512', type: 'image/png'}]
       });
       navigator.mediaSession.setActionHandler('previoustrack', () => this.vue.$emit('prevMusic'));

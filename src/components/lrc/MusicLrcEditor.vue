@@ -124,9 +124,7 @@ export default class MusicLrcEditor extends BaseComponent {
   @Ref('textEditorMeta')
   private readonly textEditorMeta: TextEditor;
 
-  private get music() {
-    return this.musicService.music;
-  }
+  private music: Music;
 
   private get lrcString() {
     return this.lrcObj.lrcString;
@@ -138,6 +136,7 @@ export default class MusicLrcEditor extends BaseComponent {
 
   public override mounted() {
     this.mapKey();
+    this.music = this.musicService.music;
     if (this.music) {
       this.readLrc();
     }
@@ -345,9 +344,11 @@ export default class MusicLrcEditor extends BaseComponent {
     element.innerText = this.lrcObj.appendTimeTag(this.musicService.currentTime, '');
   }
 
-  @Watch('music.id')
+  @Watch('musicService.music.id')
   private watchMusic() {
-    if (this.music) {
+    const id = this.musicService.music?.id;
+    if (id && id !== this.music?.id) {
+      this.music = this.musicService.music;
       this.readLrc();
     }
   }
